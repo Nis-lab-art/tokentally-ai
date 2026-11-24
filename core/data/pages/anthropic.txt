@@ -728,6 +728,10 @@ Craft and test prompts directly in your browser.
 Looking to chat with Claude? Visit claude.ai . If you have questions, contact the support team or the Discord community .
 Was this page helpful?
  
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+ Console
 List Models
  GET /v1/models
 List available models.
@@ -817,10 +821,6 @@ has_more : boolean
 Indicates if there are more results in the requested page direction.
 last_id : string or null
 Last ID in the data list. Can be used as the after_id for the next page.
- Console
-Cookie settings
-We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
-Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
 @@url https://platform.claude.com/docs/en/models/fable-5-2/overview
 @@title Claude Fable 5.2 - Claude Platform Docs
 Overview
@@ -1421,6 +1421,704 @@ How model IDs, aliases, and pinned snapshots work.
 
 Model deprecations
 Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/mythos-5/overview
+@@title Claude Mythos 5 - Claude Platform Docs
+ Claude Mythos 5 is available only to organizations verified through Anthropic’s verification programs, such as the Cyber Verification Program (opens in new tab) . It has the same specifications and pricing as Claude Fable 5. To request access, apply to the program that covers your use case.
+See Claude Fable 5
+How it compares
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Mythos 5 This model 1M 128K $10 / $50 Adaptive (always on) high Jan 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-mythos-5
+Amazon Bedrock anthropic.claude-mythos-5
+Claude Models on Google Cloud (Google managed) claude-mythos-5
+Microsoft Foundry claude-mythos-5
+Claude Models on Google Cloud (Anthropic managed) claude-mythos-5
+Pricing
+Input $10 / MTok
+Output $50 / MTok
+5m cache write $12.50 / MTok
+1h cache write $20 / MTok
+Cache read $1 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Thinking Adaptive (always on)
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff Jan 2026
+Training data cutoff Jan 2026
+Availability
+Status Active (verification required)
+Released June 9, 2026
+Retirement Not sooner than June 9, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Mythos 5.2
+What changes when moving from Claude Mythos 5 to Claude Mythos 5.2.
+
+Claude Mythos 5.2
+The current Mythos model: overview, specs, and resources.
+Reference
+
+System card 
+Safety evaluations and deployment decisions for Claude Fable 5 and Claude Mythos 5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/opus-5/overview
+@@title Claude Opus 5 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Opus 5 This model Legacy 1M 128K $5 / $25 Adaptive high May 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-opus-5
+Amazon Bedrock anthropic.claude-opus-5
+Claude Models on Google Cloud (Google managed) claude-opus-5
+Microsoft Foundry claude-opus-5
+Claude Platform on AWS claude-opus-5
+Claude Models on Google Cloud (Anthropic managed) claude-opus-5
+Pricing
+Input $5 / MTok
+Output $25 / MTok
+5m cache write $6.25 / MTok
+1h cache write $10 / MTok
+Cache read $0.50 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff May 2026
+Training data cutoff May 2026
+Availability
+Status Active (legacy)
+Released July 24, 2026
+Retirement Not sooner than July 24, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Good to know
+On the Message Batches API , Claude Opus 5 supports up to 300k output tokens with the output-300k-2026-03-24 beta header.
+The minimum cacheable prompt length is 512 tokens. See Prompt caching .
+Query limits and capabilities programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. .
+Resources
+Migrate to Claude Opus 5.5
+What changes when moving from Claude Opus 5 to Claude Opus 5.5.
+
+Claude Opus 5.5
+The current Opus model: overview, specs, and resources.
+
+Prompting Claude Opus 5
+Model-specific prompting guidance.
+Reference
+
+System prompt
+The system prompt Claude Opus 5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Opus 5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/opus-4-8/overview
+@@title Claude Opus 4.8 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Opus 4.8 This model Legacy 1M 128K $5 / $25 Adaptive high Jan 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-opus-4-8
+Amazon Bedrock anthropic.claude-opus-4-8
+Claude Models on Google Cloud (Google managed) claude-opus-4-8
+Microsoft Foundry claude-opus-4-8
+Claude Platform on AWS claude-opus-4-8
+Claude Models on Google Cloud (Anthropic managed) claude-opus-4-8
+Pricing
+Input $5 / MTok
+Output $25 / MTok
+5m cache write $6.25 / MTok
+1h cache write $10 / MTok
+Cache read $0.50 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff Jan 2026
+Training data cutoff Jan 2026
+Availability
+Status Active (legacy)
+Released May 28, 2026
+Retirement Not sooner than May 28, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Opus 5.5
+What changes when moving from Claude Opus 4.8 to Claude Opus 5.5.
+
+Claude Opus 5.5
+The current Opus model: overview, specs, and resources.
+
+Prompting Claude Opus 4.8
+Model-specific prompting guidance.
+Reference
+
+System prompt
+The system prompt Claude Opus 4.8 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Opus 4.8.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/opus-4-7/overview
+@@title Claude Opus 4.7 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Opus 4.7 This model Legacy 1M 128K $5 / $25 Adaptive high Jan 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-opus-4-7
+Amazon Bedrock anthropic.claude-opus-4-7
+Claude Models on Google Cloud (Google managed) claude-opus-4-7
+Microsoft Foundry claude-opus-4-7
+Claude Platform on AWS claude-opus-4-7
+Claude Models on Google Cloud (Anthropic managed) claude-opus-4-7
+Pricing
+Input $5 / MTok
+Output $25 / MTok
+5m cache write $6.25 / MTok
+1h cache write $10 / MTok
+Cache read $0.50 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff Jan 2026
+Training data cutoff Jan 2026
+Availability
+Status Active (legacy)
+Released April 16, 2026
+Retirement Not sooner than April 16, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Opus 5.5
+What changes when moving from Claude Opus 4.7 to Claude Opus 5.5.
+
+Claude Opus 5.5
+The current Opus model: overview, specs, and resources.
+Reference
+
+System prompt
+The system prompt Claude Opus 4.7 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Opus 4.7.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/opus-4-6/overview
+@@title Claude Opus 4.6 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Opus 4.6 This model Legacy 1M 128K $5 / $25 Adaptive (extended deprecated) high May 2025
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-opus-4-6
+Amazon Bedrock (bedrock-runtime) global.anthropic.claude-opus-4-6-v1
+Claude Models on Google Cloud (Google managed) claude-opus-4-6
+Microsoft Foundry claude-opus-4-6
+Claude Platform on AWS claude-opus-4-6
+Claude Models on Google Cloud (Anthropic managed) claude-opus-4-6
+Pricing
+Input $5 / MTok
+Output $25 / MTok
+5m cache write $6.25 / MTok
+1h cache write $10 / MTok
+Cache read $0.50 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive (extended deprecated)
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff May 2025
+Training data cutoff Aug 2025
+Availability
+Status Active (legacy)
+Released February 5, 2026
+Retirement Not sooner than February 5, 2027
+Platforms Claude API Amazon Bedrock (bedrock-runtime) Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Opus 5.5
+What changes when moving from Claude Opus 4.6 to Claude Opus 5.5.
+
+Claude Opus 5.5
+The current Opus model: overview, specs, and resources.
+Reference
+
+System prompt
+The system prompt Claude Opus 4.6 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Opus 4.6.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+
+Amazon Bedrock (bedrock-runtime)
+Claude Opus 4.6 is on the bedrock-runtime endpoint (the InvokeModel and Converse APIs), with Bedrock-style model IDs.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/opus-4-5/overview
+@@title Claude Opus 4.5 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Opus 4.5 This model 200K 64K $5 / $25 Extended high May 2025
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-opus-4-5-20251101
+Claude API alias claude-opus-4-5
+Amazon Bedrock (bedrock-runtime) global.anthropic.claude-opus-4-5-20251101-v1:0
+Claude Models on Google Cloud (Google managed) claude-opus-4-5@20251101
+Microsoft Foundry claude-opus-4-5
+Claude Platform on AWS claude-opus-4-5
+Claude Models on Google Cloud (Anthropic managed) claude-opus-4-5-20251101
+Pricing
+Input $5 / MTok
+Output $25 / MTok
+5m cache write $6.25 / MTok
+1h cache write $10 / MTok
+Cache read $0.50 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 200K tokens
+Max output 64K tokens
+Thinking Extended
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff May 2025
+Training data cutoff Aug 2025
+Availability
+Status Deprecated
+Released November 24, 2025
+Deprecated November 23, 2026
+Retires January 22, 2027
+Platforms Claude API Amazon Bedrock (bedrock-runtime) Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Opus 5.5
+What changes when moving from Claude Opus 4.5 to Claude Opus 5.5.
+
+Claude Opus 5.5
+The current Opus model: overview, specs, and resources.
+Reference
+
+System prompt
+The system prompt Claude Opus 4.5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Opus 4.5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+
+Amazon Bedrock (bedrock-runtime)
+Claude Opus 4.5 is on the bedrock-runtime endpoint (the InvokeModel and Converse APIs), with Bedrock-style model IDs.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/sonnet-5/overview
+@@title Claude Sonnet 5 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Sonnet 5 This model Legacy 1M 128K $2 / $10 Adaptive high Jan 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-sonnet-5
+Amazon Bedrock anthropic.claude-sonnet-5
+Claude Models on Google Cloud (Google managed) claude-sonnet-5
+Microsoft Foundry claude-sonnet-5
+Claude Platform on AWS claude-sonnet-5
+Claude Models on Google Cloud (Anthropic managed) claude-sonnet-5
+Pricing
+Input $2 / MTok
+Output $10 / MTok
+5m cache write $2.50 / MTok
+1h cache write $4 / MTok
+Cache read $0.20 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff Jan 2026
+Training data cutoff Jan 2026
+Availability
+Status Active (legacy)
+Released June 30, 2026
+Retirement Not sooner than June 30, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Good to know
+On the Message Batches API , Claude Sonnet 5 supports up to 300k output tokens with the output-300k-2026-03-24 beta header.
+Setting temperature , top_p , or top_k returns a 400 error.
+Query limits and capabilities programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. .
+Resources
+Migrate to Claude Sonnet 5.5
+What changes when moving from Claude Sonnet 5 to Claude Sonnet 5.5.
+
+Claude Sonnet 5.5
+The current Sonnet model: overview, specs, and resources.
+
+Prompting Claude Sonnet 5
+Model-specific prompting guidance.
+
+Adaptive thinking
+On by default on Claude Sonnet 5. Steer depth with effort .
+
+Effort
+Effort defaults to high on the Claude API and Claude Code. Choose a level for each workload.
+
+Context windows
+Holds 1M tokens by default. How the window is counted and managed.
+Reference
+
+System prompt
+The system prompt Claude Sonnet 5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Sonnet 5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/sonnet-4-6/overview
+@@title Claude Sonnet 4.6 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Sonnet 4.6 This model Legacy 1M 128K $3 / $15 Adaptive (extended deprecated) high Aug 2025
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-sonnet-4-6
+Amazon Bedrock (bedrock-runtime) global.anthropic.claude-sonnet-4-6
+Claude Models on Google Cloud (Google managed) claude-sonnet-4-6
+Microsoft Foundry claude-sonnet-4-6
+Claude Platform on AWS claude-sonnet-4-6
+Claude Models on Google Cloud (Anthropic managed) claude-sonnet-4-6
+Pricing
+Input $3 / MTok
+Output $15 / MTok
+5m cache write $3.75 / MTok
+1h cache write $6 / MTok
+Cache read $0.30 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive (extended deprecated)
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff Aug 2025
+Training data cutoff Jan 2026
+Availability
+Status Active (legacy)
+Released February 17, 2026
+Retirement Not sooner than February 17, 2027
+Platforms Claude API Amazon Bedrock (bedrock-runtime) Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Sonnet 5.5
+What changes when moving from Claude Sonnet 4.6 to Claude Sonnet 5.5.
+
+Claude Sonnet 5.5
+The current Sonnet model: overview, specs, and resources.
+Reference
+
+System prompt
+The system prompt Claude Sonnet 4.6 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Sonnet 4.6.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+
+Amazon Bedrock (bedrock-runtime)
+Claude Sonnet 4.6 is on the bedrock-runtime endpoint (the InvokeModel and Converse APIs), with Bedrock-style model IDs.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/sonnet-4-5/overview
+@@title Claude Sonnet 4.5 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Sonnet 4.5 This model 200K 64K $3 / $15 Extended — Jan 2025
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-sonnet-4-5-20250929
+Claude API alias claude-sonnet-4-5
+Amazon Bedrock (bedrock-runtime) global.anthropic.claude-sonnet-4-5-20250929-v1:0
+Claude Models on Google Cloud (Google managed) claude-sonnet-4-5@20250929
+Microsoft Foundry claude-sonnet-4-5
+Claude Platform on AWS claude-sonnet-4-5
+Claude Models on Google Cloud (Anthropic managed) claude-sonnet-4-5-20250929
+Pricing
+Input $3 / MTok
+Output $15 / MTok
+5m cache write $3.75 / MTok
+1h cache write $6 / MTok
+Cache read $0.30 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 200K tokens
+Max output 64K tokens
+Thinking Extended
+Default effort Not supported
+Input → output Text and images → text
+Reliable knowledge cutoff Jan 2025
+Training data cutoff Jul 2025
+Availability
+Status Deprecated
+Released September 29, 2025
+Deprecated September 30, 2026
+Retires November 30, 2026
+Platforms Claude API Amazon Bedrock (bedrock-runtime) Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Sonnet 5.5
+What changes when moving from Claude Sonnet 4.5 and earlier Sonnet models to Claude Sonnet 5.5.
+
+Claude Sonnet 5.5
+The current Sonnet model: overview, specs, and resources.
+Reference
+
+System prompt
+The system prompt Claude Sonnet 4.5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Sonnet 4.5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+
+Amazon Bedrock (bedrock-runtime)
+Claude Sonnet 4.5 is on the bedrock-runtime endpoint (the InvokeModel and Converse APIs), with Bedrock-style model IDs.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/haiku-4-5/overview
+@@title Claude Haiku 4.5 - Claude Platform Docs
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Claude Haiku 4.5 This model Legacy 200K 64K $1 / $5 Extended — Feb 2025
+Specifications
+Model IDs
+Claude API claude-haiku-4-5-20251001
+Claude API alias claude-haiku-4-5
+Amazon Bedrock anthropic.claude-haiku-4-5
+Amazon Bedrock (bedrock-runtime) global.anthropic.claude-haiku-4-5-20251001-v1:0
+Claude Models on Google Cloud (Google managed) claude-haiku-4-5@20251001
+Microsoft Foundry claude-haiku-4-5
+Claude Platform on AWS claude-haiku-4-5
+Claude Models on Google Cloud (Anthropic managed) claude-haiku-4-5-20251001
+Pricing
+Input $1 / MTok
+Output $5 / MTok
+5m cache write $1.25 / MTok
+1h cache write $2 / MTok
+Cache read $0.10 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 200K tokens
+Max output 64K tokens
+Thinking Extended
+Default effort Not supported
+Input → output Text and images → text
+Reliable knowledge cutoff Feb 2025
+Training data cutoff Jul 2025
+Availability
+Status Active (legacy)
+Released October 15, 2025
+Retirement Not sooner than October 15, 2026
+Platforms Claude API Amazon Bedrock Amazon Bedrock (bedrock-runtime) Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Good to know
+claude-haiku-4-5 is a convenience alias that resolves to the pinned snapshot claude-haiku-4-5-20251001 . See Model IDs and versioning .
+Claude Haiku 4.5 uses manual extended thinking ( thinking.type: "enabled" ), not adaptive thinking.
+Query limits and capabilities programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. .
+Resources
+Migrate to Claude Haiku 5.5
+What changes when moving from Claude Haiku 4.5 to Claude Haiku 5.5.
+
+Claude Haiku 5.5
+The current Haiku model: overview, specs, and resources.
+
+Extended thinking
+Claude Haiku 4.5 supports manual extended thinking with budget_tokens .
+Reference
+
+System prompt
+The system prompt Claude Haiku 4.5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Haiku 4.5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+
+Amazon Bedrock (bedrock-runtime)
+Claude Haiku 4.5 is also on the bedrock-runtime endpoint (the InvokeModel and Converse APIs), with Bedrock-style model IDs.
 Was this page helpful?
  
  Console

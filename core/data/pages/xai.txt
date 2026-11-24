@@ -843,3 +843,356 @@ Use Grok to generate images.
 Learn more
 REST API
 Use Grok via the REST API.
+@@url https://docs.x.ai/developers/models/grok-imagine-image
+@@title Grok Imagine Image | SpaceXSI Docs
+Models
+/
+grok-imagine-image
+grok-imagine-image
+Copy for LLM
+View as Markdown
+Try in playground
+At a glance
+Modalities
+Text, Image
+Image
+Pricing
+$0.02 per image
+Pricing
+Image input
+$0.002 per image
+Output
+$0.02 per image
+You are charged for each image generated when using the API.
+You are also charged when using image as an input.
+This model is available on multiple clusters, you can find full regional based pricing below.
+How does pricing work
+Request increased rate limits
+Details
+Model name
+grok-imagine-image
+Aliases
+grok-imagine-image-2026-03-02
+Region
+us-east-1, us-west-2
+Batch API
+Supported
+Batch pricing
+N/A
+Input pricing
+Text
+Image
+$0.002
+Output pricing per image based on resolution
+1K (1024x1024)
+$0.02
+2K (2048x2048)
+$0.02
+Rate limits
+Requests per second
+6
+Tokens per minute
+Learn more
+Quickstart
+Create an API Key and make your first request.
+Learn more
+Generate images
+Use Grok to generate images.
+Learn more
+REST API
+Use Grok via the REST API.
+@@url https://docs.x.ai/developers/models/grok-imagine-video-1.5
+@@title Grok Imagine Video 1.5 | SpaceXSI Docs
+Models
+/
+grok-imagine-video-1.5
+grok-imagine-video-1.5
+Copy for LLM
+View as Markdown
+Try in playground
+At a glance
+Modalities
+Text, Image, Audio
+Video
+Pricing
+$0.08 per second
+Pricing
+Output
+$0.08 per second
+You are charged for each second of video generated when using the API.
+You are also charged when using video or image as an input.
+Audio input (preset voices) is free.
+This model is available on multiple clusters, you can find full regional based pricing below.
+How does pricing work
+Request increased rate limits
+Details
+Model name
+grok-imagine-video-1.5
+Aliases
+grok-imagine-video-1.5-preview
+grok-imagine-video-1.5-2026-05-30
+Region
+us-east-1, us-west-2
+Batch API
+Supported
+Batch pricing
+N/A
+Input pricing
+Text
+Image
+$0.01
+Audio
+Pricing per second based on resolution
+480p
+$0.08
+720p
+$0.14
+1080p
+$0.25
+Rate limits
+Requests per second
+10
+Tokens per minute
+Learn more
+Quickstart
+Create an API Key and make your first request.
+Learn more
+Generate video
+Use Grok to generate videos.
+Learn more
+REST API
+Use Grok via the REST API.
+@@url https://docs.x.ai/developers/models/grok-imagine-video
+@@title Grok Imagine Video | SpaceXSI Docs
+Models
+/
+grok-imagine-video
+grok-imagine-video
+Copy for LLM
+View as Markdown
+Try in playground
+At a glance
+Modalities
+Text, Image, Video
+Video
+Pricing
+$0.05 per second
+Pricing
+Output
+$0.05 per second
+You are charged for each second of video generated when using the API.
+You are also charged when using video or image as an input.
+Video Extension API pricing is currently offered at a promotional rate and is subject to change.
+This model is available on multiple clusters, you can find full regional based pricing below.
+How does pricing work
+Request increased rate limits
+Details
+Model name
+grok-imagine-video
+Region
+us-east-1, us-west-2
+Batch API
+Supported
+Batch pricing
+N/A
+Input pricing
+Text
+Image
+$0.002
+Video per second
+$0.01
+Pricing per second based on resolution
+480p
+$0.05
+720p
+$0.07
+Rate limits
+Requests per second
+10
+Tokens per minute
+Learn more
+Quickstart
+Create an API Key and make your first request.
+Learn more
+Generate video
+Use Grok to generate videos.
+Learn more
+REST API
+Use Grok via the REST API.
+@@url https://docs.x.ai/developers/models/grok-imagine-video-1.5-lite
+@@title Grok Imagine Video 1.5 Lite | SpaceXSI Docs
+Models
+/
+grok-imagine-video-1.5-lite
+grok-imagine-video-1.5-lite
+Copy for LLM
+View as Markdown
+Try in playground
+At a glance
+Modalities
+Text, Image
+Video
+Pricing
+$0.02 per second
+Pricing
+Output
+$0.02 per second
+You are charged for each second of video generated when using the API.
+You are also charged when using video or image as an input.
+This model is available on multiple clusters, you can find full regional based pricing below.
+How does pricing work
+Request increased rate limits
+Details
+Model name
+grok-imagine-video-1.5-lite
+Region
+us-east-1, us-west-2
+Batch API
+Supported
+Batch pricing
+N/A
+Input pricing
+Text
+Image
+$0.01
+Pricing per second based on resolution
+480p
+$0.02
+720p
+$0.03
+1080p
+$0.14
+Rate limits
+Requests per second
+10
+Tokens per minute
+Learn more
+Quickstart
+Create an API Key and make your first request.
+Learn more
+Generate video
+Use Grok to generate videos.
+Learn more
+REST API
+Use Grok via the REST API.
+@@url https://docs.x.ai/developers/models/speech-to-speech
+@@title Speech to Speech Pricing and Rate Limits | SpaceXSI Docs
+Models
+Speech to Speech
+Copy for LLM
+View as Markdown
+Create API key
+Try Playground Meet grok-4.7
+The Speech to Speech API enables real-time voice conversations over WebSocket, billed per minute plus a flat fee per text input message. Supports function calling with web search, X search, collections, MCP, and custom functions.
+How to increase my rate limits?
+At a glance
+Details
+Modalities Text, Audio → Text, Audio
+Audio pricing $0.08 / minute or $4.80 / hour
+Text Input pricing $0.004 / message
+Region us-east-1
+Pricing
+The Speech to Speech API charges based on duration and text events sent without audio.
+Details
+Audio $0.08 / minute or $4.80 / hour
+Text Input $0.004 per conversation.item.create event
+Sessions using the default server_vad turn detection are billed for session duration. Push-to-talk sessions are billed only for audio sent and received.
+What counts as a text input message
+Every conversation.item.create event you send from the client is billed at $0.004 , with two exceptions:
+function_call_output items (server-requested tool results) are not billed.
+Items whose content is input_audio or audio are billed by the audio meter instead.
+response.create is not billed as a text input. It only asks the model to produce the next turn; any audio the model generates in that turn is billed under the audio meter above.
+Rate Limits
+Details
+Concurrent sessions 10 per team
+Max session duration 120 minutes
+Capabilities
+Function calling
+Web search
+X search
+Collections search
+Remote MCP tools
+Availability
+Details
+Cluster us-east-1
+Documentation
+Speech to Speech Guide — Getting started with real-time voice conversations
+API Reference — WebSocket endpoint reference
+Pricing — Full pricing overview
+Last updated: September 22, 2026
+@@url https://docs.x.ai/developers/models/speech-to-text
+@@title Speech to Text Pricing and Rate Limits | SpaceXSI Docs
+Models
+Speech to Text
+Copy for LLM
+View as Markdown
+Create API key
+Try Playground Meet grok-4.7
+The Speech to Text API transcribes audio into text. The default model is grok-voice-transcribe-2.0 . Use the REST endpoint for file-based batch transcription, or the streaming endpoint for real-time low-latency transcription.
+How to increase my rate limits?
+At a glance
+Details
+Modalities Audio → Text
+REST pricing $0.10 / hr
+Streaming pricing $0.20 / hr
+Region us-east-1
+Pricing
+Details
+REST (per hour) $0.10 / hr
+Streaming (per hour) $0.20 / hr
+Redaction (per hour) +$0.05 / hr
+Rate Limits
+REST Streaming
+RPS (Requests per second) 10 10
+Concurrent sessions — 100 per team
+Capabilities
+REST and streaming transcription
+Multiple audio formats (WAV, MP3, WebM, OGG, M4A)
+38+ languages with automatic language detection
+Real-time interim results (streaming)
+Keyterm prompting for domain-specific vocabulary
+Redaction of personal, payment, and health data
+Smart Turn end-of-turn detection (streaming) — ML-based prediction of whether the speaker has finished their thought
+Availability
+Details
+Cluster us-east-1
+Documentation
+Speech to Text Guide — Getting started with speech to text
+Voice Overview — Overview of all voice capabilities
+Pricing — Full pricing overview
+Last updated: November 20, 2026
+@@url https://docs.x.ai/developers/models/text-to-speech
+@@title Text to Speech Pricing and Rate Limits | SpaceXSI Docs
+Models
+Text to Speech
+Copy for LLM
+View as Markdown
+Create API key
+Try Playground Meet grok-4.7
+The Text to Speech API converts text into natural speech, billed per input character. Supports a full lineup of expressive voices, streaming, and batch output, in MP3, WAV, PCM, μ-law, and A-law formats.
+How to increase my rate limits?
+At a glance
+Details
+Modalities Text → Audio
+Pricing $15.00 / 1M chars
+Region us-east-1
+Pricing
+Details
+Per 1M chars $15.00 / 1M chars
+Rate Limits
+Details
+Requests per second 50 RPS
+Concurrent sessions 100 per team
+Capabilities
+Expressive built-in voices
+Streaming output
+Batch output
+MP3 / WAV / PCM / μ-law / A-law formats
+Availability
+Details
+Cluster us-east-1
+Documentation
+Text to Speech Guide — Getting started with text to speech
+API Reference — Text to Speech endpoint reference
+Pricing — Full pricing overview
+Last updated: September 11, 2026
