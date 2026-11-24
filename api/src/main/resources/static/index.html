@@ -24,7 +24,7 @@
     <div id="stats" class="flex gap-1.5 text-xs text-zinc-500"></div>
   </header>
 
-  <div class="mt-12 mb-7">
+  <div class="mt-8 mb-6">
     <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">What will your AI workload really cost?</h2>
     <p class="mt-2 text-zinc-500 max-w-xl">Prices from OpenAI, Gemini, Claude, Z.ai and xAI in one place. Search, compare and find the cheapest model.</p>
   </div>
@@ -117,6 +117,8 @@
 <style type="text/tailwindcss">
   @layer components {
     .inp { @apply w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-950; }
+    select.inp { @apply appearance-none pr-9 cursor-pointer; background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 14px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l5 5 5-5'/%3E%3C/svg%3E"); }
     .lab { @apply block text-xs font-medium text-zinc-500 mb-3.5; }
     .lab .inp { @apply mt-1.5; }
     .btn { @apply px-5 py-2.5 text-sm font-medium rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50; }
@@ -152,10 +154,10 @@ const size = (n) => (!n || n < 0) ? '–' : n >= 1000000 ? Math.round(n / 10000)
 const tag = (p) => `<span class="dot ${esc(p)} text-xs text-zinc-500">${esc(p)}</span>`
 
 // one table layout for model prices used on every tab
-function priceTable(rows, pickable) {
+function priceTable(rows, pickable, flat) {
   const head = ['model', 'provider', 'tier', 'input', 'cached', 'output', 'long input', 'context', 'notes']
   const num = [3, 4, 5, 6, 7]
-  return `<div class="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm"><table class="w-full text-[13px]">
+  return `<div class="overflow-x-auto ${flat ? '' : 'rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm'}"><table class="w-full text-[13px]">
     <thead><tr>${head.map((h, i) => `<th class="th ${num.includes(i) ? '!text-right' : ''}">${h}</th>`).join('')}</tr></thead><tbody>
     ${rows.map((p) => `<tr class="hover:bg-stone-50 dark:hover:bg-zinc-800/50">
       <td class="td">${pickable ? `<a class="link" data-model="${esc(p.model)}">${esc(p.model)}</a>` : esc(p.model)}</td>
@@ -163,7 +165,7 @@ function priceTable(rows, pickable) {
       <td class="td text-right tabular-nums">${money(p.input)}</td><td class="td text-right tabular-nums">${money(p.cachedInput)}</td>
       <td class="td text-right tabular-nums">${money(p.output)}</td><td class="td text-right tabular-nums">${money(p.longInput)}</td>
       <td class="td text-right tabular-nums">${size(p.contextWindow)}</td>
-      <td class="td !whitespace-normal min-w-[180px] text-xs text-zinc-500">${esc(p.notes)}</td></tr>`).join('')}
+      <td class="td text-xs text-zinc-500 max-w-[260px] truncate" title="${esc(p.notes)}">${esc(p.notes)}</td></tr>`).join('')}
     </tbody></table></div>`
 }
 
@@ -282,8 +284,8 @@ $('mTable').onclick = (e) => {
     $('card').innerHTML = `<div class="relative rounded-2xl border border-indigo-500 bg-white dark:bg-zinc-900 p-5 mb-4">
       <button class="absolute right-3 top-2 text-xl text-zinc-500" id="closeCard">×</button>
       <h3 class="font-semibold">${esc(c[0].model)} ${tag(c[0].provider)}</h3>
-      <p class="text-sm my-2">context window <b>${size(c[0].contextWindow)}</b> · max output <b>${size(c[0].maxOutput)}</b> · <a class="link" href="${esc(c[0].sourceUrl)}" target="_blank" rel="noreferrer">source</a></p>
-      ${priceTable(c)}</div>`
+      <p class="text-sm my-2 text-zinc-500">${[c[0].contextWindow > 0 ? `context window <b class="text-zinc-900 dark:text-zinc-100">${size(c[0].contextWindow)}</b>` : '', c[0].maxOutput > 0 ? `max output <b class="text-zinc-900 dark:text-zinc-100">${size(c[0].maxOutput)}</b>` : '', `<a class="link" href="${esc(c[0].sourceUrl)}" target="_blank" rel="noreferrer">source</a>`].filter(Boolean).join(' · ')}</p>
+      ${priceTable(c, false, true)}</div>`
     $('closeCard').onclick = () => $('card').innerHTML = ''
   }).catch(fail)
 }
