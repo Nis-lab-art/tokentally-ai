@@ -1,0 +1,8 @@
+openai crawled 19 pages
+gemini crawled 20 pages
+anthropic crawled 20 pages
+zai crawled 5 pages
+  http 404 for https://docs.z.ai/guides/llm/base-ui-disable-scrollbar
+  http 404 for https://docs.z.ai/guides/vlm/base-ui-disable-scrollbar
+xai crawled 17 pages
+parsed 194 model prices

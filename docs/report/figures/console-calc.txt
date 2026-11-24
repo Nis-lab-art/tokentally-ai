@@ -1,0 +1,23 @@
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+8
+> input tokens per day (like 2M or 500K): 2M
+output tokens per day: 500K
+share of input that hits the cache in percent (enter for 0): 20
+is batch processing fine? (y/n): n
+tokens in one request (enter to skip): 250K
+smallest context window you need (enter to skip): 
+monthly budget in $ (enter for no limit): 500
+only one provider? (enter for all): 
+cheapest models for this workload, per month:
+ 1. glm-4.5-flash                      zai        $      0.00  (input $0.00, cached $0.00, output $0.00) standard, free
+ 2. glm-4.6v-flash                     zai        $      0.00  (input $0.00, cached $0.00, output $0.00) standard, free
+ 3. glm-4.7-flash                      zai        $      0.00  (input $0.00, cached $0.00, output $0.00) standard, free
+ 4. glm-ocr                            zai        $      2.25  (input $1.44, cached $0.36, output $0.45) standard, no cache price
+ 5. glm-4-32b-0414-128k                zai        $      7.50  (input $4.80, cached $1.20, output $1.50) standard, no cache price
+ 6. glm-4.6v-flashx                    zai        $      7.97  (input $1.92, cached $0.05, output $6.00) standard
+ 7. glm-4.7-flashx                     zai        $      9.48  (input $3.36, cached $0.12, output $6.00) standard
+ 8. gemini-2.5-flash-lite              gemini     $     10.92  (input $4.80, cached $0.12, output $6.00) standard
+ 9. glm-5.3-flash                      zai        $     15.06  (input $7.20, cached $0.36, output $7.50) standard, context 1000k
+10. gemini-2.5-flash-image             gemini     $     18.59  (input $14.40, cached $3.60, output $0.59) standard, no cache price

@@ -1,0 +1,6 @@
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+13
+> 194 price lines in the log, 0 price changes
+no price has changed yet, crawl again later to see changes

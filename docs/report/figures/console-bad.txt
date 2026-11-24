@@ -1,0 +1,6 @@
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+1
+> search for: @@@bad
+input problem: use letters, digits, spaces, dots and dashes only (max 60 chars)

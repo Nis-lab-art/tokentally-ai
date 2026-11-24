@@ -1,0 +1,19 @@
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+1
+> search for: gemnii
+searched 6 time(s) so far
+"gemnii" not found. did you mean: gemini genie genai
+showing results for "gemini"
+pages ranked by how often the words show up:
+ 1. 183  https://aistudio.google.com/docs/pricing (1 keyword(s))
+ 2. 18   https://aistudio.google.com/docs/models/gemini-3.1-pro-preview (1 keyword(s))
+ 3. 16   https://aistudio.google.com/docs/models/gemini-3.5-flash-lite (1 keyword(s))
+ 4. 16   https://aistudio.google.com/docs/models/gemini-4-argon (1 keyword(s))
+ 5. 15   https://aistudio.google.com/docs/models/gemini-3.1-flash-lite (1 keyword(s))
+ 6. 15   https://aistudio.google.com/docs/models/gemini-3.6-flash (1 keyword(s))
+ 7. 12   https://aistudio.google.com/docs/models/gemini-4-hydrogen (1 keyword(s))
+ 8. 11   https://aistudio.google.com/docs/models/gemini-3.1-flash-live-preview (1 keyword(s))
+ 9. 11   https://aistudio.google.com/docs/models/gemini-3.5-transcribe (1 keyword(s))
+10. 11   https://aistudio.google.com/docs/models/gemini-4-carbon (1 keyword(s))

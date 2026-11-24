@@ -1,0 +1,27 @@
+ok   heap keeps order
+ok   robots.txt rules
+ok   url normalize and links
+ok   html cleaner
+ok   price cell helpers
+ok   openai parser
+ok   claude parser
+ok   gemini parser
+ok   z.ai parser
+ok   xai parser
+ok   tokenizer
+ok   inverted index and phrase search
+ok   boyer moore and kmp match a slow count
+ok   edit distance
+ok   spell checker
+ok   trie and word completion
+ok   search frequency saved to a file
+ok   price history log
+ok   page ranking
+ok   input validation
+ok   pattern finding
+ok   cost calculation
+ok   recommendation filters and order
+ok   saved data: parsers and accuracy
+ok   saved data: engine and speed
+
+133 checks passed, 0 failed
