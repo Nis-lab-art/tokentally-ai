@@ -10,8 +10,17 @@ public class HtmlCleaner {
 
     // the readable text of a page with one block per line
     public static String text(String html) {
+        String full = text(html, DROP);
+        // some pages (ai studio) keep all the content inside noscript, so try again without dropping the chrome
+        if (full.length() < 400) {
+            return text(html, new String[] {"script", "style", "svg", "head"});
+        }
+        return full;
+    }
+
+    private static String text(String html, String[] drop) {
         String s = html;
-        for (String tag : DROP) {
+        for (String tag : drop) {
             s = removeBlocks(s, tag);
         }
         s = s.replaceAll("(?i)<br\\s*/?>", "\n");
