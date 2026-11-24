@@ -28,6 +28,7 @@ public class TokenTallyApp {
         "find patterns in the pages",
         "check the crawled data",
         "crawl the live pages again",
+        "price history and changes",
         "exit"
     };
 
@@ -58,6 +59,9 @@ public class TokenTallyApp {
             System.out.println();
             for (int i = 0; i < MENU.length; i++) {
                 System.out.printf("%2d  %s%n", i + 1, MENU[i]);
+            }
+            if (!in.hasNextLine()) {
+                return; // input closed
             }
             int c = InputValidator.choice(ask("choose"), MENU.length);
             if (c == -1) {
@@ -92,6 +96,7 @@ public class TokenTallyApp {
             case 10 -> patterns();
             case 11 -> dataCheck();
             case 12 -> recrawl();
+            case 13 -> priceHistory();
             default -> { }
         }
     }
@@ -301,6 +306,25 @@ public class TokenTallyApp {
         System.out.println("crawling the five providers, this takes about half a minute ...");
         for (String line : engine.recrawl()) {
             System.out.println(line);
+        }
+    }
+
+    private void priceHistory() throws Exception {
+        ArrayList<PriceHistory.Change> changes = engine.history.changes();
+        int lines = engine.history.load().size();
+        System.out.println(lines + " price lines in the log, " + changes.size() + " price changes");
+        if (changes.isEmpty()) {
+            System.out.println("no price has changed yet, crawl again later to see changes");
+        }
+        int shown = 0;
+        for (PriceHistory.Change c : changes) {
+            if (shown++ == 15) {
+                break;
+            }
+            System.out.printf("   %s  %-10s %-30s %-9s input %s -> %s (%+.1f%%)  output %s -> %s (%+.1f%%)%n",
+                c.after.date, c.after.provider, c.after.model, c.after.tier,
+                ModelPrice.money(c.before.input), ModelPrice.money(c.after.input), c.inputPercent,
+                ModelPrice.money(c.before.output), ModelPrice.money(c.after.output), c.outputPercent);
         }
     }
 

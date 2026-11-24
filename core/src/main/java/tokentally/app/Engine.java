@@ -33,10 +33,12 @@ public class Engine {
     public SpellChecker spell;
     public PageRanker ranker;
     public SearchFrequency searches;
+    public PriceHistory history;
 
     public Engine(String dataFolder) {
         store = new DataStore(dataFolder);
         searches = new SearchFrequency(Path.of(dataFolder, "search_history.txt"));
+        history = new PriceHistory(Path.of(dataFolder));
     }
 
     // use the saved data, and crawl only when there is none yet
@@ -46,6 +48,7 @@ public class Engine {
         }
         prices = store.loadPrices();
         pages = store.loadPages();
+        history.record(today(), prices);
         build();
     }
 
@@ -54,8 +57,14 @@ public class Engine {
         ArrayList<String> log = CrawlAll.run(store, 20);
         prices = store.loadPrices();
         pages = store.loadPages();
+        int moved = history.record(today(), prices);
+        log.add("price history: " + moved + " new or changed price lines");
         build();
         return log;
+    }
+
+    private static String today() {
+        return java.time.LocalDate.now().toString();
     }
 
     private void build() {

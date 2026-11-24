@@ -17,7 +17,7 @@ TokenTally AI crawls the official pricing pages of five AI providers (OpenAI, Go
 ## Folders
 
 - `core` plain java back end. All the features live here. Only the jdk is used. Eclipse project files are included.
-- `api` spring boot app. It compiles `core` together with itself and serves the web page from `api/src/main/resources/static/index.html` (one page, plain javascript, tailwind from a cdn link). No node needed.
+- `api` spring boot app. It compiles `core` together with itself and serves the web page from `api/src/main/resources/static/index.html` (one page, plain javascript, tailwind saved next to it as `tailwind.js`). No node and no internet needed.
 - `docs` our proposal, the requirements in our own words, the plan and the report draft.
 
 You need java 17 or newer. Maven is only needed for `api` (Eclipse has it built in).
@@ -41,15 +41,31 @@ Tests: open `src/test/java/tokentally/TestRunner.java` in `core` and Run As > Ja
 
 ## Run it from the terminal
 
+Mac or Linux:
+
 ```
 cd core && ./run.sh        # menu
-cd core && ./test.sh       # 123 checks
+cd core && ./test.sh       # all checks
 cd api && ./run.sh         # web page on http://localhost:8080
 ```
 
-If port 8080 is busy start with `SERVER_PORT=8090 java -jar api/target/tokentally-api-1.0.jar` after `./run.sh` built it.
+Windows (command prompt, needs the jdk on the path, and maven for `api`):
 
-The web page loads tailwind from a cdn, so it needs internet for the styling. The back end works offline with the saved data.
+```
+cd core
+run.bat                    & menu
+test.bat                   & all checks
+cd ..\api
+run.bat                    & web page on http://localhost:8080
+```
+
+If port 8080 is busy, start the api with `SERVER_PORT=8090 java -jar target/tokentally-api-1.0.jar` (on Windows: `set SERVER_PORT=8090` first).
+
+Run the menu from inside the `core` folder (Eclipse does this for you), because the saved data is found with the path `data`. The web page needs no internet, the back end works offline with the saved data. Only the crawl needs internet.
+
+## Price history
+
+Every time the data is loaded or crawled, `core/data/price_history.csv` gets a new line for each price that is new or different. The first line of a model is its first price, the next lines are changes. The menu (option 13) and the "Price history" tab show what moved and by how many percent. Crawl again on another day to see real changes.
 
 ## Where each feature lives
 
@@ -66,4 +82,5 @@ The web page loads tailwind from a cdn, so it needs internet for the styling. Th
 | data validation | `regex/InputValidator` |
 | finding patterns | `regex/PatternExtractor` |
 | cost calculator | `cost/Workload`, `cost/Recommender`, `cost/CostCalculator` |
+| price history | `app/PriceHistory` |
 | menu | `app/TokenTallyApp`, `app/Engine` |

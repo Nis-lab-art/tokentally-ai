@@ -12,5 +12,6 @@ public class Workload {
     public long minContext = 0;       // smallest context window the user accepts
     public double budget = -1;        // most the user wants to pay per month, -1 for no limit
     public String provider = "";      // only this provider, empty for all
+    public boolean skipFree = false;  // leave out free models
     public int days = 30;             // days in a month
 }

@@ -24,6 +24,9 @@ public class Recommender {
             if (!p.hasTokenPrice() || !tierAllowed(p.tier, w.batchOk)) {
                 continue;
             }
+            if (w.skipFree && p.isFree()) {
+                continue;
+            }
             if (!w.provider.isEmpty() && !p.provider.equals(w.provider)) {
                 continue;
             }

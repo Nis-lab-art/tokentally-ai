@@ -9,6 +9,7 @@ import java.util.Random;
 import tokentally.app.CrawlAll;
 import tokentally.app.DataStore;
 import tokentally.app.Engine;
+import tokentally.app.PriceHistory;
 import tokentally.cost.CostCalculator;
 import tokentally.cost.Recommender;
 import tokentally.cost.Workload;
@@ -66,6 +67,7 @@ public class TestRunner {
         run("spell checker", TestRunner::spell);
         run("trie and word completion", TestRunner::completion);
         run("search frequency saved to a file", TestRunner::searchFrequency);
+        run("price history log", TestRunner::priceHistory);
         run("page ranking", TestRunner::ranking);
         run("input validation", TestRunner::validation);
         run("pattern finding", TestRunner::patterns);
@@ -336,6 +338,41 @@ public class TestRunner {
         ArrayList<String> c = new WordCompleter(t).complete("GLM-5", 3);
         check(c.size() == 3 && c.get(0).equals("glm-5.1") && c.get(1).equals("glm-5.3"), "most frequent first " + c);
         check(new WordCompleter(t).complete("xyz", 3).isEmpty() && new WordCompleter(t).complete("  ", 3).isEmpty(), "no match and blank prefix");
+    }
+
+    static void priceHistory() throws Exception {
+        Path dir = Files.createTempDirectory("history");
+        PriceHistory h = new PriceHistory(dir);
+        ArrayList<ModelPrice> prices = new ArrayList<>();
+        ModelPrice a = new ModelPrice("openai", "gpt-x", "standard");
+        a.input = 2;
+        a.cachedInput = 0.2;
+        a.output = 10;
+        ModelPrice b = new ModelPrice("xai", "grok-x", "standard");
+        b.input = 1;
+        b.output = 4;
+        prices.add(a);
+        prices.add(b);
+        check(h.record("2026-11-01", prices) == 2, "first crawl writes every price");
+        check(h.record("2026-11-02", prices) == 0, "same prices write nothing");
+        check(h.changes().isEmpty(), "no change yet");
+
+        a.input = 1;
+        ModelPrice c = new ModelPrice("zai", "glm-x", "standard");
+        c.input = 0.5;
+        c.output = 1;
+        prices.add(c);
+        check(h.record("2026-11-10", prices) == 2, "a changed price and a new model are written");
+        ArrayList<PriceHistory.Change> ch = h.changes();
+        check(ch.size() == 1, "only the changed price counts as a change");
+        check(ch.get(0).after.model.equals("gpt-x") && ch.get(0).inputPercent == -50.0, "input price dropped 50 percent");
+        check(ch.get(0).outputPercent == 0, "output did not move");
+        check(h.of("gpt-x").size() == 2 && h.of("glm-x").size() == 1, "history of one model");
+
+        PriceHistory again = new PriceHistory(dir);
+        check(again.load().size() == 4, "log loads again from the file");
+        Files.writeString(dir.resolve("price_history.csv"), "date,provider,model,tier,input,cached_input,output\nbroken\n", java.nio.charset.StandardCharsets.UTF_8);
+        check(again.load().isEmpty(), "broken lines are skipped");
     }
 
     static void searchFrequency() throws Exception {

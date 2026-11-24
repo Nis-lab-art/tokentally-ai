@@ -143,8 +143,20 @@ public class TokenTallyController {
             }
         }
         w.batchOk = Boolean.parseBoolean(text(body, "batchOk"));
+        w.skipFree = Boolean.parseBoolean(text(body, "skipFree"));
         w.provider = text(body, "provider").toLowerCase();
         return engine.recommend(w, 10);
+    }
+
+    // every price that moved, newest first
+    @GetMapping("/history/changes")
+    public Object historyChanges() throws Exception {
+        return engine.history.changes();
+    }
+
+    @GetMapping("/history")
+    public Object history(@RequestParam String model) throws Exception {
+        return engine.history.of(model);
     }
 
     @PostMapping("/crawl")

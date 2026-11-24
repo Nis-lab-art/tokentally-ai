@@ -9,7 +9,7 @@
 | 5 cost calculator, recommender, command line menu | done |
 | 6 tests with our own small test runner (123 checks) | done |
 | 7 spring boot api serving one html page (tailwind link) | done |
-| 8 scheduled email report with email login (extra) | not started |
+| 8 price history log and tab (our extra feature, replaces the email report) | done |
 | 9 final report and presentation | not started |
 
 ## Data structures

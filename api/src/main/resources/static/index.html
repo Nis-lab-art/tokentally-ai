@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TokenTally AI</title>
-<!-- tailwind from a cdn, so the page needs internet only for the styling -->
-<script src="https://cdn.tailwindcss.com"></script>
+<!-- tailwind play script saved in this folder (v3.4.17) so the page works without internet -->
+<script src="tailwind.js"></script>
 <script>tailwind.config = { darkMode: 'media' }</script>
 <style>
   .dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; background: var(--c, #a1a1aa); }
@@ -41,7 +41,8 @@
         <label class="lab">Output tokens / day<input name="outputPerDay" value="500K" class="inp" /></label>
       </div>
       <label class="lab">Provider<select name="provider" class="inp"><option value="">all</option></select></label>
-      <label class="flex items-center gap-2 text-sm mb-4"><input type="checkbox" name="batchOk" class="accent-indigo-600" /> batch or flex is fine</label>
+      <label class="flex items-center gap-2 text-sm mb-2"><input type="checkbox" name="batchOk" class="accent-indigo-600" /> batch or flex is fine</label>
+      <label class="flex items-center gap-2 text-sm mb-4"><input type="checkbox" name="skipFree" class="accent-indigo-600" /> hide free models</label>
       <details class="mb-4">
         <summary class="cursor-pointer text-xs font-medium text-zinc-500 mb-3">More options</summary>
         <label class="lab">Input that hits the cache (%)<input name="cachedPercent" value="0" class="inp" /></label>
@@ -92,6 +93,12 @@
     </form>
     <p id="cmpBest" class="text-sm text-zinc-500 my-3"></p>
     <div id="cmpTable" class="mt-3"></div>
+  </section>
+
+  <!-- price history -->
+  <section id="history" class="tab hidden">
+    <p class="text-sm text-zinc-500 mb-4">Every crawl is saved with its date. A line shows up here when a price moves, so you can see who got cheaper or more expensive.</p>
+    <div id="histOut"></div>
   </section>
 
   <!-- insights -->
@@ -170,13 +177,13 @@ function priceTable(rows, pickable, flat) {
 }
 
 // tabs
-const TABS = [['calculator', 'Cost calculator'], ['search', 'Search'], ['models', 'Models'], ['compare', 'Compare'], ['insights', 'Insights']]
+const TABS = [['calculator', 'Cost calculator'], ['search', 'Search'], ['models', 'Models'], ['compare', 'Compare'], ['history', 'Price history'], ['insights', 'Insights']]
 const loaded = {}
 function show(id) {
   clearFail()
   document.querySelectorAll('.tab').forEach((s) => s.classList.toggle('hidden', s.id !== id))
   $('tabs').innerHTML = TABS.map(([t, label]) => `<button data-tab="${t}" class="px-3.5 py-1.5 text-[13px] font-medium rounded-lg ${t === id ? 'bg-white dark:bg-zinc-950 shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'}">${label}</button>`).join('')
-  if (!loaded[id]) { loaded[id] = true; if (id === 'models') loadModels(); if (id === 'compare') runCompare(); if (id === 'insights') loadInsights() }
+  if (!loaded[id]) { loaded[id] = true; if (id === 'models') loadModels(); if (id === 'compare') runCompare(); if (id === 'history') loadHistory(); if (id === 'insights') loadInsights() }
 }
 $('tabs').onclick = (e) => { if (e.target.dataset.tab) show(e.target.dataset.tab) }
 
@@ -192,7 +199,7 @@ $('mTier').add(new Option('all tiers', '')); TIERS.forEach((t) => $('mTier').add
 $('calcForm').onsubmit = (e) => {
   e.preventDefault(); clearFail()
   const f = new FormData(e.target)
-  const form = Object.fromEntries(f.entries()); form.batchOk = e.target.batchOk.checked
+  const form = Object.fromEntries(f.entries()); form.batchOk = e.target.batchOk.checked; form.skipFree = e.target.skipFree.checked
   call('/recommend', form).then((picks) => {
     if (!picks.length) return $('picks').innerHTML = '<p class="text-zinc-500">no model fits, try a bigger budget or a smaller context</p>'
     const max = picks[picks.length - 1].cost.total || 1
@@ -302,6 +309,19 @@ function runCompare() {
   }).catch(fail)
 }
 $('cmpForm').onsubmit = (e) => { e.preventDefault(); runCompare() }
+
+// price history
+function loadHistory() {
+  get('/history/changes').then((rows) => {
+    if (!rows.length) return $('histOut').innerHTML = '<div class="p-12 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl">no price has changed yet<br><span class="text-xs">press "Crawl the live pages again" on the Insights tab on another day to see changes</span></div>'
+    const arrow = (a, b, pct) => `${money(a)} → <b>${money(b)}</b> ${pct ? `<span class="${pct < 0 ? 'text-emerald-600' : 'text-red-600'}">${pct > 0 ? '+' : ''}${pct}%</span>` : ''}`
+    $('histOut').innerHTML = `<div class="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm"><table class="w-full text-[13px]">
+      <thead><tr><th class="th">date</th><th class="th">model</th><th class="th">provider</th><th class="th">tier</th><th class="th">input</th><th class="th">output</th></tr></thead><tbody>
+      ${rows.map((c) => `<tr><td class="td">${esc(c.after.date)}</td><td class="td">${esc(c.after.model)}</td><td class="td">${tag(c.after.provider)}</td><td class="td">${esc(c.after.tier)}</td>
+        <td class="td">${arrow(c.before.input, c.after.input, c.inputPercent)}</td><td class="td">${arrow(c.before.output, c.after.output, c.outputPercent)}</td></tr>`).join('')}
+      </tbody></table></div>`
+  }).catch(fail)
+}
 
 // insights
 function loadInsights() {
