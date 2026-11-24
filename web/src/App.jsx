@@ -26,9 +26,9 @@ export default function App() {
   return (
     <div className="page">
       <header>
-        <div>
+        <div className="brand">
+          <div className="logo">T</div>
           <h1>TokenTally AI</h1>
-          <p className="muted">AI model prices from OpenAI, Gemini, Claude, Z.ai and xAI in one place</p>
         </div>
         {stats && (
           <div className="stats">
@@ -38,6 +38,11 @@ export default function App() {
           </div>
         )}
       </header>
+
+      <div className="hero">
+        <h2>What will your AI workload really cost?</h2>
+        <p className="muted">Prices from OpenAI, Gemini, Claude, Z.ai and xAI in one place. Search, compare and find the cheapest model.</p>
+      </div>
 
       <nav>
         {TABS.map(([id, label]) => (

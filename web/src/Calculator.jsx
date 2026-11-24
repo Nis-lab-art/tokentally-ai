@@ -23,12 +23,10 @@ export default function Calculator() {
     <section className="two">
       <form className="panel" onSubmit={submit}>
         <h3>Your workload</h3>
-        <label>Input tokens per day<input value={form.inputPerDay} onChange={set('inputPerDay')} placeholder="2M" /></label>
-        <label>Output tokens per day<input value={form.outputPerDay} onChange={set('outputPerDay')} placeholder="500K" /></label>
-        <label>Input that hits the cache (%)<input value={form.cachedPercent} onChange={set('cachedPercent')} /></label>
-        <label>Tokens in one request<input value={form.promptSize} onChange={set('promptSize')} placeholder="optional, like 250K" /></label>
-        <label>Smallest context window<input value={form.minContext} onChange={set('minContext')} placeholder="optional, like 200K" /></label>
-        <label>Monthly budget ($)<input value={form.budget} onChange={set('budget')} placeholder="optional" /></label>
+        <div className="fields">
+          <label>Input tokens / day<input value={form.inputPerDay} onChange={set('inputPerDay')} placeholder="2M" /></label>
+          <label>Output tokens / day<input value={form.outputPerDay} onChange={set('outputPerDay')} placeholder="500K" /></label>
+        </div>
         <label>Provider
           <select value={form.provider} onChange={set('provider')}>
             <option value="">all</option>
@@ -36,13 +34,20 @@ export default function Calculator() {
           </select>
         </label>
         <label className="check"><input type="checkbox" checked={form.batchOk} onChange={set('batchOk')} /> batch or flex is fine</label>
+        <details>
+          <summary>More options</summary>
+          <label>Input that hits the cache (%)<input value={form.cachedPercent} onChange={set('cachedPercent')} /></label>
+          <label>Tokens in one request<input value={form.promptSize} onChange={set('promptSize')} placeholder="like 250K" /></label>
+          <label>Smallest context window<input value={form.minContext} onChange={set('minContext')} placeholder="like 200K" /></label>
+          <label>Monthly budget ($)<input value={form.budget} onChange={set('budget')} placeholder="no limit" /></label>
+        </details>
         <button>Find the cheapest</button>
         {error && <div className="error">{error}</div>}
       </form>
 
       <div>
         <h3>Cheapest per month</h3>
-        {!picks && <p className="muted">fill in the workload and press the button</p>}
+        {!picks && <div className="empty muted">fill in your workload and press the button</div>}
         {picks && picks.length === 0 && <p className="muted">no model fits, try a bigger budget or a smaller context</p>}
         {picks && picks.map((p, i) => (
           <div className="pick" key={p.price.provider + p.price.model}>
