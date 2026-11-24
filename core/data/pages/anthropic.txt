@@ -1,0 +1,1429 @@
+@@url https://platform.claude.com/docs/en/about-claude/pricing
+@@title Pricing - Claude Platform Docs
+ Copy page
+
+This page provides detailed pricing information for Anthropic’s models and features. All prices are in USD.
+For the most current pricing information, see the Claude pricing page.
+Model pricing
+The following table shows pricing for all Claude models:
+Model Base tokens Prompt caching
+Name Input Output 5m writes 1h writes Hits and refreshes
+Claude Fable 5.2 For demanding reasoning and long-horizon agentic work
+$8 / MTok
+$40 / MTok
+$10 / MTok
+$16 / MTok
+$0.20 / MTok
+Claude Opus 5.5 For long-running agentic coding and knowledge work
+$4 / MTok
+$20 / MTok
+$5 / MTok
+$8 / MTok
+$0.20 / MTok
+Claude Sonnet 5.5 The best combination of speed and intelligence
+$2 / MTok
+$10 / MTok
+$2.50 / MTok
+$4 / MTok
+$0.10 / MTok
+Claude Haiku 5.5 For high-volume, latency-sensitive tasks such as classification, extraction, and routing
+$0.10 / MTok for prompts up to 100,000 tokens
+$0.50 / MTok
+$0.125 / MTok
+$0.20 / MTok
+$0.01 / MTok
+$0.50 / MTok for prompts over 100,000 tokens
+$2.50 / MTok
+$0.625 / MTok
+$1 / MTok
+$0.05 / MTok
+ Additional models
+Claude Mythos 5.2 
+$8 / MTok
+$40 / MTok
+$10 / MTok
+$16 / MTok
+$0.20 / MTok
+Claude Fable 5.1
+$10 / MTok
+$50 / MTok
+$12.50 / MTok
+$20 / MTok
+$0.25 / MTok
+Claude Mythos 5.1 
+$10 / MTok
+$50 / MTok
+$12.50 / MTok
+$20 / MTok
+$0.25 / MTok
+Claude Fable 5
+$10 / MTok
+$50 / MTok
+$12.50 / MTok
+$20 / MTok
+$1 / MTok
+Claude Mythos 5 
+$10 / MTok
+$50 / MTok
+$12.50 / MTok
+$20 / MTok
+$1 / MTok
+Claude Opus 5
+$5 / MTok
+$25 / MTok
+$6.25 / MTok
+$10 / MTok
+$0.50 / MTok
+Claude Opus 4.8
+$5 / MTok
+$25 / MTok
+$6.25 / MTok
+$10 / MTok
+$0.50 / MTok
+Claude Opus 4.7
+$5 / MTok
+$25 / MTok
+$6.25 / MTok
+$10 / MTok
+$0.50 / MTok
+Claude Opus 4.6
+$5 / MTok
+$25 / MTok
+$6.25 / MTok
+$10 / MTok
+$0.50 / MTok
+Claude Opus 4.5
+$5 / MTok
+$25 / MTok
+$6.25 / MTok
+$10 / MTok
+$0.50 / MTok
+Claude Opus 4.1 
+$15 / MTok
+$75 / MTok
+$18.75 / MTok
+$30 / MTok
+$1.50 / MTok
+Claude Opus 4 
+$15 / MTok
+$75 / MTok
+$18.75 / MTok
+$30 / MTok
+$1.50 / MTok
+Claude Sonnet 5
+$2 / MTok
+$10 / MTok
+$2.50 / MTok
+$4 / MTok
+$0.20 / MTok
+Claude Sonnet 4.6
+$3 / MTok
+$15 / MTok
+$3.75 / MTok
+$6 / MTok
+$0.30 / MTok
+Claude Sonnet 4.5
+$3 / MTok
+$15 / MTok
+$3.75 / MTok
+$6 / MTok
+$0.30 / MTok
+Claude Sonnet 4 
+$3 / MTok
+$15 / MTok
+$3.75 / MTok
+$6 / MTok
+$0.30 / MTok
+Claude Haiku 4.5
+$1 / MTok
+$5 / MTok
+$1.25 / MTok
+$2 / MTok
+$0.10 / MTok
+ Additional notes
+All other models use the standard 0.1x multiplier.
+Claude 4.7 and later models and Claude Mythos Preview use a newer tokenizer that contributes to their improved performance on a wide range of tasks. This tokenizer produces approximately 30% more tokens for the same text. The exact increase depends on the content and workload shape. Claude Sonnet 4.6 and earlier models use the previous tokenizer.
+Cloud platform pricing
+This section covers partner-operated cloud platforms, where the cloud provider invoices you. For Anthropic-operated cloud platforms billed through a marketplace, see Claude Platform on AWS pricing , Claude Models on Google Cloud (Anthropic managed) billing , and Claude in Microsoft Foundry pricing .
+For official pricing on Claude Models on Google Cloud (Google managed) and Amazon Bedrock , visit:
+Claude Models on Google Cloud (Google managed) pricing
+Amazon Bedrock pricing
+Claude Platform on AWS pricing
+Claude Platform on AWS bills through AWS Marketplace using Claude Consumption Units (CCUs). Anthropic rates your token usage in USD at standard per-model, per-feature rates, applies any negotiated discount, converts the result to CCUs at $0.01 USD per CCU, and reports the CCU quantity to AWS Marketplace hourly. Your AWS bill shows a single CCU line item.
+Concept Details
+Billing unit Claude Consumption Unit ( CCU )
+CCU price $0.01 USD per CCU (fixed; discounts apply at token-to-CCU conversion, not to the CCU price)
+Conversion Token usage rated in USD at standard per-model, per-feature rates (same as Model pricing ), then converted to CCUs at $0.01 USD per CCU
+Billing cadence Hourly metering to AWS Marketplace; monthly invoices
+Payment model Arrears only (postpaid); no prepaid credits
+Discounts Applied as fewer CCUs metered
+Tax Pre-tax metering; AWS Marketplace handles tax
+Cost visibility Real-time breakdown in the Claude Console (access through the AWS Console); AWS Cost Explorer shows aggregated CCU
+Inference geography
+For Claude 4.6 and later models, using inference_geo: "us" applies a 1.1x pricing multiplier. inference_geo: "global" (default) uses standard pricing. See Data residency for details.
+Private offers
+When you sign up on the AWS Console Claude Platform on AWS service page, the AWS Console looks up any private offer associated with your account and prompts you to accept it in AWS Marketplace. Contact your Anthropic account representative for private offer terms.
+Claude in Microsoft Foundry pricing
+Claude in Microsoft Foundry bills through the Azure Marketplace using Claude Consumption Units (CCUs). Anthropic rates your token usage in USD at standard per-model, per-feature rates, applies any negotiated discount, converts the result to CCUs at $0.01 USD per CCU, and reports the CCU quantity to the Azure Marketplace hourly. Your Azure bill shows a single CCU line item.
+Concept Details
+Billing unit Claude Consumption Unit ( CCU )
+CCU price $0.01 USD per CCU (fixed; discounts apply at token-to-CCU conversion, not to the CCU price)
+Conversion Token usage rated in USD at standard per-model, per-feature rates (same as Model pricing ), then converted to CCUs at $0.01 USD per CCU
+Billing cadence Hourly metering to the Azure Marketplace; monthly invoices
+Payment model Arrears only (postpaid); no prepaid credits
+Discounts Applied as fewer CCUs metered
+Tax Pre-tax metering; Azure Marketplace handles tax
+Cost visibility Azure Cost Management shows aggregated CCU
+Inference geography
+Deployments hosted on Azure can use the US Data Zone Standard deployment type, which keeps inference within the United States. This is equivalent to inference_geo: "us" on the Claude API and applies the same 1.1x pricing multiplier. See Data residency for details.
+Feature-specific pricing
+Prompt caching
+Prompt caching reduces costs and latency by reusing previously processed portions of your prompt across API calls. Instead of reprocessing the same large system prompt, document, or conversation history on every request, the API reads from cache at a fraction of the standard input price.
+There are two ways to enable prompt caching:
+Automatic caching: Add a single cache_control field at the top level of your request. The system automatically manages cache breakpoints as conversations grow. This is the recommended starting point for most use cases.
+Explicit cache breakpoints: Place cache_control directly on individual content blocks for fine-grained control over exactly what gets cached.
+Prompt caching uses the following pricing multipliers relative to base input token rates:
+Cache operation Multiplier Duration
+5-minute cache write 1.25x base input price Cache valid for 5 minutes
+1-hour cache write 2x base input price Cache valid for 1 hour
+Cache read (hit) 0.1x base input price on most models Same duration as the preceding write
+Cache write tokens are charged when content is first stored. Cache read tokens are charged when a subsequent request retrieves the cached content.
+Caching saves money after a small number of cache reads:
+5-minute duration (1.25x write): after one cache read
+1-hour duration (2x write): after two cache reads
+What a cache hit costs depends on the model:
+Model Cache hit multiplier Cache hit price per million tokens
+Claude Fable 5.2 and Claude Mythos 5.2 0.025x $0.20 USD
+Claude Fable 5.1 and Claude Mythos 5.1 0.025x $0.25 USD
+Claude Opus 5.5 0.05x $0.20 USD
+Claude Sonnet 5.5 0.05x $0.10 USD
+All other models 0.1x See Model pricing
+These multipliers stack with other pricing modifiers, including the Batch API discount and data residency.
+For implementation details, supported models, and code examples, see Prompt caching .
+Data residency pricing
+For Claude 4.6 and later models, specifying US-only inference through the inference_geo parameter incurs a 1.1x multiplier on all token pricing categories, including input tokens, output tokens, cache writes, and cache reads. On Claude Haiku 5.5, the multiplier also applies to the higher prices for prompts over 100,000 tokens (see Long context pricing ). Global routing (the default) uses standard pricing.
+Whether the 1.1x multiplier applies depends on the platform:
+Claude API (first-party), Claude Platform on AWS, and Claude Models on Google Cloud (Anthropic managed): The multiplier applies.
+Claude in Microsoft Foundry: The multiplier applies to deployments that use the US Data Zone Standard deployment type (see Inference geography ).
+Claude Models on Google Cloud (Google managed) and Amazon Bedrock: These partner-operated platforms have independent regional pricing. For their price lists, see the Cloud platform pricing section.
+Models earlier than Claude 4.6 don’t support the inference_geo parameter and always use standard pricing. On these models, a request that includes the parameter returns a 400 error.
+For more information, see Data residency .
+Fast mode pricing
+Fast mode provides up to 2.5x higher output tokens per second at premium pricing. It is available for Claude Fable 5.2, Claude Opus 5.5, Claude Opus 5, and Claude Opus 4.8. Fast mode is in research preview for Claude Opus 5 and deprecated for Claude Opus 4.8.
+Fast mode pricing applies across the full context window, including requests over 200k input tokens.
+Fast mode is available on the Claude API (first-party). For Claude Opus 5.5, it is also available on Claude Models on Google Cloud (Anthropic managed) and on Claude in Microsoft Foundry for deployments hosted on Azure.
+Fast mode for Claude Fable 5.2 is also available on Claude Models on Google Cloud (Anthropic managed) .
+Fast mode for Claude Fable 5.2 is also available on Claude Models on Google Cloud (Google managed) . Google Cloud sets its prices there. See Cloud platform pricing .
+Fast mode for Claude Fable 5.2 is also available on Claude in Microsoft Foundry for deployments hosted on Anthropic. See Claude in Microsoft Foundry pricing .
+Fast mode is also available for Claude Mythos 5.2 on the Claude API. Availability of fast mode lists every platform where Claude Mythos 5.2 has fast mode.
+Model Input Output
+Claude Fable 5.2 $16 USD / MTok $80 USD / MTok
+Claude Mythos 5.2 $16 USD / MTok $80 USD / MTok
+Claude Opus 5.5 $8 USD / MTok $40 USD / MTok
+Claude Opus 5 / Claude Opus 4.8 $10 USD / MTok $50 USD / MTok
+Fast mode pricing stacks with other pricing modifiers:
+Prompt caching multipliers apply on top of fast mode pricing.
+Data residency multipliers apply on top of fast mode pricing.
+Fast mode is not available with the Batch API .
+For more information, see Fast mode .
+Batch processing
+The Batch API allows asynchronous processing of large volumes of requests with a 50 percent discount on both input and output tokens.
+Model Batch tokens
+Name Input Output
+Claude Fable 5.2 For demanding reasoning and long-horizon agentic work
+$4 / MTok
+$20 / MTok
+Claude Opus 5.5 For long-running agentic coding and knowledge work
+$2 / MTok
+$10 / MTok
+Claude Sonnet 5.5 The best combination of speed and intelligence
+$1 / MTok
+$5 / MTok
+Claude Haiku 5.5 For high-volume, latency-sensitive tasks such as classification, extraction, and routing
+$0.05 / MTok for prompts up to 100,000 tokens
+$0.25 / MTok
+$0.25 / MTok for prompts over 100,000 tokens
+$1.25 / MTok
+ Additional models
+Claude Mythos 5.2 
+$4 / MTok
+$20 / MTok
+Claude Fable 5.1
+$5 / MTok
+$25 / MTok
+Claude Mythos 5.1 
+$5 / MTok
+$25 / MTok
+Claude Fable 5
+$5 / MTok
+$25 / MTok
+Claude Mythos 5 
+$5 / MTok
+$25 / MTok
+Claude Opus 5
+$2.50 / MTok
+$12.50 / MTok
+Claude Opus 4.8
+$2.50 / MTok
+$12.50 / MTok
+Claude Opus 4.7
+$2.50 / MTok
+$12.50 / MTok
+Claude Opus 4.6
+$2.50 / MTok
+$12.50 / MTok
+Claude Opus 4.5
+$2.50 / MTok
+$12.50 / MTok
+Claude Opus 4.1 
+$7.50 / MTok
+$37.50 / MTok
+Claude Opus 4 
+$7.50 / MTok
+$37.50 / MTok
+Claude Sonnet 5
+$1 / MTok
+$5 / MTok
+Claude Sonnet 4.6
+$1.50 / MTok
+$7.50 / MTok
+Claude Sonnet 4.5
+$1.50 / MTok
+$7.50 / MTok
+Claude Sonnet 4 
+$1.50 / MTok
+$7.50 / MTok
+Claude Haiku 4.5
+$0.50 / MTok
+$2.50 / MTok
+For more information about batch processing, see Batch processing .
+Long context pricing
+Claude 4.6 and later models (except Claude Haiku 5.5) and Claude Mythos Preview include the full 1M token context window at standard pricing. (A 900k-token request is billed at the same per-token rate as a 9k-token request.) Prompt caching and batch processing discounts apply at standard rates across the full context window.
+Claude Haiku 5.5 is priced by prompt length: a request whose prompt is over 100,000 tokens pays higher prices. A request’s prompt length counts all of its input tokens, including cache reads and cache writes. Each request is priced on its own: a request over the threshold pays the higher prices even when part of its prompt is a cache hit, and earlier requests keep the prices they were billed at. The model pricing and batch processing pricing sections list both sets of prices.
+Tool use pricing
+Tool use requests are priced based on:
+The total number of input tokens sent to the model (including in the tools parameter).
+The number of output tokens generated.
+For server-side tools, additional usage-based pricing (for example, web search charges per search performed).
+Client-side tools are priced the same as any other Claude API request, although server-side tools can incur additional charges based on their specific usage.
+The additional tokens from tool use come from:
+The tools parameter in API requests (tool names, descriptions, and schemas)
+tool_use content blocks in API requests and responses
+tool_result content blocks in API requests
+When you use tools , the API also automatically includes a special system prompt for the model that enables tool use. The following table lists the number of tool use tokens that each model requires (excluding the additional tokens listed earlier). The table assumes that you provide at least one tool. If you provide no tools , a tool choice of none uses 0 additional system prompt tokens.
+Model Tool use system prompt tokens
+Name Tool choice Token count
+Claude Opus 5.5 For long-running agentic coding and knowledge work
+auto , none
+286 tokens
+Claude Sonnet 5.5 The best combination of speed and intelligence
+auto , none
+286 tokens
+Claude Haiku 5.5 For high-volume, latency-sensitive tasks such as classification, extraction, and routing
+auto , none
+286 tokens
+any , tool
+406 tokens
+ Additional models
+Claude Opus 5
+auto , none
+286 tokens
+any , tool
+406 tokens
+Claude Opus 4.8
+auto , none
+290 tokens
+any , tool
+410 tokens
+Claude Opus 4.7
+auto , none
+675 tokens
+any , tool
+804 tokens
+Claude Opus 4.6
+auto , none
+497 tokens
+any , tool
+589 tokens
+Claude Opus 4.5
+auto , none
+496 tokens
+any , tool
+588 tokens
+Claude Opus 4.1 
+auto , none
+313 tokens
+any , tool
+315 tokens
+Claude Opus 4 
+auto , none
+313 tokens
+any , tool
+315 tokens
+Claude Sonnet 5
+auto , none
+354 tokens
+any , tool
+474 tokens
+Claude Sonnet 4.6
+auto , none
+497 tokens
+any , tool
+589 tokens
+Claude Sonnet 4.5
+auto , none
+496 tokens
+any , tool
+588 tokens
+Claude Sonnet 4 
+auto , none
+313 tokens
+any , tool
+315 tokens
+Claude Haiku 4.5
+auto , none
+496 tokens
+any , tool
+588 tokens
+These token counts are added to your normal input and output tokens to calculate the total cost of a request.
+For current per-model prices, refer to the model pricing section.
+For more information about tool use implementation and best practices, see Tool use with Claude .
+Specific tool pricing
+Bash tool
+The bash tool definition adds the following input tokens to your request. This is in addition to the per-model tool use system prompt that applies whenever any tool is present.
+Model Additional input tokens
+Claude 4.7 and later models and Claude Mythos Preview 325 tokens
+Claude 4.6 and earlier models 244 tokens
+Additional tokens are consumed by:
+Command outputs (stdout/stderr)
+Error messages
+Large file contents
+See tool use pricing for complete pricing details.
+Code execution tool
+Code execution is free when used with web search or web fetch. When web_search_20260209 (or later) or web_fetch_20260209 (or later) is included in your API request, there are no additional charges for code execution tool calls beyond the standard input and output token costs.
+When used without these tools, code execution is billed by execution time, tracked separately from token usage:
+Execution time has a minimum of 5 minutes.
+Each organization receives 1,550 free hours of usage per month.
+Additional usage beyond 1,550 hours is billed at $0.05 USD per hour, per container .
+If files are included in the request, execution time is billed even if the tool is not called, because files are preloaded onto the container.
+Code execution usage is tracked in the response:
+{
+"usage" : {
+"input_tokens" : 105 ,
+"output_tokens" : 239 ,
+"server_tool_use" : {
+"code_execution_requests" : 1
+}
+}
+}
+
+Text editor tool
+The text editor tool uses the same pricing structure as other tools used with Claude. It follows the standard input and output token pricing based on the Claude model you’re using.
+In addition to the base tokens, the following additional input tokens are needed for the text editor tool:
+Tool Additional input tokens
+text_editor_20250728 (Claude 4.7 and later models and Claude Mythos Preview) 974 tokens
+text_editor_20250728 (Claude 4.6 and earlier models) 745 tokens
+See tool use pricing for complete pricing details.
+Web search tool
+Web search usage is charged in addition to token usage:
+{
+"usage" : {
+"input_tokens" : 105 ,
+"output_tokens" : 6039 ,
+"cache_read_input_tokens" : 7123 ,
+"cache_creation_input_tokens" : 7345 ,
+"server_tool_use" : {
+"web_search_requests" : 1
+}
+}
+}
+
+On the Claude API, web search costs $10 USD per 1,000 searches , plus standard token costs for search-generated content. Search results count as input tokens, both while Claude keeps searching within a turn and in later conversation turns.
+Each web search counts as one use, regardless of the number of results returned. A web search that fails with an error is not billed.
+Web fetch tool
+Web fetch usage has no additional charges beyond standard token costs:
+{
+"usage" : {
+"input_tokens" : 25039 ,
+"output_tokens" : 931 ,
+"cache_read_input_tokens" : 0 ,
+"cache_creation_input_tokens" : 0 ,
+"server_tool_use" : {
+"web_fetch_requests" : 1
+}
+}
+}
+
+The web fetch tool is available on the Claude API at no additional cost . You only pay standard token costs for the fetched content that becomes part of your conversation context.
+To protect against inadvertently fetching large content that would consume excessive tokens, use the max_content_tokens parameter to set appropriate limits based on your use case and budget considerations.
+Example token usage for typical content:
+Average webpage (10 kB): ~2,500 tokens
+Large documentation page (100 kB): ~25,000 tokens
+Research paper PDF (500 kB): ~125,000 tokens
+Computer use tool
+Computer use follows the standard tool use pricing in the tool use overview . When using the computer use tool:
+Toolset definition overhead: Declaring computer_toolset_20260801 with its default members adds about 4,500 input tokens to a request: about 4,590 on Claude Sonnet 5 and about 4,520 on the other supported models. These tokens cover the member tool definitions and the tool use system prompt. Disabling zoom with configs removes about 410 of those tokens. The response usage reports the exact count for a request, and you can estimate it in advance with the token counting endpoint .
+Earlier tool versions: The following figures apply to the computer_20251124 and computer_20250124 tool versions, not to computer_toolset_20260801 :
+System prompt overhead: 466–499 tokens added to the system prompt
+Tool definition: about 735 input tokens for each tool definition (measured with computer_20250124 )
+Additional token consumption:
+Screenshot and zoom images returned in tool results, billed as image input (see Resolution and token cost )
+Tool execution results returned to Claude
+Browser use tool
+Browser use follows the standard tool use pricing in the tool use overview . When using the browser use tool:
+Toolset definition overhead: Declaring browser_toolset_20260801 with its default members adds about 6,600 input tokens to a request: about 6,670 on Claude Sonnet 5 and about 6,610 on the other supported models. These tokens cover the member tool definitions and the tool use system prompt. Enabling all four optional members adds about 880 tokens, and disabling members with configs reduces the count. The response usage reports the exact count for a request, and you can estimate it in advance with the token counting endpoint .
+Additional token consumption:
+Screenshot and zoom images returned in tool results, billed as image input (see Resolution and token cost )
+Text tool results returned to Claude, such as accessibility trees, page text, and console or network entries
+Claude Managed Agents pricing
+Claude Managed Agents is billed on two dimensions: tokens and session runtime.
+On Claude Platform on AWS, session token and runtime charges convert to Claude Consumption Units at the standard rate (see Claude Platform on AWS pricing ). Claude Models on Google Cloud (Anthropic managed) also bills usage in Claude Consumption Units.
+For pricing of self-hosted Claude Managed Agents , contact your Anthropic account team.
+Tokens
+All tokens consumed by a Claude Managed Agents session are billed at the rates shown in Model pricing . These pricing rules also apply:
+Prompt caching multipliers apply identically.
+Web search triggered inside a session incurs the standard $10 USD per 1,000 searches.
+Fast mode premium pricing applies when an agent’s model.speed is set to "fast" .
+The data residency multiplier also applies: when an agent’s model.inference_geo is pinned to "us" , tokens consumed by sessions running that agent are billed at 1.1x the standard rates, the same multiplier that applies to US-only inference on the Messages API.
+The following Messages API modifiers do not apply to Claude Managed Agents sessions:
+Modifier Why it doesn’t apply
+Batch API discount Sessions are stateful and interactive. There is no batch mode.
+Cloud platform pricing Not available on partner-operated cloud platforms.
+Session runtime
+SKU Rate Metering
+Session runtime $0.08 USD per session-hour running status duration
+Runtime is measured to the millisecond and accrues only while the session’s status is running . Time spent idle (waiting for your next message or a tool confirmation), rescheduling , or terminated does not count toward runtime.
+Worked example
+A 1-hour coding session using Claude Opus 5.5 that consumes 50,000 input tokens and 15,000 output tokens:
+Line item Calculation Cost
+Input tokens 50,000 × $4 / 1,000,000 $0.20 USD
+Output tokens 15,000 × $20 / 1,000,000 $0.30 USD
+Session runtime 1.0 hour × $0.08 $0.08 USD
+Total $0.58 USD
+If prompt caching is active and 40,000 of the input tokens are cache reads:
+Line item Calculation Cost
+Uncached input tokens 10,000 × $4 / 1,000,000 $0.04 USD
+Cache read tokens 40,000 × $4 × 0.05 / 1,000,000 $0.008 USD
+Output tokens 15,000 × $20 / 1,000,000 $0.30 USD
+Session runtime 1.0 hour × $0.08 $0.08 USD
+Total $0.428 USD
+Additional pricing considerations
+Cost optimization strategies
+When building agents with Claude:
+Use appropriate models: Choose Haiku for simple tasks, Sonnet for most production workloads, and Opus for the most complex reasoning.
+Implement prompt caching: Reduce costs for repeated context.
+Batch operations: Use the Batch API for non-time-sensitive tasks.
+Monitor usage patterns: Track token consumption to identify optimization opportunities.
+Rate limits
+Rate limits vary by usage tier and affect how many requests you can make:
+Start tier: Entry-level limits for getting started
+Build tier: Increased limits for growing applications
+Scale tier: Highest standard limits for production workloads
+For detailed rate limit information, see Rate limits .
+For limits beyond the Scale tier or custom pricing arrangements, contact the sales team .
+Volume discounts
+Volume discounts might be available for high-volume users. These are negotiated on a case-by-case basis.
+Standard usage tiers use the pricing shown in Model pricing .
+Enterprise customers can email sales for custom pricing.
+Academic and research discounts might be available.
+Enterprise pricing
+For enterprise customers with specific needs:
+Custom rate limits
+Volume discounts
+Dedicated support
+Custom terms
+To discuss enterprise pricing options, email sales@anthropic.com or contact sales from the Claude Console .
+Billing and payment
+Billing is based on actual monthly usage.
+All payments are in USD.
+Credit card and invoicing options are available.
+Usage tracking is available in the Claude Console .
+Frequently asked questions
+How is token usage calculated?
+Tokens are pieces of text that models process. How many tokens the same text produces depends on the model’s tokenizer, the language, and the type of content. Claude 4.7 and later models and Claude Mythos Preview ( claude-mythos-preview ) use a newer tokenizer that produces approximately 30 percent more tokens for the same text than earlier models. To see how many tokens a request uses on a specific model, count it with Token counting and that model’s ID.
+Are there free tiers or trials?
+New users receive free credits to test the API. Email sales for information about extended trials for enterprise evaluation.
+How do discounts stack?
+Batch API and prompt caching discounts can be combined. For example, using both features together provides significant cost savings compared to standard API calls. See prompt caching pricing for how the multipliers interact.
+What payment methods are accepted?
+Major credit cards are accepted for standard accounts. To buy credits or manage your payment methods, go to the Billing page ( platform.claude.com/settings/billing ) in the Claude Console. Enterprise customers can arrange invoicing and other payment methods.
+For additional questions about pricing, contact support@anthropic.com .
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/overview
+@@title Models overview - Claude Platform Docs
+ Choosing a model  Pricing  Migration guide  Copy page
+
+Latest models
+If you’re unsure which model to use, start with Claude Opus 5.5 for most workloads. Use Claude Fable 5.2 for demanding reasoning and long-horizon agentic work, or when your evals on Claude Opus 5.5 at higher effort still fall short. All current models support text and image input, text output, multilingual capabilities, vision, and tool use.
+Feature
+Claude Fable 5.2 For demanding reasoning and long-horizon agentic work
+Claude Opus 5.5 For long-running agentic coding and knowledge work
+Claude Sonnet 5.5 The best combination of speed and intelligence
+Claude Haiku 5.5 For high-volume, latency-sensitive tasks such as classification, extraction, and routing
+Comparative latency Moderate Moderate Fast Fastest
+Pricing $8 / input MTok $40 / output MTok $4 / input MTok $20 / output MTok $2 / input MTok $10 / output MTok From $0.10 / input MTok From $0.50 / output MTok
+Claude API ID claude-fable-5-2 claude-opus-5-5 claude-sonnet-5-5 claude-haiku-5-5
+Capabilities
+Thinking Adaptive (always on) Adaptive (always on) Adaptive Adaptive
+Default effort high medium high medium
+Context window 1M tokens 1M tokens 1M tokens 1M tokens
+Max output 128K tokens 128K tokens 128K tokens 128K tokens
+Reliable knowledge cutoff Jun 2026 Jun 2026 Jun 2026 Jun 2026
+ Additional details
+Training data cutoff Jun 2026 Jun 2026 Jun 2026 Jun 2026
+Retirement Not sooner than November 9, 2027 Not sooner than September 22, 2027 Not sooner than September 28, 2027 Not sooner than October 7, 2027
+Model IDs
+Claude API alias claude-fable-5-2 claude-opus-5-5 claude-sonnet-5-5 claude-haiku-5-5
+Amazon Bedrock ID global.anthropic.claude-fable-5-2 anthropic.claude-opus-5-5 anthropic.claude-sonnet-5-5 anthropic.claude-haiku-5-5
+Claude Models on Google Cloud (Google managed) ID claude-fable-5-2 claude-opus-5-5 claude-sonnet-5-5 claude-haiku-5-5
+Microsoft Foundry ID claude-fable-5-2 claude-opus-5-5 claude-sonnet-5-5 claude-haiku-5-5
+Claude Platform on AWS ID claude-fable-5-2 claude-opus-5-5 claude-sonnet-5-5 claude-haiku-5-5
+Claude Models on Google Cloud (Anthropic managed) ID claude-fable-5-2 claude-opus-5-5 claude-sonnet-5-5 claude-haiku-5-5
+Once you’ve picked a model, learn how to make your first API call . To understand how model IDs, aliases, and snapshots work, see Model IDs and versioning . For the reliable-knowledge and training-data cutoffs behind each model, see Anthropic’s Transparency Hub .
+All models
+Older models might still be available, but where possible, you should default to the latest models . To move to a newer model, see the migration guides . For retirement dates, see model deprecations .
+Model Capabilities Base tokens
+Name Context window Max output Input Output
+Claude Fable 5.2
+1M tokens
+128K tokens
+$8 / MTok
+$40 / MTok
+Claude Opus 5.5
+1M tokens
+128K tokens
+$4 / MTok
+$20 / MTok
+Claude Sonnet 5.5
+1M tokens
+128K tokens
+$2 / MTok
+$10 / MTok
+Claude Haiku 5.5
+1M tokens
+128K tokens
+From $0.10 / MTok
+From $0.50 / MTok
+Claude Mythos 5.2 
+1M tokens
+128K tokens
+$8 / MTok
+$40 / MTok
+Claude Fable 5.1
+1M tokens
+128K tokens
+$10 / MTok
+$50 / MTok
+Claude Mythos 5.1 
+1M tokens
+128K tokens
+$10 / MTok
+$50 / MTok
+Claude Fable 5
+1M tokens
+128K tokens
+$10 / MTok
+$50 / MTok
+Claude Mythos 5 
+1M tokens
+128K tokens
+$10 / MTok
+$50 / MTok
+Claude Opus 5
+1M tokens
+128K tokens
+$5 / MTok
+$25 / MTok
+Claude Opus 4.8
+1M tokens
+128K tokens
+$5 / MTok
+$25 / MTok
+Claude Opus 4.7
+1M tokens
+128K tokens
+$5 / MTok
+$25 / MTok
+Claude Opus 4.6
+1M tokens
+128K tokens
+$5 / MTok
+$25 / MTok
+Claude Opus 4.5
+200K tokens
+64K tokens
+$5 / MTok
+$25 / MTok
+Claude Opus 4.1 
+200K tokens
+32K tokens
+$15 / MTok
+$75 / MTok
+Claude Opus 4 
+200K tokens
+32K tokens
+$15 / MTok
+$75 / MTok
+Claude Sonnet 5
+1M tokens
+128K tokens
+$2 / MTok
+$10 / MTok
+Claude Sonnet 4.6
+1M tokens
+128K tokens
+$3 / MTok
+$15 / MTok
+Claude Sonnet 4.5
+200K tokens
+64K tokens
+$3 / MTok
+$15 / MTok
+Claude Sonnet 4 
+200K tokens
+64K tokens
+$3 / MTok
+$15 / MTok
+Claude Haiku 4.5
+200K tokens
+64K tokens
+$1 / MTok
+$5 / MTok
+Using the Models API
+You can query model capabilities and token limits programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. . The response includes max_input_tokens Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. , max_tokens Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. , and a capabilities Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. object for every available model.
+Each model in the response also has a line Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. field, which names the model line it belongs to. Claude Opus 4.5 and Claude Opus 4.6 both report opus . Use line to group models, for example, in a model picker. line is null when a model belongs to no line. Read line instead of inferring it from the model’s id . Anthropic might add more lines, so don’t treat the set of values as fixed.
+Each model’s capabilities object includes thinking.types.disabled Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. , which reports whether the model accepts thinking: {type: "disabled"} , the setting that turns thinking off . supported is false when the model rejects "disabled" with a 400 error, and true on a model that doesn’t support thinking. Even when supported is true , the API can still reject a "disabled" request for another reason. One such reason is an effort level that the model doesn’t allow with thinking off.
+Each model’s capabilities object also includes thinking.types.between_tools Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. , which reports whether the model accepts thinking: {type: "between_tools"} , the setting that turns off up-front thinking . supported is false when the model rejects "between_tools" with a 400 error. Even when supported is true , the API can still reject a "between_tools" request for another reason, such as an effort level that the model doesn’t allow with "between_tools" . For Claude Sonnet 5.5, for example, the Models API reports thinking.types.between_tools.supported as true and thinking.types.disabled.supported as false .
+Each model’s capabilities object also includes server_tools Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. , which reports whether the model accepts the web search and code execution tools. It doesn’t cover other server tools, such as web fetch. server_tools.web_search.supported and server_tools.code_execution.supported are true when the model accepts at least one version of that tool, not necessarily every version. server_tools.supported is true when the model accepts at least one of the two tools. Even when a tool is supported, your organization’s settings can still cause a request that uses it to fail. For example, an administrator can disable web search .
+The top-level code_execution Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. capability is a different check. It reports whether code that Claude runs in the code execution tool can call the request’s other tools, as in programmatic tool calling . For Claude Haiku 4.5, for example, the Models API reports server_tools.code_execution.supported as true and code_execution.supported as false .
+The API reference lists the List Models endpoint’s parameters and full response.
+Prompt and output performance
+Current Claude models excel in:
+Performance: Top-tier results in reasoning, coding, multilingual tasks, long-context handling, honesty, and image processing. See Prompting best practices for general and model-specific prompting guidance.
+Engaging responses: Claude models are ideal for applications that require rich, human-like interactions. If you prefer more concise responses, adjust your prompts to guide the model toward the output length you want. Refer to the prompt engineering guides for details.
+Output quality: When migrating from a previous model generation, you might notice larger improvements in overall performance. If you’re on Claude Opus 5 or earlier, see the Claude Opus 5.5 migration guide .
+Get started with Claude
+Whether you’re a developer looking to integrate Claude into your applications or a user wanting to experience the power of AI firsthand, the following resources can help.
+
+Intro to Claude
+Explore Claude’s capabilities and development flow.
+
+Quickstart
+Learn how to make your first API call in minutes.
+Choosing a model
+Establish criteria and pick the right model for your use case.
+Pricing
+Complete pricing, including batch discounts and prompt caching rates.
+
+Model deprecations
+Lifecycle status and retirement commitments for every model.
+
+Claude Console
+Craft and test prompts directly in your browser.
+Looking to chat with Claude? Visit claude.ai . If you have questions, contact the support team or the Discord community .
+Was this page helpful?
+ 
+List Models
+ GET /v1/models
+List available models.
+Query parameters after_id before_id lifecycle limit 
+after_id : optional string
+ID of the object to use as a cursor for pagination. When provided, returns the page of results immediately after this object.
+before_id : optional string
+ID of the object to use as a cursor for pagination. When provided, returns the page of results immediately before this object.
+
+lifecycle : optional array of "active" or "deprecated" or "retired"
+Filter the list to models in any of the given lifecycle stages ( active , deprecated , or retired ). Up to 3 values. When omitted, the list contains the active and deprecated models; retired models appear only when retired is requested explicitly.
+maxItems 3
+One of the following:
+"active"
+"deprecated"
+"retired"
+
+limit : optional number
+Number of items to return per page.
+Defaults to 20 . Ranges from 1 to 1000 .
+default 20
+minimum 1
+maximum 1000
+Headers anthropic-version anthropic-workspace-id 
+
+"anthropic-version" : optional string
+The version of the Claude API you want to use.
+Read more about versioning and our version history here .
+
+"anthropic-workspace-id" : optional string
+Optional header to select the Workspace for this request. The value is a Workspace ID (for example, wrkspc_011CZkZaBF1tNoB5wlCeusgy ).
+Only needed for credentials that can act on more than one Workspace. A credential that belongs to a specific Workspace may omit it; if sent, it must match that Workspace.
+Returns data first_id has_more last_id 
+
+data : array of ModelInfo { type : "model" , id , capabilities , 8 more }
+
+type : "model"
+Object type.
+For Models, this is always "model" .
+default model
+id : string
+Unique model identifier.
+
+capabilities : ModelCapabilities { batch , citations , code_execution , 7 more } or null
+Object mapping capability names to their support details. Keys are always present for all known capabilities.
+
+created_at : string
+RFC 3339 datetime string representing the time at which the model was released. May be set to an epoch value if the release date is unknown.
+format date-time
+
+deprecated_at : string or null
+RFC 3339 datetime string representing the time of the model's most recent deprecation. Populated for deprecated and retired models; null while the model is active .
+format date-time
+display_name : string
+A human-readable name for the model.
+
+lifecycle : "active" or "deprecated" or "retired"
+The model's current lifecycle stage.
+active : The model is available for use, open to new adopters, and not scheduled for retirement.
+deprecated : The model remains callable for organizations with existing access, but is headed for retirement and closed to new adopters.
+retired : The model is no longer available for use; inference requests naming it fail. It remains in the catalogue as the historical record of its retirement.
+default active
+One of the following:
+"active"
+"deprecated"
+"retired"
+
+line : ModelLine or null
+The model line this model belongs to, such as opus for both Claude Opus 4.5 and Claude Opus 4.6. More lines may be added. null when the model belongs to no line; do not infer a line from the id .
+One of the following:
+"haiku"
+"sonnet"
+"opus"
+"fable"
+"mythos"
+max_input_tokens : number or null
+Maximum input context window size in tokens for this model.
+max_tokens : number or null
+Maximum value for the max_tokens parameter when using this model.
+
+retires_at : string or null
+RFC 3339 datetime string representing the model's currently scheduled retirement date. The schedule can be revised until retirement occurs; null while the model is active or while no retirement is scheduled. A past date on a deprecated model means retirement is overdue, not that it has occurred: lifecycle is the retirement signal.
+format date-time
+first_id : string or null
+First ID in the data list. Can be used as the before_id for the previous page.
+has_more : boolean
+Indicates if there are more results in the requested page direction.
+last_id : string or null
+Last ID in the data list. Can be used as the after_id for the next page.
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/fable-5-2/overview
+@@title Claude Fable 5.2 - Claude Platform Docs
+Overview
+Claude Fable 5.2 is built for demanding reasoning and long-horizon agentic work. Typical uses include agent sessions that run for hours, multistep deep research, and analysis carried through to a finished document, spreadsheet, or deck.
+Claude Fable 5.2 and Claude Mythos 5.2
+Claude Mythos 5.2 offers the same capabilities only to organizations verified through Anthropic’s verification programs, such as the Cyber Verification Program . It shares Claude Fable 5.2’s specifications and pricing. To request access, apply to the program that covers your use case, or contact your account team.
+How it compares
+Model Context  Max output  Price / MTok  Latency  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 This model 1M 128K $8 / $40 Moderate Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Moderate Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Fast Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Fastest Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-fable-5-2
+Amazon Bedrock (bedrock-runtime) global.anthropic.claude-fable-5-2
+Claude Models on Google Cloud (Google managed) claude-fable-5-2
+Microsoft Foundry claude-fable-5-2
+Claude Platform on AWS claude-fable-5-2
+Claude Models on Google Cloud (Anthropic managed) claude-fable-5-2
+Pricing
+Input $8 / MTok
+Output $40 / MTok
+5m cache write $10 / MTok
+1h cache write $16 / MTok
+Cache read $0.20 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Thinking Adaptive (always on)
+Default effort high
+Comparative latency Moderate
+Input → output Text and images → text
+Reliable knowledge cutoff Jun 2026
+Training data cutoff Jun 2026
+Availability
+Status Active (latest)
+Released November 9, 2026
+Retirement Not sooner than November 9, 2027
+Platforms Claude API Amazon Bedrock (bedrock-runtime) Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Good to know
+Adaptive thinking is always on and can’t be turned off. Control thinking depth with the effort parameter .
+Forced tool use ( tool_choice types any and tool ) returns a 400 error. See Thinking and tool choice .
+Omit temperature , top_p , and top_k . See Sampling parameters for the values that return a 400 error.
+Claude Fable 5.2 requires 30-day data retention and isn’t available under zero data retention unless expressly authorized by Anthropic. See Model-specific data retention requirements .
+Query limits and capabilities programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. .
+Resources
+
+Prompting Claude Fable 5.2
+Behavioral differences and prompting patterns specific to Claude Fable 5.2.
+
+Claude Fable 5.2 migration guide
+What changes when you move from Claude Fable 5.1 or from a Claude Opus model.
+
+Preserved thinking
+Editing earlier turns invalidates thinking blocks.
+
+Adaptive thinking
+How adaptive thinking works. It’s the only thinking mode on Claude Fable 5.2.
+
+Effort
+The control for thinking depth, latency, and cost. Choose a level for each workload.
+
+Refusals and fallback
+Handle classifier refusals and retry on another Claude model.
+
+Fast mode
+Faster output from Claude Fable 5.2 in Messages API requests, at premium pricing.
+Reference
+
+System prompt
+The system prompt Claude Fable 5.2 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Fable 5.2 and Claude Mythos 5.2.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/opus-5-5/overview
+@@title Claude Opus 5.5 - Claude Platform Docs
+Overview
+Claude Opus 5.5 is built for long-running agentic coding and knowledge work. Typical uses include multihour autonomous coding agents, large-scale refactoring, complex systems engineering, vision-heavy workflows, and computer use.
+How it compares
+Model Context  Max output  Price / MTok  Latency  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Moderate Adaptive (always on) high Jun 2026
+Claude Opus 5.5 This model 1M 128K $4 / $20 Moderate Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Fast Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Fastest Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-opus-5-5
+Amazon Bedrock anthropic.claude-opus-5-5
+Claude Models on Google Cloud (Google managed) claude-opus-5-5
+Microsoft Foundry claude-opus-5-5
+Claude Platform on AWS claude-opus-5-5
+Claude Models on Google Cloud (Anthropic managed) claude-opus-5-5
+Pricing
+Input $4 / MTok
+Output $20 / MTok
+5m cache write $5 / MTok
+1h cache write $8 / MTok
+Cache read $0.20 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive (always on)
+Default effort medium
+Comparative latency Moderate
+Input → output Text and images → text
+Reliable knowledge cutoff Jun 2026
+Training data cutoff Jun 2026
+Availability
+Status Active (latest)
+Released September 22, 2026
+Retirement Not sooner than September 22, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Good to know
+Adaptive thinking is always on and can’t be turned off. Control thinking depth with the effort parameter .
+On the Message Batches API , Claude Opus 5.5 supports up to 300k output tokens with the output-300k-2026-03-24 beta header.
+The minimum cacheable prompt length is 512 tokens. See Prompt caching .
+Query limits and capabilities programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. .
+Resources
+
+Prompting Claude Opus 5.5
+Behavioral differences and prompting patterns specific to Claude Opus 5.5.
+
+Effort
+The control for thinking depth, latency, and cost. Choose a level for each workload.
+
+Adaptive thinking
+How adaptive thinking works and how thinking blocks are preserved.
+
+Fast mode
+Faster output from Claude Opus 5.5 at premium pricing.
+Reference
+
+System prompt
+The system prompt Claude Opus 5.5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Opus 5.5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/sonnet-5-5/overview
+@@title Claude Sonnet 5.5 - Claude Platform Docs
+Overview
+Claude Sonnet 5.5 offers the best combination of speed and intelligence. It’s built for everyday coding, agent, and enterprise workloads, such as code generation, data analysis, content creation, visual understanding, and agentic tool use.
+How it compares
+Model Context  Max output  Price / MTok  Latency  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Moderate Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Moderate Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 This model 1M 128K $2 / $10 Fast Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Fastest Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-sonnet-5-5
+Amazon Bedrock anthropic.claude-sonnet-5-5
+Claude Models on Google Cloud (Google managed) claude-sonnet-5-5
+Microsoft Foundry claude-sonnet-5-5
+Claude Platform on AWS claude-sonnet-5-5
+Claude Models on Google Cloud (Anthropic managed) claude-sonnet-5-5
+Pricing
+Input $2 / MTok
+Output $10 / MTok
+5m cache write $2.50 / MTok
+1h cache write $4 / MTok
+Cache read $0.10 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive
+Default effort high
+Comparative latency Fast
+Input → output Text and images → text
+Reliable knowledge cutoff Jun 2026
+Training data cutoff Jun 2026
+Availability
+Status Active (latest)
+Released September 28, 2026
+Retirement Not sooner than September 28, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Good to know
+Adaptive thinking is on by default. The lowest thinking setting is between_tools , which turns off up-front thinking. It works at high effort or below. See What’s new in Claude Sonnet 5.5 .
+Setting temperature , top_p , or top_k returns a 400 error.
+The minimum cacheable prompt length is 512 tokens. See Prompt caching .
+On the Message Batches API , Claude Sonnet 5.5 supports up to 300k output tokens with the output-300k-2026-03-24 beta header.
+Query limits and capabilities programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. .
+Resources
+
+Prompting Claude Sonnet 5.5
+Behavioral differences and prompting patterns specific to Claude Sonnet 5.5.
+
+Effort
+The control for thinking depth, latency, and cost. Choose a level for each workload.
+
+Adaptive thinking
+How adaptive thinking works, which thinking settings each model accepts, and how thinking blocks are preserved.
+Reference
+
+System prompt
+The system prompt Claude Sonnet 5.5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Sonnet 5.5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/haiku-5-5/overview
+@@title Claude Haiku 5.5 - Claude Platform Docs
+Overview
+Claude Haiku 5.5 is built for high-volume, latency-sensitive work such as classification, routing, extraction, and subagent tasks. It supports adaptive thinking with the effort parameter, a 1M token context window, and up to 128k output tokens. It uses the same newer tokenizer as Claude 4.7 and later models, so the same text counts as approximately 30 percent more tokens than on Claude Haiku 4.5. Its thinking blocks work only in the account that produced them, or in an account linked to it.
+For code changes, see the migration guide . For model IDs, pricing, and limits, see the Claude Haiku 5.5 overview . For prompting guidance, see Prompting Claude Haiku 5.5 .
+What’s new in Claude Haiku 5.5 
+How it compares
+Model Context  Max output  Price / MTok  Latency  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Moderate Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Moderate Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Fast Adaptive high Jun 2026
+Claude Haiku 5.5 This model 1M 128K From $0.10 / $0.50 Fastest Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-haiku-5-5
+Amazon Bedrock anthropic.claude-haiku-5-5
+Claude Models on Google Cloud (Google managed) claude-haiku-5-5
+Microsoft Foundry claude-haiku-5-5
+Claude Platform on AWS claude-haiku-5-5
+Claude Models on Google Cloud (Anthropic managed) claude-haiku-5-5
+Pricing
+Input $0.10 / MTok for prompts up to 100,000 tokens $0.50 / MTok for prompts over 100,000 tokens
+Output $0.50 / MTok for prompts up to 100,000 tokens $2.50 / MTok for prompts over 100,000 tokens
+5m cache write $0.125 / MTok for prompts up to 100,000 tokens $0.625 / MTok for prompts over 100,000 tokens
+1h cache write $0.20 / MTok for prompts up to 100,000 tokens $1 / MTok for prompts over 100,000 tokens
+Cache read $0.01 / MTok for prompts up to 100,000 tokens $0.05 / MTok for prompts over 100,000 tokens
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Max output (Batch API, beta) 300K tokens
+Thinking Adaptive
+Default effort medium
+Comparative latency Fastest
+Input → output Text and images → text
+Reliable knowledge cutoff Jun 2026
+Training data cutoff Jun 2026
+Availability
+Status Active (latest)
+Released October 7, 2026
+Retirement Not sooner than October 7, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Good to know
+Adaptive thinking is on by default. Control thinking depth with the effort parameter .
+Omit temperature , top_p , and top_k .
+On the Message Batches API , Claude Haiku 5.5 supports up to 300k output tokens with the output-300k-2026-03-24 beta header.
+The minimum cacheable prompt length is 512 tokens. See Prompt caching .
+Query limits and capabilities programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. .
+Resources
+
+Prompting Claude Haiku 5.5
+Behavioral differences and prompting patterns specific to Claude Haiku 5.5.
+
+Reduce latency
+Choose a model and effort level, shape prompts, and stream output for faster responses.
+
+Adaptive thinking
+Claude Haiku 5.5 determines when and how much to think. Steer depth with effort .
+
+Context windows
+How the context window is counted and managed.
+Reference
+
+System prompt
+The system prompt Claude Haiku 5.5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Haiku 5.5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/mythos-5-2/overview
+@@title Claude Mythos 5.2 - Claude Platform Docs
+ Claude Mythos 5.2 is available only to organizations verified through Anthropic’s verification programs, such as the Cyber Verification Program (opens in new tab) . It has the same specifications and pricing as Claude Fable 5.2. To request access, apply to the program that covers your use case.
+See Claude Fable 5.2
+How it compares
+Model Context  Max output  Price / MTok  Latency  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Moderate Adaptive (always on) high Jun 2026
+Claude Mythos 5.2 This model 1M 128K $8 / $40 Moderate Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Moderate Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Fast Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Fastest Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-mythos-5-2
+Amazon Bedrock (bedrock-runtime) global.anthropic.claude-mythos-5-2
+Claude Models on Google Cloud (Google managed) claude-mythos-5-2
+Microsoft Foundry claude-mythos-5-2
+Claude Models on Google Cloud (Anthropic managed) claude-mythos-5-2
+Pricing
+Input $8 / MTok
+Output $40 / MTok
+5m cache write $10 / MTok
+1h cache write $16 / MTok
+Cache read $0.20 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Thinking Adaptive (always on)
+Default effort high
+Comparative latency Moderate
+Input → output Text and images → text
+Reliable knowledge cutoff Jun 2026
+Training data cutoff Jun 2026
+Availability
+Status Active (verification required)
+Released November 9, 2026
+Retirement Not sooner than November 9, 2027
+Platforms Claude API Amazon Bedrock (bedrock-runtime) Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Models on Google Cloud (Anthropic managed)
+Reference
+
+Migrating from Claude Mythos 5.1
+What changes when you move from Claude Mythos 5.1.
+
+System card 
+Safety evaluations and deployment decisions for Claude Fable 5.2 and Claude Mythos 5.2.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+
+Fast mode
+Faster output from Claude Mythos 5.2 in Messages API requests, at premium pricing.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/fable-5-1/overview
+@@title Claude Fable 5.1 - Claude Platform Docs
+Claude Fable 5.1 and Claude Mythos 5.1
+Claude Mythos 5.1 offers the same capabilities only to organizations verified through Anthropic’s verification programs, such as the Cyber Verification Program . It shares Claude Fable 5.1’s specifications and pricing. To request access, apply to the program that covers your use case, or contact your Anthropic, AWS, or Google Cloud account team.
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Fable 5.1 This model Legacy 1M 128K $10 / $50 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-fable-5-1
+Amazon Bedrock anthropic.claude-fable-5-1
+Claude Models on Google Cloud (Google managed) claude-fable-5-1
+Microsoft Foundry claude-fable-5-1
+Claude Platform on AWS claude-fable-5-1
+Claude Models on Google Cloud (Anthropic managed) claude-fable-5-1
+Pricing
+Input $10 / MTok
+Output $50 / MTok
+5m cache write $12.50 / MTok
+1h cache write $20 / MTok
+Cache read $0.25 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Thinking Adaptive (always on)
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff Jun 2026
+Training data cutoff Jun 2026
+Availability
+Status Active (legacy)
+Released September 1, 2026
+Retirement Not sooner than September 1, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Fable 5.2
+What changes when moving from Claude Fable 5.1 to Claude Fable 5.2.
+
+Claude Fable 5.2
+The current Fable model: overview, specs, and resources.
+
+Prompting Claude Fable 5.1
+Model-specific prompting guidance for long-horizon and agentic work.
+
+Preserved thinking
+When this model’s thinking blocks stay usable: across model switches and across changes to the conversation.
+
+Per-message effort
+Change the effort level partway through a conversation without invalidating the prompt cache.
+
+Refusals and fallback
+Handle classifier refusals and retry on another Claude model.
+
+Adaptive thinking
+The only thinking mode on Claude Fable 5.1. Steer depth with effort .
+Reference
+
+System prompt
+The system prompt Claude Fable 5.1 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Fable 5.1 and Claude Mythos 5.1.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/mythos-5-1/overview
+@@title Claude Mythos 5.1 - Claude Platform Docs
+ Claude Mythos 5.1 is available only to organizations verified through Anthropic’s verification programs, such as the Cyber Verification Program (opens in new tab) . It has the same specifications and pricing as Claude Fable 5.1. To request access, apply to the program that covers your use case.
+See Claude Fable 5.1
+How it compares
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Mythos 5.1 This model 1M 128K $10 / $50 Adaptive (always on) high Jun 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-mythos-5-1
+Amazon Bedrock anthropic.claude-mythos-5-1
+Claude Models on Google Cloud (Google managed) claude-mythos-5-1
+Microsoft Foundry claude-mythos-5-1
+Claude Models on Google Cloud (Anthropic managed) claude-mythos-5-1
+Pricing
+Input $10 / MTok
+Output $50 / MTok
+5m cache write $12.50 / MTok
+1h cache write $20 / MTok
+Cache read $0.25 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Thinking Adaptive (always on)
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff Jun 2026
+Training data cutoff Jun 2026
+Availability
+Status Active (verification required)
+Released September 1, 2026
+Retirement Not sooner than September 1, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Mythos 5.2
+What changes when moving from Claude Mythos 5.1 to Claude Mythos 5.2.
+
+Claude Mythos 5.2
+The current Mythos model: overview, specs, and resources.
+Reference
+
+System card 
+Safety evaluations and deployment decisions for Claude Fable 5.1 and Claude Mythos 5.1.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
+@@url https://platform.claude.com/docs/en/models/fable-5/overview
+@@title Claude Fable 5 - Claude Platform Docs
+Fable versus Mythos
+Claude Mythos 5 is offered separately for defensive cybersecurity workflows and is available only to organizations verified through Anthropic’s verification programs, such as the Cyber Verification Program . It shares Claude Fable 5’s specifications and pricing.
+How it compares to the current lineup
+Model Context  Max output  Price / MTok  Thinking  Default effort  Knowledge cutoff 
+Claude Fable 5.2 1M 128K $8 / $40 Adaptive (always on) high Jun 2026
+Claude Fable 5 This model Legacy 1M 128K $10 / $50 Adaptive (always on) high Jan 2026
+Claude Opus 5.5 1M 128K $4 / $20 Adaptive (always on) medium Jun 2026
+Claude Sonnet 5.5 1M 128K $2 / $10 Adaptive high Jun 2026
+Claude Haiku 5.5 1M 128K From $0.10 / $0.50 Adaptive medium Jun 2026
+Specifications
+Model IDs
+Claude API claude-fable-5
+Amazon Bedrock anthropic.claude-fable-5
+Claude Models on Google Cloud (Google managed) claude-fable-5
+Microsoft Foundry claude-fable-5
+Claude Platform on AWS claude-fable-5
+Claude Models on Google Cloud (Anthropic managed) claude-fable-5
+Pricing
+Input $10 / MTok
+Output $50 / MTok
+5m cache write $12.50 / MTok
+1h cache write $20 / MTok
+Cache read $1 / MTok
+Batch API 50% discount on input and output
+Full price list
+Capabilities
+Context window 1M tokens
+Max output 128K tokens
+Thinking Adaptive (always on)
+Default effort high
+Input → output Text and images → text
+Reliable knowledge cutoff Jan 2026
+Training data cutoff Jan 2026
+Availability
+Status Active (legacy)
+Released June 9, 2026
+Retirement Not sooner than June 9, 2027
+Platforms Claude API Amazon Bedrock Claude Models on Google Cloud (Google managed) Microsoft Foundry Claude Platform on AWS Claude Models on Google Cloud (Anthropic managed)
+Resources
+Migrate to Claude Fable 5.2
+What changes when moving from Claude Fable 5 to Claude Fable 5.2.
+
+Claude Fable 5.2
+The current Fable model: overview, specs, and resources.
+
+Prompting Claude Fable 5
+Model-specific prompting guidance for long-horizon and agentic work.
+
+Refusals and fallback
+Handle classifier refusals and retry on another Claude model with the fallbacks parameter.
+Reference
+
+System prompt
+The system prompt Claude Fable 5 uses on claude.ai and the Claude apps.
+
+System card 
+Safety evaluations and deployment decisions for Claude Fable 5 and Claude Mythos 5.
+Pricing
+Full price list, including batch discounts and prompt caching rates.
+Model IDs and versioning
+How model IDs, aliases, and pinned snapshots work.
+
+Model deprecations
+Lifecycle status and retirement commitments for every Claude model.
+Was this page helpful?
+ 
+ Console
+Cookie settings
+We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
+Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
