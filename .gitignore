@@ -7,3 +7,4 @@ dist/
 *.iml
 .vscode/
 core/data/search_history.txt
+.claude/
