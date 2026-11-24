@@ -111,6 +111,9 @@ public class TokenTallyApp {
                 System.out.println(line);
             }
         }
+        if (!r.searchedInstead.isEmpty()) {
+            System.out.println("showing results for \"" + r.searchedInstead + "\"");
+        }
         if (!r.models.isEmpty()) {
             System.out.println("models:");
             printPrices(r.models);

@@ -121,6 +121,7 @@ public class Engine {
         public ArrayList<PageRanker.Result> pages = new ArrayList<>();
         public HashMap<String, Integer> phraseHits = new HashMap<>();
         public ArrayList<ModelPrice> models = new ArrayList<>();
+        public String searchedInstead = ""; // the suggestion used when the typed words found nothing
     }
 
     public SearchResult search(String query) {
@@ -138,6 +139,26 @@ public class Engine {
             }
         }
         r.pages = ranker.rank(r.query, 10);
+
+        // nothing found but every unknown word has a close match, so search with the matches
+        if (r.pages.isEmpty() && !r.unknownWords.isEmpty()) {
+            StringBuilder fixed = new StringBuilder();
+            boolean allFixed = true;
+            for (String w : Tokenizer.words(r.query)) {
+                ArrayList<SpellChecker.Suggestion> s = r.suggestions.get(w);
+                if (s == null) {
+                    fixed.append(w).append(' ');
+                } else if (!s.isEmpty()) {
+                    fixed.append(s.get(0).word).append(' ');
+                } else {
+                    allFixed = false;
+                }
+            }
+            if (allFixed) {
+                r.searchedInstead = fixed.toString().trim();
+                r.pages = ranker.rank(r.searchedInstead, 10);
+            }
+        }
         if (Tokenizer.words(r.query).size() > 1) {
             r.phraseHits = index.phrase(r.query);
         }

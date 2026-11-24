@@ -442,19 +442,24 @@ public class TestRunner {
         list.add(price("pricey", "standard", 10, 1, 50));
         list.add(price("fast", "priority", 0.01, 0.01, 0.01));
         list.get(0).contextWindow = 32000;
+        list.get(1).contextWindow = 200000;
+        list.get(2).contextWindow = 200000;
+        list.add(price("unknown-size", "standard", 0.2, 0.02, 0.8)); // no context window listed
         Workload w = new Workload();
         w.inputPerDay = 1_000_000;
         w.outputPerDay = 100_000;
 
         ArrayList<Recommender.Pick> r = Recommender.recommend(list, w, 10);
-        check(r.size() == 3 && r.get(0).price.model.equals("cheap") && r.get(2).price.model.equals("pricey"), "cheapest first, priority tier left out");
-        check(r.get(1).price.tier.equals("standard"), "batch not used when not allowed");
+        check(r.size() == 4 && r.get(0).price.model.equals("cheap") && r.get(3).price.model.equals("pricey"), "cheapest first, priority tier left out");
+        check(r.get(2).price.model.equals("mid") && r.get(2).price.tier.equals("standard"), "batch not used when not allowed");
         w.batchOk = true;
-        check(Recommender.recommend(list, w, 10).get(1).price.tier.equals("batch"), "batch used when allowed, one row per model");
+        check(Recommender.recommend(list, w, 10).get(2).price.tier.equals("batch"), "batch used when allowed, one row per model");
         w.minContext = 100000;
-        check(!Recommender.recommend(list, w, 10).get(0).price.model.equals("cheap"), "small context filtered");
-        w.budget = 100;
-        check(Recommender.recommend(list, w, 10).size() == 1, "budget filter");
+        ArrayList<Recommender.Pick> big = Recommender.recommend(list, w, 10);
+        check(big.size() == 1 && big.get(0).price.model.equals("mid"), "small and unknown context filtered");
+        w.minContext = 0;
+        w.budget = 10;
+        check(Recommender.recommend(list, w, 10).size() == 2, "budget filter");
     }
 
     static void savedData(String folder) throws Exception {

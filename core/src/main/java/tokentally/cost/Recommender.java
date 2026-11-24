@@ -27,7 +27,8 @@ public class Recommender {
             if (!w.provider.isEmpty() && !p.provider.equals(w.provider)) {
                 continue;
             }
-            if (w.minContext > 0 && p.contextWindow > 0 && p.contextWindow < w.minContext) {
+            // when the user needs a context size, a model must list one that is big enough
+            if (w.minContext > 0 && (p.contextWindow < 0 || p.contextWindow < w.minContext)) {
                 continue;
             }
             if (w.minContext > 0 && p.contextWindow > 0 && w.promptSize > p.contextWindow) {
