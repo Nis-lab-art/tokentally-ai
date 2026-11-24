@@ -1,0 +1,9 @@
+out/
+target/
+node_modules/
+dist/
+.DS_Store
+.idea/
+*.iml
+.vscode/
+core/data/search_history.txt
