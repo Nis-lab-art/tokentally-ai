@@ -82,7 +82,7 @@ public class CrawlAll {
 
     public static void main(String[] args) throws Exception {
         DataStore store = new DataStore(args.length > 0 ? args[0] : "data");
-        for (String line : run(store, 10)) {
+        for (String line : run(store, 20)) {
             System.out.println(line);
         }
     }
