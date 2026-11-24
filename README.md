@@ -22,6 +22,40 @@ TokenTally AI crawls the official pricing pages of five AI providers (OpenAI, Go
 
 You need java 17 or newer. Maven is only needed for `api` (Eclipse has it built in).
 
+## Screenshots
+
+Cost calculator, cheapest models per month for a workload:
+
+![cost calculator](docs/report/figures/web-calculator.png)
+
+Search with a spell suggestion, ranked pages and a frequency count:
+
+![search](docs/report/figures/web-search.png)
+
+![frequency count](docs/report/figures/web-frequency.png)
+
+Word completion while typing:
+
+![word completion](docs/report/figures/web-completion.png)
+
+Models with a model card, and compare:
+
+![models](docs/report/figures/web-models.png)
+
+![compare](docs/report/figures/web-compare.png)
+
+Price history (this picture uses demo data with one price edited by hand):
+
+![price history](docs/report/figures/web-history.png)
+
+Insights, free models, price warnings and patterns found with regex:
+
+![insights](docs/report/figures/web-insights.png)
+
+![patterns](docs/report/figures/web-patterns.png)
+
+The full report with numbered figures is in `docs/report/TokenTally_AI_Report.docx`.
+
 ## Run it in Eclipse
 
 Use "Eclipse IDE for Enterprise Java and Web Developers" (it has Maven built in).
