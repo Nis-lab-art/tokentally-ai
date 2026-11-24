@@ -1,0 +1,123 @@
+running bad, odd and extreme inputs through every feature ...
+
+== Nishan Giri
+ok  spell checking / empty word  [(nothing)]
+      -> no suggestions, nothing crashed
+ok  spell checking / missing word (null)  [null]
+      -> treated as unknown, no suggestions: 0
+ok  spell checking / nonsense word  [qzxqzxqzx]
+      -> nothing close enough, the page says so
+ok  spell checking / very long word  [a x 1000]
+      -> 0 suggestions in 0 ms (long words are skipped by the length check)
+ok  spell checking / typo of a model name  [claude-opus-5-6x]
+      -> suggests claude-opus-5-5
+ok  cost calculator / token amount with words  [2 million]
+      -> "2 million" is not a token amount, use 2M, 500K or 1,000,000
+ok  cost calculator / token amount far too big  [999999999999B]
+      -> that number is too big to be a real workload
+ok  cost calculator / negative token amount  [-500K]
+      -> "-500K" is not a token amount, use 2M, 500K or 1,000,000
+ok  cost calculator / cached share above 100 percent  [150]
+      -> cached share must be 0 to 100 percent
+ok  cost calculator / budget nobody can meet  [$0.01 a month, no free models]
+      -> no model fits, the page says to raise the budget
+ok  cost calculator / context window nobody has  [minimum 100M tokens]
+      -> no model fits, models with an unknown context are not guessed
+ok  cost calculator / zero workload  [0 input, 0 output]
+      -> enter some input or output tokens, a workload of zero costs nothing
+
+== Abhinav Pandey
+ok  inverted index / word that is on no page  [zzzunknownzzz]
+      -> empty result, no crash
+ok  inverted index / missing word (null)  [null]
+      -> empty result, no crash
+ok  inverted index / page with no text  [page with empty text and a null page]
+      -> skipped safely, index has 0 words
+ok  inverted index / phrase that is not on any page  [batch unicorn pricing]
+      -> no page has the phrase
+ok  frequency count / empty word  [(nothing)]
+      -> type a word to count
+ok  frequency count / weird characters  [@@@]
+      -> not a valid word
+ok  frequency count / page that was never crawled  [https://example.com/nothing]
+      -> no crawled page with that url
+ok  frequency count / word that is not on the page  [zzzunknownzzz]
+      -> count is 0, both algorithms agree
+ok  frequency count / boyer moore and kmp must agree  [price, token, batch on the first page]
+      -> price BM 10 KMP 10, token BM 32 KMP 32, batch BM 14 KMP 14 (equal)
+
+== Shrijana Karki
+ok  page ranking / blank search  [(spaces)]
+      -> no ranking, the page asks for a keyword
+ok  page ranking / same keyword 200 times  [gemini x 200]
+      -> score 183 (same as one keyword, 183), repeats do not count twice
+ok  page ranking / keyword that is on no page  [zzzunknownzzz]
+      -> empty list
+ok  page ranking / ask for zero results  [howMany = 0]
+      -> empty list
+ok  data validation / search text with symbols  [<script>alert(1)</script>]
+      -> use letters, digits, spaces, dots and dashes only (max 60 chars)
+ok  data validation / search text over 60 chars  [a x 100]
+      -> use letters, digits, spaces, dots and dashes only (max 60 chars)
+ok  data validation / date that does not exist  [2026-02-30]
+      -> rejected, 30 February is not a real date
+ok  data validation / money with 3 decimals  [$12.345]
+      -> budget should look like 50 or $49.99
+ok  data validation / good values still pass  [2.5M, 1,000,000, 500k, $1,200.50, 99%]
+      -> all five accepted and read correctly
+ok  data validation / price that looks wrong  [cached more than input, price over $1000]
+      -> flagged: [cached input is more than input, price over $1000 per million tokens]
+
+== Aakriti Mainali
+ok  word completion / empty prefix  [(nothing)]
+      -> no suggestions until the user types
+ok  word completion / missing prefix (null)  [null]
+      -> no suggestions, no crash
+ok  word completion / prefix nothing starts with  [zzzq]
+      -> empty list
+ok  word completion / capital letters  [CLAUDE-OP]
+      -> still completes: [claude-opus-5-5, claude-opus-4-8, claude-opus-5]
+ok  word completion / bad words stored in the trie  [null, empty, zero count]
+      -> ignored, trie has 0 words
+ok  finding patterns / empty page text  [(nothing)]
+      -> summary has 6 groups, all empty
+ok  finding patterns / missing text (null)  [null]
+      -> summary has 6 groups, all empty
+ok  finding patterns / text with no prices  [hello world]
+      -> prices found: 0
+ok  finding patterns / page url that does not exist  [https://example.com/none]
+      -> prices found: 0 (no pages matched)
+
+== Khem Raj Adhikari
+ok  search frequency / damaged history file  [a file with broken lines]
+      -> loaded 2 good lines, broken lines skipped (gemini 3, claude 7)
+ok  search frequency / blank and missing searches  [(spaces) and null]
+      -> counted 0 and 0 times, nothing saved
+ok  search frequency / two searches at the same time  [200 threads]
+      -> count is exactly 200, no search was lost
+ok  html cleaning / html that is never closed  [<div><p>price <b>$5 <i>per]
+      -> text kept: "price $5 per"
+ok  html cleaning / page that is only scripts  [<script>alert(1)</script>]
+      -> text is "" (nothing left)
+ok  html cleaning / missing page (null) and blank page  [null, (spaces)]
+      -> text lengths 0 and 0
+ok  html cleaning / very big page  [5 MB of html]
+      -> 3749999 chars cleaned in 535 ms
+
+== shared parts
+ok  crawler / url that is not a url  [ht!tp://bad url]
+      -> rejected: bad url ht!tp://bad url
+ok  crawler / server that is not there  [http://localhost:1/]
+      -> the crawl logs it and goes on: no connection for http://localhost:1/ (tried twice)
+ok  parsers / page that is not a pricing page  [<html><body>hello</body></html>]
+      -> 0 prices found, no crash
+ok  parsers / empty and broken html  [(nothing) and <table><tr><td>]
+      -> 0 and 0 prices found, no crash
+ok  saved data / damaged prices.csv  [one good row, one broken number, one short row]
+      -> 1 good row loaded, 2 damaged rows skipped
+ok  saved data / data folder that does not exist  [/no/such/folder]
+      -> reported as no data, the app tells the user to crawl or fix the path
+ok  price history / damaged history file  [broken lines]
+      -> 1 good line loaded, broken lines skipped
+
+54 cases, 54 handled, 0 crashed

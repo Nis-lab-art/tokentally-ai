@@ -4,7 +4,8 @@ cd "$(dirname "$0")"
 python3 - <<'PY'
 s = open('report.md').read()
 for key, f in [('CRAWL', 'crawl'), ('SEARCH', 'search'), ('BAD', 'bad'), ('COMPLETION', 'completion'),
-               ('CALC', 'calc'), ('HISTORY', 'history'), ('TESTS', 'tests')]:
+               ('CALC', 'calc'), ('HISTORY', 'history'), ('TESTS', 'tests'),
+               ('ERRNISHAN', 'errors-nishan'), ('EXPSHORT', 'experiments-short')]:
     text = open('figures/console-%s.txt' % f).read().rstrip('\n')
     s = s.replace('FIGURE_' + key, text)
 open('build_tmp.md', 'w').write(s)

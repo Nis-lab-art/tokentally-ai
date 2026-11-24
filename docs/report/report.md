@@ -80,7 +80,7 @@ Figure 5 The same search in the command line menu
 
 ## 5.5 page ranking (Shrijana Karki)
 
-`PageRanker` uses the inverted index. A page scores the number of times the keywords show up and a tie is won by the page with more different keywords. The pages are put in a **max heap** and the top ten come out in order, O(n log n). This is ranking by keyword count, it does not use links between pages (see section 8).
+`PageRanker` uses the inverted index. A page scores the number of times the keywords show up and a tie is won by the page with more different keywords. The pages are put in a **max heap** and the top ten come out in order, O(n log n). This is ranking by keyword count, it does not use links between pages (see section 9).
 
 The ranked table is visible in Figure 4 and Figure 5.
 
@@ -164,35 +164,92 @@ FIGURE_HISTORY
 
 Figure 16 Price history in the command line menu with the real data (no price has changed yet)
 
-# 7 testing
+# 7 error handling and experiments
 
-We wrote a small test runner ourselves (`TestRunner`) that counts passed and failed checks without a test library. It has 133 checks for the heap, robots.txt rules, url cleaning, html cleaner, all five parsers, tokenizer, inverted index, Boyer-Moore and KMP (compared with a slow count), edit distance, spell checker, trie, search frequency file, ranking, validation, patterns, cost calculation, recommendation filters, the price history log and the saved data (speed and accuracy). All checks pass. The web page was checked by hand and the live crawl was run again for this report.
+## 7.1 error handling
+
+The presentation questions will ask what happens if a user does something unexpected. Because of that every member's features were tested with bad, odd and extreme inputs. A case is handled when the program gives a clear message or a safe result and does not crash. `ErrorDemo` runs 54 cases and all are handled. The command line menu (option 18), the web page (tab Error handling) and the test runner all use this one class. The web page also has a box where anybody can type anything and see the answer.
+
+| member | cases | examples |
+|---|---|---|
+| Nishan Giri | 12 | empty and null word, nonsense word, 1000 letter word, "2 million" as tokens, 999999999999B, cached share 150 percent, budget nobody can meet, zero workload |
+| Abhinav Pandey | 9 | word on no page, page with no text, phrase that is not there, empty word, page never crawled, Boyer-Moore and KMP must agree |
+| Shrijana Karki | 10 | blank search, same keyword 200 times, script tags as search text, 30 February, money with 3 decimals, a wrong looking price |
+| Aakriti Mainali | 9 | empty and null prefix, prefix nothing starts with, capital letters, null words in the trie, patterns on empty text |
+| Khem Raj Adhikari | 7 | damaged history file, blank search, 20 threads at once, html that is never closed, a page of only scripts, a 5 MB page |
+| shared parts | 7 | url that is not a url, server that is not there, parsers on garbage html, damaged prices.csv, missing data folder |
+
+Things we changed because of these cases: null and empty input is refused or ignored in every feature, the search counter is synchronized so two searches at the same time are both counted, a token amount above 1000 trillion is rejected, a damaged row in prices.csv is skipped and counted instead of stopping the program, a crawl that finds no price on a changed page keeps the old saved data, and a request that times out or gets http 429 or 5xx is tried once more.
+
+In the web page a wrong value marks the input field and says what is wrong under it. Any other problem shows a message in the corner and never a stack trace. The api answers a wrong value with http 400 and a plain sentence and an unexpected problem with a short 500 message while the details stay in the server log.
+
+![Figure 17 Error handling tab, 54 cases, one block for each member, and the box to try to break it yourself](figures/ui-errors-report.png){width=100%}
+
+![Figure 18 A wrong token amount marks the field and explains it](figures/ui-field-error.png){width=70%}
+
+```
+FIGURE_ERRNISHAN
+```
+
+Figure 19 The same cases in the command line menu (option 18 started with `./run.sh data nishan`, so only that member and the shared parts show)
+
+## 7.2 experiments
+
+Each member compared their data structure or algorithm with the plain way of doing it, measured on the real crawled data (`Experiments`, menu option 19, tab Experiments). The numbers change a little on every run and laptop, the ratio is what matters.
+
+| member | experiment | result |
+|---|---|---|
+| Abhinav Pandey | inverted index against reading all 81 pages for a word | thousands of times faster |
+| Abhinav Pandey | characters checked to count 5 words, Boyer-Moore against KMP | Boyer-Moore checks about 4.6 times fewer |
+| Nishan Giri | edit distance for 8, 16 and 32 letters | 2.2 times and about 7 times the cost of 8 letters, near the a x b table |
+| Nishan Giri | heap against sorting everything for the best 5 suggestions and the cheapest 10 prices | about the same at our size, the heap wins on much bigger data |
+| Shrijana Karki | ranking with 1 keyword against 4 | about twice as long, not four times |
+| Shrijana Karki | regex check of a good and a bad token amount | a bad value is rejected faster |
+| Aakriti Mainali | trie against scanning every word for a prefix | about 30 times faster |
+| Aakriti Mainali | 6 regex patterns on all 81 pages | about 170 ms |
+| Khem Raj Adhikari | cleaning the 5 saved pricing pages | about 10 ms for every 100 thousand characters |
+| Khem Raj Adhikari | saving the history file after every search | about 100 microseconds per search |
+
+Some results are not a win for our structure, for example the heap against a full sort. We report that as it is. With only 194 prices or a few hundred spelling candidates a plain sort is just as quick, the heap pays off when the data is much bigger.
+
+![Figure 20 Experiments tab, two bars for every experiment](figures/ui-experiments-report.png){width=100%}
+
+```
+FIGURE_EXPSHORT
+```
+
+Figure 21 Experiments in the command line menu (option 19, first two members)
+
+# 8 testing
+
+We wrote a small test runner ourselves (`TestRunner`) that counts passed and failed checks without a test library. It has 146 checks. They cover the heap, robots.txt rules, url cleaning, html cleaner, all five parsers, tokenizer, inverted index, Boyer-Moore and KMP (compared with a slow count), edit distance, spell checker, trie, search frequency file, ranking, validation, patterns, cost calculation, recommendation filters, the price history log, the 54 bad input cases, the experiments, the hardening of null and damaged input and the saved data (speed and accuracy). All checks pass. The web page was checked by hand and the live crawl was run again for this report.
 
 ```
 FIGURE_TESTS
 ```
 
-Figure 17 All checks pass (test.sh)
+Figure 22 All checks pass (test.sh)
 
-# 8 limits we know about
+# 9 limits we know about
 
 - we read html pages and not an api so a redesign of a pricing page can break a parser, the data check and the saved pages help with this
 - cost only looks at text token prices, not quality, speed, rate limits or tool fees
 - page ranking counts keywords and does not use links between pages
+- the experiments run on 81 pages, a sort is as quick as a heap at this size
 - some models have no context window because the page does not list it, we show a dash and do not guess
-- the crawl button has no login and we did not test many users at once
+- the crawl button has no login and we did not test many real users at once (only 20 threads on the search counter)
 - price history has no real changes until more crawls are done
 - the scheduled email report from the proposal was dropped, we built price history instead because it needs no passwords or mail server
 
-# 9 how to run
+# 10 how to run
 
-See the README in the repository. In short, open the core folder in eclipse and run `TokenTallyApp` for the menu or import the api folder as a maven project and run `ApiApplication` and open http://localhost:8080. There are also `run.sh` and `run.bat` files.
+See the README in the repository. In short, open the core folder in eclipse and run `TokenTallyApp` for the menu or import the api folder as a maven project and run `ApiApplication` and open http://localhost:8080. There are also `run.sh` and `run.bat` files. `./run.sh data nishan` (or abhinav, shrijana, aakriti, khem) shows only the options of that member, so each member can demonstrate their own features without the web page.
 
-# 10 team work
+# 11 team work
 
 Each member wrote and studied the crawler, parser and two features listed in section 1 and can explain their own files. Shared parts were done together. Some code was written with the help of an AI assistant, each of us reviewed and tested our own part. (each member to check this section and add what they did)
 
-# 11 references
+# 12 references
 
 - OpenAI API pricing page, https://developers.openai.com/api/docs/pricing (read 24 November 2026)
 - Google Gemini API pricing page, https://ai.google.dev/gemini-api/docs/pricing (read 24 November 2026)

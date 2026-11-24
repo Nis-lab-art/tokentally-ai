@@ -168,7 +168,10 @@ ok   edit distance
 ok   spell checker
 ok   trie and word completion
 ok   search frequency saved to a file
+ok   hardening: bad input and damaged files
 ok   price history log
+ok   error handling demo (no case may crash)
+ok   experiments give sane numbers
 ok   page ranking
 ok   input validation
 ok   pattern finding
@@ -177,7 +180,94 @@ ok   recommendation filters and order
 ok   saved data: parsers and accuracy
 ok   saved data: engine and speed
 
-133 checks passed, 0 failed
+146 checks passed, 0 failed
+```
+
+## Error handling and experiments
+
+Every member's features are checked with bad, odd and extreme inputs. The program must give a clear message or a safe result and never crash. There are 54 cases (empty text, null, symbols, huge numbers, damaged files, no connection, many threads at once) and all are handled. You can run them in three ways, and the same cases are in `docs/what-if-questions.md` with the answers for the Q&A.
+
+```
+cd core
+./run.sh data nishan       # menu with only Nishan's options (abhinav, shrijana, aakriti, khem work too)
+```
+
+- menu option 18 runs the bad input cases, option 19 runs the measured experiments
+- the web page has the tabs Error handling and Experiments
+- `core/test.sh` fails if any case crashes
+
+What the program does with bad input:
+
+- the web page marks the wrong field and says what is wrong under it
+- anything else shows a message in the corner, never a stack trace
+- the api answers a wrong value with 400 and a plain sentence, an unexpected problem with a short 500 message
+- a damaged data file loses only the damaged rows, a failed crawl never wipes the saved data
+- a request that times out or gets http 429 or 5xx is tried once more
+
+The experiments compare our data structures with the plain way, measured on the real data (the numbers change a little on every run):
+
+| member | experiment | result |
+|---|---|---|
+| Abhinav | inverted index against reading all 81 pages | thousands of times faster |
+| Abhinav | Boyer-Moore against KMP, characters checked on 5 words | about 4.6 times fewer for Boyer-Moore |
+| Nishan | edit distance for 8, 16 and 32 letters | grows like the a x b table |
+| Nishan | heap against sort for the 5 best suggestions and the cheapest 10 prices | about the same at our size, the heap wins on much bigger data |
+| Shrijana | ranking with 1 and 4 keywords | about twice as long, not four times |
+| Shrijana | regex check of a good and a bad amount | a bad value is rejected faster |
+| Aakriti | trie against scanning every word | about 30 times faster |
+| Aakriti | 6 regex patterns on all pages | about 170 ms |
+| Khem | cleaning the 5 saved pages | about 10 ms for every 100 thousand characters |
+| Khem | saving the history file after every search | about 100 microseconds per search |
+
+![error handling tab](docs/report/figures/ui-errors.png)
+
+![field error on the calculator](docs/report/figures/ui-field-error.png)
+
+![experiments tab](docs/report/figures/ui-experiments.png)
+
+The menu print of the same cases (option 18, shortened to the first member):
+
+```
+running bad, odd and extreme inputs through every feature ...
+
+== Nishan Giri
+ok  spell checking / empty word  [(nothing)]
+      -> no suggestions, nothing crashed
+ok  spell checking / missing word (null)  [null]
+      -> treated as unknown, no suggestions: 0
+ok  spell checking / nonsense word  [qzxqzxqzx]
+      -> nothing close enough, the page says so
+ok  spell checking / very long word  [a x 1000]
+      -> 0 suggestions in 1 ms (long words are skipped by the length check)
+ok  spell checking / typo of a model name  [claude-opus-5-6x]
+      -> suggests claude-opus-5-5
+ok  cost calculator / token amount with words  [2 million]
+      -> "2 million" is not a token amount, use 2M, 500K or 1,000,000
+ok  cost calculator / token amount far too big  [999999999999B]
+      -> that number is too big to be a real workload
+ok  cost calculator / negative token amount  [-500K]
+      -> "-500K" is not a token amount, use 2M, 500K or 1,000,000
+ok  cost calculator / cached share above 100 percent  [150]
+      -> cached share must be 0 to 100 percent
+ok  cost calculator / budget nobody can meet  [$0.01 a month, no free models]
+      -> no model fits, the page says to raise the budget
+ok  cost calculator / context window nobody has  [minimum 100M tokens]
+      -> no model fits, models with an unknown context are not guessed
+ok  cost calculator / zero workload  [0 input, 0 output]
+      -> enter some input or output tokens, a workload of zero costs nothing
+
+== shared parts
+ok  crawler / url that is not a url  [ht!tp://bad url]
+      -> rejected: bad url ht!tp://bad url
+ok  crawler / server that is not there  [http://localhost:1/]
+      -> the crawl logs it and goes on: no connection for http://localhost:1/ (tried twice)
+ok  parsers / page that is not a pricing page  [<html><body>hello</body></html>]
+      -> 0 prices found, no crash
+ok  parsers / empty and broken html  [(nothing) and <table><tr><td>]
+      -> 0 and 0 prices found, no crash
+ok  saved data / damaged prices.csv  [one good row, one broken number, one short row]
+      -> 1 good row loaded, 2 damaged rows skipped
+ok  saved data / data folder that does not exist  [/no/such/folder]
 ```
 
 ## Screenshots

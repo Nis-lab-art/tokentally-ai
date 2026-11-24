@@ -15,7 +15,10 @@ ok   edit distance
 ok   spell checker
 ok   trie and word completion
 ok   search frequency saved to a file
+ok   hardening: bad input and damaged files
 ok   price history log
+ok   error handling demo (no case may crash)
+ok   experiments give sane numbers
 ok   page ranking
 ok   input validation
 ok   pattern finding
@@ -24,4 +27,4 @@ ok   recommendation filters and order
 ok   saved data: parsers and accuracy
 ok   saved data: engine and speed
 
-133 checks passed, 0 failed
+146 checks passed, 0 failed

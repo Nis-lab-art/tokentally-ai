@@ -14,8 +14,8 @@ Read this before the presentation. Every member should be able to answer the que
 | 6 | small data set | 81 pages and 4713 words is a tiny search engine | the goal is the algorithms on real data, not scale. say the complexity so it is clear it would scale |
 | 7 | price history is new and has little data | the log starts on the day of the first run, so no changes show until a later crawl | explain the design (append only log, only changes are written) and crawl again before the demo if possible |
 | 8 | crawl button is open to anyone | the api has no login, any visitor can start a 40 second crawl | fine for a class demo, would need auth and a rate limit for real use |
-| 9 | thread safety not checked | search history and crawl are shared state in one spring app. we did not test many users at once | single user demo, say so |
-| 10 | tests are mostly on saved data | 123 checks on saved pages, none on a live crawl or the page in a browser | say what the tests cover. the ui was only checked by hand |
+| 9 | thread safety | search history is shared state in one spring app | fixed: the search counter is synchronized and a test runs 20 threads at once, the crawl is one at a time. Still not load tested with many real users |
+| 10 | tests are mostly on saved data | 146 checks on saved pages and 54 bad input cases, no automatic test of the live crawl or the page in a browser | say what the tests cover. the live crawl was run by hand for the report and the page was checked in a browser |
 | 11 | tailwind is a 400 KB script file | it is the play version, fine for a demo, a real build would compile only the used css | say so if asked |
 | 12 | email report dropped | we chose price history instead because it needs no passwords or mail server | say that choice clearly |
 | 13 | cost formula is simple | days x (uncached x in + cached x cached + out x out) / 1M, long prices above a size threshold, batch = discount tier | know it by heart (Nishan) |

@@ -1,0 +1,32 @@
+measuring on the real data, this takes a few seconds ...
+
+== Abhinav Pandey
+inverted index: find the pages that have a word
+      inverted index (hash map)            0.19
+      read every page                      4298   (microseconds per search)
+      inverted index (hash map) is 22838x faster. Why: a hash map lookup is O(1) on average, reading every page is O(total characters).
+frequency count: characters checked to count 5 words on all pages
+      Boyer-Moore                       1287780
+      KMP                               5916407   (characters compared)
+      Boyer-Moore is 4.6x smaller
+frequency count: time to count one word on the biggest page (158462 characters)
+      Boyer-Moore                           366
+      KMP                                   434   (microseconds per count)
+      about the same
+
+== Nishan Giri
+spell checking: best 5 suggestions for a typo (4713 known words)
+      heap (ours)                          1248
+      collect and sort all                 1138   (microseconds per search)
+      about the same. Why: with only a few hundred candidates a plain sort is just as quick. The heap pays off when there are far more candidates than the 5 we keep.
+spell checking: edit distance for words of 8 and 32 letters
+      8 letters                             529
+      32 letters                           3713   (nanoseconds per comparison)
+      16 letters took 1213 ns. 8 to 16 letters costs 2.3x and 8 to 32 letters costs 7.0x, about the 4x and 16x of an a x b table.
+cost calculator: price 194 model prices and take the cheapest 10
+      top 10 from the heap                48.57
+      all models, sorted                   81.5   (microseconds per request)
+      top 10 from the heap is 1.7x faster. Why: only 194 prices, so sorting all of them is as quick as the heap. With thousands of models the heap would win.
+
+== Shrijana Karki
+page ranking: rank pages for "token price"

@@ -1,0 +1,40 @@
+running bad, odd and extreme inputs through every feature ...
+
+== Nishan Giri
+ok  spell checking / empty word  [(nothing)]
+      -> no suggestions, nothing crashed
+ok  spell checking / missing word (null)  [null]
+      -> treated as unknown, no suggestions: 0
+ok  spell checking / nonsense word  [qzxqzxqzx]
+      -> nothing close enough, the page says so
+ok  spell checking / very long word  [a x 1000]
+      -> 0 suggestions in 1 ms (long words are skipped by the length check)
+ok  spell checking / typo of a model name  [claude-opus-5-6x]
+      -> suggests claude-opus-5-5
+ok  cost calculator / token amount with words  [2 million]
+      -> "2 million" is not a token amount, use 2M, 500K or 1,000,000
+ok  cost calculator / token amount far too big  [999999999999B]
+      -> that number is too big to be a real workload
+ok  cost calculator / negative token amount  [-500K]
+      -> "-500K" is not a token amount, use 2M, 500K or 1,000,000
+ok  cost calculator / cached share above 100 percent  [150]
+      -> cached share must be 0 to 100 percent
+ok  cost calculator / budget nobody can meet  [$0.01 a month, no free models]
+      -> no model fits, the page says to raise the budget
+ok  cost calculator / context window nobody has  [minimum 100M tokens]
+      -> no model fits, models with an unknown context are not guessed
+ok  cost calculator / zero workload  [0 input, 0 output]
+      -> enter some input or output tokens, a workload of zero costs nothing
+
+== shared parts
+ok  crawler / url that is not a url  [ht!tp://bad url]
+      -> rejected: bad url ht!tp://bad url
+ok  crawler / server that is not there  [http://localhost:1/]
+      -> the crawl logs it and goes on: no connection for http://localhost:1/ (tried twice)
+ok  parsers / page that is not a pricing page  [<html><body>hello</body></html>]
+      -> 0 prices found, no crash
+ok  parsers / empty and broken html  [(nothing) and <table><tr><td>]
+      -> 0 and 0 prices found, no crash
+ok  saved data / damaged prices.csv  [one good row, one broken number, one short row]
+      -> 1 good row loaded, 2 damaged rows skipped
+ok  saved data / data folder that does not exist  [/no/such/folder]

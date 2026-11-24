@@ -7,10 +7,12 @@
 | 3 inverted index, frequency count, spell checking, word completion | done |
 | 4 search frequency, page ranking, regex validation and pattern finding | done |
 | 5 cost calculator, recommender, command line menu | done |
-| 6 tests with our own small test runner (123 checks) | done |
+| 6 tests with our own small test runner (146 checks) | done |
 | 7 spring boot api serving one html page (tailwind link) | done |
 | 8 price history log and tab (our extra feature, replaces the email report) | done |
-| 9 final report and presentation | not started |
+| 9 hardening, error handling demo and experiments for every member | done |
+| 10 final report (docx) | done, team section to fill in |
+| 11 presentation | not started |
 
 ## Data structures
 

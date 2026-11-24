@@ -1,0 +1,63 @@
+measuring on the real data, this takes a few seconds ...
+
+== Abhinav Pandey
+inverted index: find the pages that have a word
+      inverted index (hash map)            0.19
+      read every page                      4298   (microseconds per search)
+      inverted index (hash map) is 22838x faster. Why: a hash map lookup is O(1) on average, reading every page is O(total characters).
+frequency count: characters checked to count 5 words on all pages
+      Boyer-Moore                       1287780
+      KMP                               5916407   (characters compared)
+      Boyer-Moore is 4.6x smaller
+frequency count: time to count one word on the biggest page (158462 characters)
+      Boyer-Moore                           366
+      KMP                                   434   (microseconds per count)
+      about the same
+
+== Nishan Giri
+spell checking: best 5 suggestions for a typo (4713 known words)
+      heap (ours)                          1248
+      collect and sort all                 1138   (microseconds per search)
+      about the same. Why: with only a few hundred candidates a plain sort is just as quick. The heap pays off when there are far more candidates than the 5 we keep.
+spell checking: edit distance for words of 8 and 32 letters
+      8 letters                             529
+      32 letters                           3713   (nanoseconds per comparison)
+      16 letters took 1213 ns. 8 to 16 letters costs 2.3x and 8 to 32 letters costs 7.0x, about the 4x and 16x of an a x b table.
+cost calculator: price 194 model prices and take the cheapest 10
+      top 10 from the heap                48.57
+      all models, sorted                   81.5   (microseconds per request)
+      top 10 from the heap is 1.7x faster. Why: only 194 prices, so sorting all of them is as quick as the heap. With thousands of models the heap would win.
+
+== Shrijana Karki
+page ranking: rank pages for "token price"
+      top 10                              22.86
+      all ranked pages                    21.28   (microseconds per search)
+      about the same. Why: the heap only decides the order. Most of the time goes into counting keyword hits in the index, so the gap is small on 81 pages.
+page ranking: 1 keyword against 4 keywords
+      1 keyword                            8.81
+      4 keywords                          19.53   (microseconds per search)
+      1 keyword is 2.2x faster. Why: 4 keywords cost about twice as much as 1, not 4 times, because pages that have several keywords are merged in one map.
+data validation: check a token amount with the regex
+      good value 2.5M                       674
+      bad value                             105   (nanoseconds per check)
+      bad value is 6.4x faster. Why: a bad value fails the pattern early, so it costs less than reading a good one. A hostile input can not slow the program down.
+
+== Aakriti Mainali
+word completion: words that start with "claude-op" (4907 words)
+      trie                                 3.55
+      scan all words                        166   (microseconds per prefix)
+      trie is 47x faster. Why: the trie only walks the letters of the prefix, a list checks every word.
+finding patterns: find 6 kinds of patterns in 81 pages (1146 thousand characters)
+      all 6 patterns                        173
+      one page on average                  2.13   (milliseconds)
+      The regex pass over the whole text takes 172 ms, so it is fine to run on every click of the Insights tab.
+
+== Khem Raj Adhikari
+html cleaning: clean the 5 saved pricing pages (1153 thousand characters)
+      time for all 5 pages                  132
+      per 100 thousand characters         11.43   (milliseconds)
+      about 11 ms for every 100 thousand characters. Why: one pass over the text, so the time grows in a straight line with the page size (O(n)).
+search frequency: count a search and save the history file
+      record and save                       114
+      read a count                         0.08   (microseconds per call)
+      read a count is 1481x faster. Why: saving after every search is the slow part. It is safe because the history survives a crash, and a search still only takes about 114 microseconds more.
