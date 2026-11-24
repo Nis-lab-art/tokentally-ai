@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TokenTally AI</title>
+<!-- tailwind from a cdn, so the page needs internet only for the styling -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'media' }</script>
+<style>
+  .dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; background: var(--c, #a1a1aa); }
+  .dot.openai { --c: #10a37f } .dot.gemini { --c: #4285f4 } .dot.anthropic { --c: #d97757 }
+  .dot.zai { --c: #8b5cf6 } .dot.xai { --c: #71717a }
+</style>
+</head>
+<body class="bg-stone-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 antialiased">
+<div class="max-w-5xl mx-auto px-5 py-8">
+
+  <header class="flex items-center justify-between flex-wrap gap-3">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white grid place-items-center text-sm font-bold">T</div>
+      <h1 class="text-lg font-semibold">TokenTally AI</h1>
+    </div>
+    <div id="stats" class="flex gap-1.5 text-xs text-zinc-500"></div>
+  </header>
+
+  <div class="mt-12 mb-7">
+    <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">What will your AI workload really cost?</h2>
+    <p class="mt-2 text-zinc-500 max-w-xl">Prices from OpenAI, Gemini, Claude, Z.ai and xAI in one place. Search, compare and find the cheapest model.</p>
+  </div>
+
+  <nav id="tabs" class="inline-flex gap-0.5 p-1 mb-7 rounded-xl bg-zinc-200/70 dark:bg-zinc-800 flex-wrap"></nav>
+  <div id="error" class="hidden my-3 px-4 py-3 rounded-xl bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300 text-sm"></div>
+
+  <!-- calculator -->
+  <section id="calculator" class="tab grid md:grid-cols-[340px_1fr] gap-8 items-start">
+    <form id="calcForm" class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm">
+      <h3 class="font-semibold text-sm mb-4">Your workload</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="lab">Input tokens / day<input name="inputPerDay" value="2M" class="inp" /></label>
+        <label class="lab">Output tokens / day<input name="outputPerDay" value="500K" class="inp" /></label>
+      </div>
+      <label class="lab">Provider<select name="provider" class="inp"><option value="">all</option></select></label>
+      <label class="flex items-center gap-2 text-sm mb-4"><input type="checkbox" name="batchOk" class="accent-indigo-600" /> batch or flex is fine</label>
+      <details class="mb-4">
+        <summary class="cursor-pointer text-xs font-medium text-zinc-500 mb-3">More options</summary>
+        <label class="lab">Input that hits the cache (%)<input name="cachedPercent" value="0" class="inp" /></label>
+        <label class="lab">Tokens in one request<input name="promptSize" placeholder="like 250K" class="inp" /></label>
+        <label class="lab">Smallest context window<input name="minContext" placeholder="like 200K" class="inp" /></label>
+        <label class="lab">Monthly budget ($)<input name="budget" placeholder="no limit" class="inp" /></label>
+      </details>
+      <button class="btn w-full">Find the cheapest</button>
+    </form>
+    <div>
+      <h3 class="font-semibold text-sm mb-3">Cheapest per month</h3>
+      <div id="picks"><div class="p-12 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl">fill in your workload and press the button</div></div>
+    </div>
+  </section>
+
+  <!-- search -->
+  <section id="search" class="tab hidden">
+    <form id="searchForm" class="flex gap-2">
+      <div class="relative flex-1">
+        <input id="q" autocomplete="off" placeholder="try gemnii, batch api or claude-opus" class="inp !py-3 !px-4 !text-base !rounded-xl" />
+        <ul id="hints" class="hidden absolute z-10 left-0 right-0 mt-1.5 p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg"></ul>
+      </div>
+      <button class="btn !px-6 !rounded-xl">Search</button>
+    </form>
+    <div id="searchOut" class="mt-4"></div>
+  </section>
+
+  <!-- models -->
+  <section id="models" class="tab hidden">
+    <div class="flex gap-2 items-center flex-wrap mb-3">
+      <select id="mProvider" class="inp !w-auto"><option value="">all providers</option></select>
+      <select id="mTier" class="inp !w-auto"></select>
+      <select id="mSort" class="inp !w-auto">
+        <option value="input">cheapest input</option><option value="output">cheapest output</option>
+        <option value="contextWindow">biggest context</option><option value="model">name</option>
+      </select>
+      <span id="mCount" class="text-sm text-zinc-500"></span>
+    </div>
+    <div id="card"></div>
+    <div id="mTable"></div>
+  </section>
+
+  <!-- compare -->
+  <section id="compare" class="tab hidden">
+    <form id="cmpForm" class="flex gap-2">
+      <input id="cmpText" value="gpt-6.2-astra, claude-opus-5-5, gemini-4-carbon, grok-4.7, glm-5.3" class="inp flex-1" />
+      <button class="btn">Compare</button>
+    </form>
+    <p id="cmpBest" class="text-sm text-zinc-500 my-3"></p>
+    <div id="cmpTable" class="mt-3"></div>
+  </section>
+
+  <!-- insights -->
+  <section id="insights" class="tab hidden">
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="box"><h3 class="h">Top searches</h3><div id="top"></div></div>
+      <div class="box">
+        <h3 class="h">Data check</h3><div id="problems" class="text-sm mb-3"></div>
+        <button id="crawlBtn" class="btn w-full">Crawl the live pages again</button>
+        <pre id="crawlLog" class="text-xs whitespace-pre-wrap max-h-56 overflow-auto mt-3"></pre>
+      </div>
+    </div>
+    <h3 class="h mt-7">Free models</h3><div id="free"></div>
+    <h3 class="h mt-7">Price warnings</h3><div id="warnings"></div>
+    <h3 class="h mt-7">Patterns found with regex</h3>
+    <select id="patUrl" class="inp !w-auto"></select>
+    <div id="patterns" class="grid sm:grid-cols-2 md:grid-cols-3 gap-3 mt-3 text-sm"></div>
+  </section>
+
+  <footer class="mt-14 text-xs text-center text-zinc-500">COMP 8547 Group 10 · prices come from the official pricing pages</footer>
+</div>
+
+<style type="text/tailwindcss">
+  @layer components {
+    .inp { @apply w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-950; }
+    .lab { @apply block text-xs font-medium text-zinc-500 mb-3.5; }
+    .lab .inp { @apply mt-1.5; }
+    .btn { @apply px-5 py-2.5 text-sm font-medium rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50; }
+    .box { @apply rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm; }
+    .h { @apply font-semibold text-sm mb-3; }
+    .th { @apply px-3.5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-zinc-500 whitespace-nowrap; }
+    .td { @apply px-3.5 py-2.5 border-t border-zinc-100 dark:border-zinc-800 whitespace-nowrap; }
+    .note { @apply my-3 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-sm; }
+    .link { @apply text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer; }
+  }
+</style>
+
+<script>
+// small helpers to call the spring boot api
+const PROVIDERS = ['openai', 'gemini', 'anthropic', 'zai', 'xai']
+const TIERS = ['standard', 'batch', 'flex', 'priority', 'fast']
+const $ = (id) => document.getElementById(id)
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+
+async function call(path, data) {
+  const res = await fetch('/api' + path, data === undefined ? {} : {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(body.error || 'request failed')
+  return body
+}
+const get = (p) => call(p)
+const fail = (e) => { const b = $('error'); b.textContent = e.message; b.classList.remove('hidden') }
+const clearFail = () => $('error').classList.add('hidden')
+
+const money = (v) => (v === undefined || v === null || v < 0) ? '–' : v === 0 ? 'free' : '$' + Math.round(v * 10000) / 10000
+const size = (n) => (!n || n < 0) ? '–' : n >= 1000000 ? Math.round(n / 10000) / 100 + 'M' : Math.round(n / 1000) + 'K'
+const tag = (p) => `<span class="dot ${esc(p)} text-xs text-zinc-500">${esc(p)}</span>`
+
+// one table layout for model prices used on every tab
+function priceTable(rows, pickable) {
+  const head = ['model', 'provider', 'tier', 'input', 'cached', 'output', 'long input', 'context', 'notes']
+  const num = [3, 4, 5, 6, 7]
+  return `<div class="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm"><table class="w-full text-[13px]">
+    <thead><tr>${head.map((h, i) => `<th class="th ${num.includes(i) ? '!text-right' : ''}">${h}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map((p) => `<tr class="hover:bg-stone-50 dark:hover:bg-zinc-800/50">
+      <td class="td">${pickable ? `<a class="link" data-model="${esc(p.model)}">${esc(p.model)}</a>` : esc(p.model)}</td>
+      <td class="td">${tag(p.provider)}</td><td class="td">${esc(p.tier)}</td>
+      <td class="td text-right tabular-nums">${money(p.input)}</td><td class="td text-right tabular-nums">${money(p.cachedInput)}</td>
+      <td class="td text-right tabular-nums">${money(p.output)}</td><td class="td text-right tabular-nums">${money(p.longInput)}</td>
+      <td class="td text-right tabular-nums">${size(p.contextWindow)}</td>
+      <td class="td !whitespace-normal min-w-[180px] text-xs text-zinc-500">${esc(p.notes)}</td></tr>`).join('')}
+    </tbody></table></div>`
+}
+
+// tabs
+const TABS = [['calculator', 'Cost calculator'], ['search', 'Search'], ['models', 'Models'], ['compare', 'Compare'], ['insights', 'Insights']]
+const loaded = {}
+function show(id) {
+  clearFail()
+  document.querySelectorAll('.tab').forEach((s) => s.classList.toggle('hidden', s.id !== id))
+  $('tabs').innerHTML = TABS.map(([t, label]) => `<button data-tab="${t}" class="px-3.5 py-1.5 text-[13px] font-medium rounded-lg ${t === id ? 'bg-white dark:bg-zinc-950 shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'}">${label}</button>`).join('')
+  if (!loaded[id]) { loaded[id] = true; if (id === 'models') loadModels(); if (id === 'compare') runCompare(); if (id === 'insights') loadInsights() }
+}
+$('tabs').onclick = (e) => { if (e.target.dataset.tab) show(e.target.dataset.tab) }
+
+// header stats and dropdowns
+get('/stats').then((s) => {
+  $('stats').innerHTML = [['prices', s.prices], ['pages', s.pages], ['words', s.words]]
+    .map(([k, v]) => `<span class="px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"><b class="text-zinc-900 dark:text-zinc-100">${v}</b> ${k}</span>`).join('')
+}).catch(() => fail(new Error('the api is not running, start it with ./run.sh in api')))
+document.querySelectorAll('select[name=provider], #mProvider').forEach((s) => PROVIDERS.forEach((p) => s.add(new Option(p, p))))
+$('mTier').add(new Option('all tiers', '')); TIERS.forEach((t) => $('mTier').add(new Option(t, t))); $('mTier').value = 'standard'
+
+// calculator
+$('calcForm').onsubmit = (e) => {
+  e.preventDefault(); clearFail()
+  const f = new FormData(e.target)
+  const form = Object.fromEntries(f.entries()); form.batchOk = e.target.batchOk.checked
+  call('/recommend', form).then((picks) => {
+    if (!picks.length) return $('picks').innerHTML = '<p class="text-zinc-500">no model fits, try a bigger budget or a smaller context</p>'
+    const max = picks[picks.length - 1].cost.total || 1
+    $('picks').innerHTML = picks.map((p, i) => `<div class="flex gap-3.5 mb-2.5 p-4 rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm ${i === 0 ? 'border-indigo-500' : 'border-zinc-200 dark:border-zinc-800'}">
+      <div class="w-4 font-semibold text-zinc-500">${i + 1}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex gap-2.5 items-center flex-wrap"><b>${esc(p.price.model)}</b>${tag(p.price.provider)}
+          <span class="text-sm text-zinc-500">${esc(p.why)}${p.cost.longPrices ? ', long context prices' : ''}</span>
+          <span class="ml-auto font-semibold text-lg tabular-nums">$${p.cost.total.toFixed(2)}</span></div>
+        <div class="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full my-2.5 overflow-hidden"><div class="h-full bg-indigo-600 rounded-full" style="width:${Math.max(2, p.cost.total / max * 100)}%"></div></div>
+        <div class="text-xs text-zinc-500">input $${p.cost.input.toFixed(2)} · cached $${p.cost.cached.toFixed(2)} · output $${p.cost.output.toFixed(2)}${p.price.contextWindow > 0 ? ' · context ' + size(p.price.contextWindow) : ''}</div>
+      </div></div>`).join('')
+  }).catch((err) => { fail(err); $('picks').innerHTML = '' })
+}
+
+// search with word completion, spell suggestions, ranked pages and frequency count
+let hintTimer
+$('q').oninput = () => {
+  clearTimeout(hintTimer)
+  const last = $('q').value.split(' ').pop()
+  if (last.length < 2) return $('hints').classList.add('hidden')
+  hintTimer = setTimeout(() => get('/complete?prefix=' + encodeURIComponent(last)).then((h) => {
+    $('hints').innerHTML = h.map((w) => `<li data-w="${esc(w)}" class="px-3 py-2 text-sm rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950">${esc(w)}</li>`).join('')
+    $('hints').classList.toggle('hidden', !h.length)
+  }).catch(() => {}), 150)
+}
+$('hints').onmousedown = (e) => {
+  if (!e.target.dataset.w) return
+  const words = $('q').value.split(' '); words[words.length - 1] = e.target.dataset.w
+  $('q').value = words.join(' '); runSearch()
+}
+$('q').onblur = () => $('hints').classList.add('hidden')
+$('searchForm').onsubmit = (e) => { e.preventDefault(); runSearch() }
+
+function runSearch(text) {
+  const q = (text ?? $('q').value).trim()
+  if (!q) return
+  clearFail(); $('hints').classList.add('hidden')
+  get('/search?q=' + encodeURIComponent(q)).then((r) => {
+    let html = `<p class="text-sm text-zinc-500">searched ${r.timesSearched} time(s)</p>`
+    r.unknownWords.forEach((w) => {
+      const sug = r.suggestions[w] || []
+      html += `<div class="note">"${esc(w)}" is not in the pages. ${sug.length ? 'did you mean ' + sug.map((s) => `<a class="link mx-1" data-fix="${esc(s.word)}">${esc(s.word)}</a>`).join('') : 'nothing close was found.'}</div>`
+    })
+    if (r.searchedInstead) html += `<p class="my-2">showing results for <b>${esc(r.searchedInstead)}</b></p>`
+    if (r.models.length) html += `<h3 class="h mt-6">Models</h3>` + priceTable(r.models)
+    html += `<h3 class="h mt-6">Pages ranked by keyword count</h3>`
+    html += !r.pages.length ? '<p class="text-zinc-500">no page has these words</p>' : `<div class="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm"><table class="w-full text-[13px]">
+      <thead><tr><th class="th">#</th><th class="th">score</th><th class="th">keywords</th><th class="th">page</th><th class="th"></th></tr></thead><tbody>
+      ${r.pages.map((p, i) => `<tr><td class="td">${i + 1}</td><td class="td">${p.score}</td><td class="td">${p.keywordsFound}</td>
+        <td class="td"><a class="link" href="${esc(p.url)}" target="_blank" rel="noreferrer">${esc(p.url.replace('https://', ''))}</a></td>
+        <td class="td"><button class="btn !py-1 !px-2.5 !text-xs !rounded-lg" data-count="${esc(p.url)}">count</button></td></tr>`).join('')}
+      </tbody></table></div>`
+    html += '<div id="freq"></div>'
+    $('searchOut').innerHTML = html
+    $('searchOut').dataset.word = (r.searchedInstead || r.query).split(' ')[0]
+  }).catch(fail)
+}
+$('searchOut').onclick = (e) => {
+  if (e.target.dataset.fix) { $('q').value = e.target.dataset.fix; runSearch() }
+  const url = e.target.dataset.count
+  if (url) {
+    const word = $('searchOut').dataset.word
+    get('/frequency?word=' + encodeURIComponent(word) + '&url=' + encodeURIComponent(url)).then((r) => {
+      const x = r[0] || { boyerMoore: 0, kmp: 0 }
+      $('freq').innerHTML = `<div class="note">"${esc(word)}" shows up <b>${x.boyerMoore}</b> time(s) on ${esc(url.replace('https://', ''))}. Boyer-Moore checked ${x.bmComparisons ?? 0} chars, KMP checked ${x.kmpComparisons ?? 0}.</div>`
+    }).catch(fail)
+  }
+}
+
+// models with filters and a card for one model
+function loadModels() {
+  get(`/models?provider=${$('mProvider').value}&tier=${$('mTier').value}`).then((rows) => {
+    const sort = $('mSort').value
+    rows.sort((a, b) => {
+      if (sort === 'model') return a.model.localeCompare(b.model)
+      const x = a[sort] < 0 ? Infinity : a[sort], y = b[sort] < 0 ? Infinity : b[sort]
+      return sort === 'contextWindow' ? y - x : x - y
+    })
+    $('mCount').textContent = rows.length + ' rows'
+    $('mTable').innerHTML = priceTable(rows, true)
+  }).catch(fail)
+}
+;['mProvider', 'mTier', 'mSort'].forEach((id) => $(id).onchange = loadModels)
+$('mTable').onclick = (e) => {
+  if (!e.target.dataset.model) return
+  get('/models/' + e.target.dataset.model).then((c) => {
+    if (!c.length) return
+    $('card').innerHTML = `<div class="relative rounded-2xl border border-indigo-500 bg-white dark:bg-zinc-900 p-5 mb-4">
+      <button class="absolute right-3 top-2 text-xl text-zinc-500" id="closeCard">×</button>
+      <h3 class="font-semibold">${esc(c[0].model)} ${tag(c[0].provider)}</h3>
+      <p class="text-sm my-2">context window <b>${size(c[0].contextWindow)}</b> · max output <b>${size(c[0].maxOutput)}</b> · <a class="link" href="${esc(c[0].sourceUrl)}" target="_blank" rel="noreferrer">source</a></p>
+      ${priceTable(c)}</div>`
+    $('closeCard').onclick = () => $('card').innerHTML = ''
+  }).catch(fail)
+}
+
+// compare
+function runCompare() {
+  clearFail()
+  get('/compare?ids=' + encodeURIComponent($('cmpText').value)).then((rows) => {
+    if (rows.length) {
+      const best = rows.reduce((a, b) => (a.input + a.output <= b.input + b.output ? a : b))
+      $('cmpBest').innerHTML = `cheapest for input plus output: <b class="text-zinc-900 dark:text-zinc-100">${esc(best.model)}</b>`
+    }
+    $('cmpTable').innerHTML = priceTable(rows)
+  }).catch(fail)
+}
+$('cmpForm').onsubmit = (e) => { e.preventDefault(); runCompare() }
+
+// insights
+function loadInsights() {
+  get('/top-searches').then((t) => $('top').innerHTML = t.length
+    ? `<ol class="list-decimal pl-5 leading-7 text-sm">${t.map((x) => `<li><b>${x.count}</b> ${esc(x.word)}</li>`).join('')}</ol>`
+    : '<p class="text-sm text-zinc-500">nothing searched yet</p>').catch(fail)
+  get('/problems').then((p) => $('problems').innerHTML = Object.keys(p).length === 0
+    ? 'every crawled price passed the regex and sanity checks'
+    : Object.entries(p).map(([k, v]) => `<p>${esc(k)}: ${esc(v.join(', '))}</p>`).join('')).catch(fail)
+  get('/free').then((r) => $('free').innerHTML = priceTable(r)).catch(fail)
+  get('/warnings').then((r) => $('warnings').innerHTML = priceTable(r)).catch(fail)
+  get('/pages').then((pages) => {
+    $('patUrl').innerHTML = `<option value="">all ${pages.length} pages</option>` + pages.map((p) => `<option value="${esc(p.url)}">${esc(p.url.replace('https://', ''))}</option>`).join('')
+    loadPatterns()
+  }).catch(fail)
+}
+function loadPatterns() {
+  get('/patterns?url=' + encodeURIComponent($('patUrl').value)).then((found) => {
+    $('patterns').innerHTML = Object.entries(found).map(([kind, items]) => `<div class="box !p-4">
+      <h4 class="font-semibold text-sm mb-2 capitalize">${esc(kind)} <span class="text-zinc-500 font-normal">(${Object.keys(items).length})</span></h4>
+      ${Object.entries(items).slice(0, 10).map(([v, n]) => `<div><span class="text-zinc-500">${n}×</span> ${esc(v)}</div>`).join('')}</div>`).join('')
+  }).catch(fail)
+}
+$('patUrl').onchange = loadPatterns
+$('crawlBtn').onclick = () => {
+  const b = $('crawlBtn'); b.disabled = true; b.textContent = 'crawling…'
+  call('/crawl', {}).then((log) => $('crawlLog').textContent = log.join('\n')).catch((e) => $('crawlLog').textContent = e.message)
+    .finally(() => { b.disabled = false; b.textContent = 'Crawl the live pages again' })
+}
+
+show('calculator')
+</script>
+</body>
+</html>

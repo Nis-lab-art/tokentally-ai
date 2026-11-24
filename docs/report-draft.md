@@ -19,7 +19,7 @@ TokenTally AI crawls the official pricing pages of five ai providers and turns e
 ## 3 how it is built
 
 crawler (queue + hash set) -> html cleaner -> parsers -> data store -> features (index, search, rank, cost) -> menu or api and web ui.
-The core uses only the jdk. The api (spring boot) and ui (react) are only a front for the same core.
+The core uses only the jdk. The api (spring boot) serves one html page and is only a front for the same core.
 
 Figure 1: architecture diagram (todo)
 

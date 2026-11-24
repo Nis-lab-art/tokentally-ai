@@ -8,3 +8,5 @@ dist/
 .vscode/
 core/data/search_history.txt
 .claude/
+bin/
+.settings/

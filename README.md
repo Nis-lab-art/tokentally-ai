@@ -16,37 +16,40 @@ TokenTally AI crawls the official pricing pages of five AI providers (OpenAI, Go
 
 ## Folders
 
-- `core` plain java back end. All the features live here. Only the jdk is used.
-- `api` small spring boot layer that calls `core` (optional, for the web ui).
-- `web` small react ui (optional, gui does not count as a feature).
-- `docs` our proposal, the requirements in our own words and the plan.
+- `core` plain java back end. All the features live here. Only the jdk is used. Eclipse project files are included.
+- `api` spring boot app. It compiles `core` together with itself and serves the web page from `api/src/main/resources/static/index.html` (one page, plain javascript, tailwind from a cdn link). No node needed.
+- `docs` our proposal, the requirements in our own words, the plan and the report draft.
 
-## Run the back end
+You need java 17 or newer. Maven is only needed for `api` (Eclipse has it built in).
+
+## Run it in Eclipse
+
+Use "Eclipse IDE for Enterprise Java and Web Developers" (it has Maven built in).
+
+Menu version (`core`):
+1. File > Import > General > Existing Projects into Workspace, pick the `core` folder.
+2. Open `src/main/java/tokentally/app/TokenTallyApp.java`, right click > Run As > Java Application.
+3. The menu shows in the console. It uses the saved pages in `core/data`. Pick option 12 to crawl the live pages again.
+
+Web version (`api`):
+1. File > Import > Maven > Existing Maven Projects, pick the `api` folder.
+2. If Eclipse asks to install a connector for build-helper-maven-plugin, accept it. If a red error stays, right click the project > Maven > Update Project.
+3. Open `tokentally/api/ApiApplication.java`, right click > Run As > Java Application.
+4. Open http://localhost:8080 in the browser.
+
+Tests: open `src/test/java/tokentally/TestRunner.java` in `core` and Run As > Java Application. It prints how many checks passed.
+
+## Run it from the terminal
 
 ```
-cd core
-./run.sh
+cd core && ./run.sh        # menu
+cd core && ./test.sh       # 123 checks
+cd api && ./run.sh         # web page on http://localhost:8080
 ```
 
-`run.sh` compiles with `javac` and starts the menu. The first time it uses the saved pages in `core/data`. Pick "crawl again" in the menu to fetch the live pages.
+If port 8080 is busy start with `SERVER_PORT=8090 java -jar api/target/tokentally-api-1.0.jar` after `./run.sh` built it.
 
-## Run the web ui (optional)
-
-Needs java 17+, maven and node.
-
-```
-cd api && ./run.sh          # api on http://localhost:8080
-cd web && npm install && npm run dev   # ui on http://localhost:5173
-```
-
-## Run the tests
-
-```
-cd core
-./test.sh
-```
-
-The tests use a small runner we wrote ourselves (`core/src/test/java/tokentally/TestRunner.java`), no test library.
+The web page loads tailwind from a cdn, so it needs internet for the styling. The back end works offline with the saved data.
 
 ## Where each feature lives
 
@@ -62,5 +65,5 @@ The tests use a small runner we wrote ourselves (`core/src/test/java/tokentally/
 | inverted indexing | `text/InvertedIndex` |
 | data validation | `regex/InputValidator` |
 | finding patterns | `regex/PatternExtractor` |
-| cost calculator | `cost/Workload`, `cost/CostCalculator`, `cost/Recommender` |
+| cost calculator | `cost/Workload`, `cost/Recommender`, `cost/CostCalculator` |
 | menu | `app/TokenTallyApp`, `app/Engine` |

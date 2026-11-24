@@ -8,7 +8,7 @@
 | 4 search frequency, page ranking, regex validation and pattern finding | done |
 | 5 cost calculator, recommender, command line menu | done |
 | 6 tests with our own small test runner (123 checks) | done |
-| 7 spring boot api and react ui | done |
+| 7 spring boot api serving one html page (tailwind link) | done |
 | 8 scheduled email report with email login (extra) | not started |
 | 9 final report and presentation | not started |
 
