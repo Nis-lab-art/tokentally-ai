@@ -22,6 +22,164 @@ TokenTally AI crawls the official pricing pages of five AI providers (OpenAI, Go
 
 You need java 17 or newer. Maven is only needed for `api` (Eclipse has it built in).
 
+## How it works
+
+The data goes through the same steps for every provider:
+
+```
+crawler (queue + hash set) -> html cleaner -> parser per provider
+  -> data store (csv + text files) -> engine -> features
+  -> menu (TokenTallyApp) or spring boot page (api)
+```
+
+| Part | How it works | Data structure and cost |
+|---|---|---|
+| crawler | breadth first search from the pricing page, follows only the links each provider allows, depth 2, at most 20 pages, 400 ms wait, robots.txt checked, urls cleaned first | queue and hash set, O(pages + links) |
+| html cleaner | removes scripts, styles, svg and tags, keeps plain text with single spaces | one pass, O(n) |
+| parsers | one per provider because every page is built differently, all fill the same `ModelPrice` (dollars per million tokens, -1 means not listed) | tables and regex |
+| inverted index | word to page to list of positions, also gives phrase search | hash map, add O(words), lookup O(1) average |
+| frequency count | counts a word on a page with Boyer-Moore and KMP and shows how many characters each one compared | KMP O(n + m), Boyer-Moore skips ahead |
+| spell checking | edit distance between the typed word and the known words, best few kept, search is repeated with the best suggestion | dp table O(a x b) and a heap |
+| word completion | letters are stored in a tree with a count on each word, the most used words under a prefix come first | trie and a heap |
+| search frequency | counts every search and saves the counts to a file | hash map, tree map for the top list |
+| page ranking | score is how often the keywords show up, a tie goes to the page with more different keywords | max heap, O(n log n) |
+| data validation | regex checks for search words, token amounts (2M, 500K), percents and money, and sanity checks on crawled prices | regex |
+| finding patterns | regex finds prices, context sizes, dated prices, long context limits, model ids and free offers | regex |
+| cost calculator | monthly cost = days x (uncached input x input price + cached input x cached price + output x output price) / 1 million, long prices when one request is big enough, batch or flex tiers only when batch is fine | min heap, O(n log n) |
+| price history | every load or crawl writes a dated line to `core/data/price_history.csv` when a price is new or different | append only log, hash map of last prices |
+
+### The menu and what it prints
+
+Search with a typo (option 1), the spell suggestion and the ranked pages:
+
+```
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+1
+> search for: gemnii
+searched 6 time(s) so far
+"gemnii" not found. did you mean: gemini genie genai
+showing results for "gemini"
+pages ranked by how often the words show up:
+ 1. 183  https://aistudio.google.com/docs/pricing (1 keyword(s))
+ 2. 18   https://aistudio.google.com/docs/models/gemini-3.1-pro-preview (1 keyword(s))
+ 3. 16   https://aistudio.google.com/docs/models/gemini-3.5-flash-lite (1 keyword(s))
+ 4. 16   https://aistudio.google.com/docs/models/gemini-4-argon (1 keyword(s))
+ 5. 15   https://aistudio.google.com/docs/models/gemini-3.1-flash-lite (1 keyword(s))
+ 6. 15   https://aistudio.google.com/docs/models/gemini-3.6-flash (1 keyword(s))
+ 7. 12   https://aistudio.google.com/docs/models/gemini-4-hydrogen (1 keyword(s))
+ 8. 11   https://aistudio.google.com/docs/models/gemini-3.1-flash-live-preview (1 keyword(s))
+ 9. 11   https://aistudio.google.com/docs/models/gemini-3.5-transcribe (1 keyword(s))
+10. 11   https://aistudio.google.com/docs/models/gemini-4-carbon (1 keyword(s))
+```
+
+Bad input is stopped with a short message:
+
+```
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+1
+> search for: @@@bad
+input problem: use letters, digits, spaces, dots and dashes only (max 60 chars)
+```
+
+Word completion (option 2):
+
+```
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+2
+> start of a word: claude-op
+claude-opus-5-5, claude-opus-4-8, claude-opus-5, claude-opus-4-6, claude-opus-4-7, claude-opus-4-5, claude-opus-4-5-20251101
+```
+
+Cost calculator (option 8), 2M input and 500K output tokens a day, 20 percent cached, 250K requests, budget 500 dollars:
+
+```
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+8
+> input tokens per day (like 2M or 500K): 2M
+output tokens per day: 500K
+share of input that hits the cache in percent (enter for 0): 20
+is batch processing fine? (y/n): n
+tokens in one request (enter to skip): 250K
+smallest context window you need (enter to skip): 
+monthly budget in $ (enter for no limit): 500
+only one provider? (enter for all): 
+cheapest models for this workload, per month:
+ 1. glm-4.5-flash                      zai        $      0.00  (input $0.00, cached $0.00, output $0.00) standard, free
+ 2. glm-4.6v-flash                     zai        $      0.00  (input $0.00, cached $0.00, output $0.00) standard, free
+ 3. glm-4.7-flash                      zai        $      0.00  (input $0.00, cached $0.00, output $0.00) standard, free
+ 4. glm-ocr                            zai        $      2.25  (input $1.44, cached $0.36, output $0.45) standard, no cache price
+ 5. glm-4-32b-0414-128k                zai        $      7.50  (input $4.80, cached $1.20, output $1.50) standard, no cache price
+ 6. glm-4.6v-flashx                    zai        $      7.97  (input $1.92, cached $0.05, output $6.00) standard
+ 7. glm-4.7-flashx                     zai        $      9.48  (input $3.36, cached $0.12, output $6.00) standard
+ 8. gemini-2.5-flash-lite              gemini     $     10.92  (input $4.80, cached $0.12, output $6.00) standard
+ 9. glm-5.3-flash                      zai        $     15.06  (input $7.20, cached $0.36, output $7.50) standard, context 1000k
+10. gemini-2.5-flash-image             gemini     $     18.59  (input $14.40, cached $3.60, output $0.59) standard, no cache price
+```
+
+Live crawl of the five providers (option 12, about one minute):
+
+```
+openai crawled 19 pages
+gemini crawled 20 pages
+anthropic crawled 20 pages
+zai crawled 5 pages
+  http 404 for https://docs.z.ai/guides/llm/base-ui-disable-scrollbar
+  http 404 for https://docs.z.ai/guides/vlm/base-ui-disable-scrollbar
+xai crawled 17 pages
+parsed 194 model prices
+```
+
+Price history (option 13), the log starts at the first run so changes show after a later crawl:
+
+```
+loading data from data ...
+TokenTally AI  |  194 model prices  |  81 pages  |  4713 words
+
+13
+> 194 price lines in the log, 0 price changes
+no price has changed yet, crawl again later to see changes
+```
+
+All checks (`core/test.sh`):
+
+```
+ok   heap keeps order
+ok   robots.txt rules
+ok   url normalize and links
+ok   html cleaner
+ok   price cell helpers
+ok   openai parser
+ok   claude parser
+ok   gemini parser
+ok   z.ai parser
+ok   xai parser
+ok   tokenizer
+ok   inverted index and phrase search
+ok   boyer moore and kmp match a slow count
+ok   edit distance
+ok   spell checker
+ok   trie and word completion
+ok   search frequency saved to a file
+ok   price history log
+ok   page ranking
+ok   input validation
+ok   pattern finding
+ok   cost calculation
+ok   recommendation filters and order
+ok   saved data: parsers and accuracy
+ok   saved data: engine and speed
+
+133 checks passed, 0 failed
+```
+
 ## Screenshots
 
 Cost calculator, cheapest models per month for a workload:
