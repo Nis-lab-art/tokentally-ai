@@ -13,7 +13,10 @@ public class HtmlCleaner {
         String full = text(html, DROP);
         // some pages (ai studio) keep all the content inside noscript, so try again without dropping the chrome
         if (full.length() < 400) {
-            return text(html, new String[] {"script", "style", "svg", "head"});
+            String more = text(html, new String[] {"script", "style", "svg", "head"});
+            if (more.length() > 400 && more.length() > full.length() * 3) {
+                return more;
+            }
         }
         return full;
     }
