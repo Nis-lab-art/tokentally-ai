@@ -23,6 +23,9 @@ public class PatternExtractor {
     private static final String SIZE_VALUE = "(\\d{1,3}(?:,\\d{3})+|\\d+(?:\\.\\d+)?\\s?[KM]\\b|\\d{4,})";
     public static final Pattern CONTEXT_WINDOW = Pattern.compile("(?is)context (?:window|length)[^0-9$]{0,80}?" + SIZE_VALUE);
     public static final Pattern MAX_OUTPUT = Pattern.compile("(?is)max(?:imum)? output(?: tokens)?[^0-9$]{0,80}?" + SIZE_VALUE);
+    // some pages put the value first: "1,050,000 context window" or "a 1M-token context window"
+    public static final Pattern CONTEXT_WINDOW_FIRST = Pattern.compile("(?i)" + SIZE_VALUE + "[\\s-]*(?:tokens?)?[\\s-]*context (?:window|length)");
+    public static final Pattern MAX_OUTPUT_FIRST = Pattern.compile("(?i)" + SIZE_VALUE + "[\\s-]*max(?:imum)? output");
 
     public static ArrayList<String> findAll(Pattern p, String text) {
         ArrayList<String> out = new ArrayList<>();
