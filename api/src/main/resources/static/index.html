@@ -34,6 +34,7 @@
 
   <!-- calculator -->
   <section id="calculator" class="tab grid md:grid-cols-[340px_1fr] gap-8 items-start">
+    <div id="wi-calculator" class="md:col-span-2 -mb-3"></div>
     <form id="calcForm" class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm">
       <h3 class="font-semibold text-sm mb-4">Your workload</h3>
       <div class="grid grid-cols-2 gap-3">
@@ -60,6 +61,7 @@
 
   <!-- search -->
   <section id="search" class="tab hidden">
+    <div id="wi-search" class="mb-4"></div>
     <form id="searchForm" class="flex gap-2">
       <div class="relative flex-1">
         <input id="q" autocomplete="off" placeholder="try gemnii, batch api or claude-opus" class="inp !py-3 !px-4 !text-base !rounded-xl" />
@@ -72,6 +74,7 @@
 
   <!-- models -->
   <section id="models" class="tab hidden">
+    <div id="wi-models" class="mb-4"></div>
     <div class="flex gap-2 items-center flex-wrap mb-3">
       <select id="mProvider" class="inp !w-auto"><option value="">all providers</option></select>
       <select id="mTier" class="inp !w-auto"></select>
@@ -87,6 +90,7 @@
 
   <!-- compare -->
   <section id="compare" class="tab hidden">
+    <div id="wi-compare" class="mb-4"></div>
     <form id="cmpForm" class="flex gap-2">
       <input id="cmpText" value="gpt-6.2-astra, claude-opus-5-5, gemini-4-carbon, grok-4.7, glm-5.3" class="inp flex-1" />
       <button class="btn">Compare</button>
@@ -114,6 +118,7 @@
     <div class="box mt-8">
       <h3 class="h">Try to break it yourself</h3>
       <p class="text-xs text-zinc-500 mb-3">Type anything. Empty text, symbols, a huge number, a wrong name. The server checks it and answers.</p>
+      <div id="wi-try" class="mb-3"></div>
       <form id="tryForm" class="flex gap-2 flex-wrap">
         <select id="tryKind" class="inp !w-auto">
           <option value="search">Search text</option>
@@ -249,6 +254,21 @@ function priceTable(rows, pickable, flat) {
     </tbody></table></div>`
 }
 
+// a friendly box that says how the program reacted: ok (answered safely) or rejected (refused with a reason)
+function reaction(kind, title, text) {
+  const rejected = kind === 'rejected'
+  return `<div class="mb-3 flex gap-3 rounded-xl px-4 py-3 text-sm border ${rejected ? 'bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950 dark:border-amber-900 dark:text-amber-200' : 'bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950 dark:border-emerald-900 dark:text-emerald-200'}">
+    <span>${rejected ? '🛡️' : '✅'}</span><div><b class="block">${title}</b>${text}${rejected ? '<div class="text-xs mt-1 opacity-70">Handled: the program refused the input with this message and nothing crashed.</div>' : ''}</div></div>`
+}
+
+// "What if I..." buttons: each one fills in the real form and presses the real button
+function whatIf(id, items) {
+  const box = $('wi-' + id)
+  box.innerHTML = `<div class="flex flex-wrap items-center gap-1.5"><span class="text-xs font-semibold text-zinc-500 mr-1">What if I…</span>` +
+    items.map(([label], i) => `<button type="button" data-wi="${i}" class="px-2.5 py-1 text-xs rounded-full border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-200 hover:border-indigo-400 hover:text-indigo-600">${esc(label)}</button>`).join('') + '</div>'
+  box.onclick = (e) => { const i = e.target.dataset.wi; if (i !== undefined) { clearFail(); items[i][1]() } }
+}
+
 // tabs
 const TABS = [['calculator', 'Cost calculator'], ['search', 'Search'], ['models', 'Models'], ['compare', 'Compare'], ['history', 'Price history'], ['insights', 'Insights'], ['errors', 'Error handling'], ['experiments', 'Experiments']]
 const loaded = {}
@@ -261,7 +281,9 @@ function show(id) {
 $('tabs').onclick = (e) => { if (e.target.dataset.tab) show(e.target.dataset.tab) }
 
 // header stats and dropdowns
+let TOTAL_PRICES = 0
 get('/stats').then((s) => {
+  TOTAL_PRICES = s.prices
   $('stats').innerHTML = [['prices', s.prices], ['pages', s.pages], ['words', s.words]]
     .map(([k, v]) => `<span class="px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"><b class="text-zinc-900 dark:text-zinc-100">${v}</b> ${k}</span>`).join('')
 }).catch(() => fail(new Error('the api is not running, start it with ./run.sh in api')))
@@ -274,7 +296,7 @@ $('calcForm').onsubmit = (e) => {
   const f = new FormData(e.target)
   const form = Object.fromEntries(f.entries()); form.batchOk = e.target.batchOk.checked; form.skipFree = e.target.skipFree.checked
   call('/recommend', form).then((picks) => {
-    if (!picks.length) return $('picks').innerHTML = '<p class="text-zinc-500">no model fits, try a bigger budget or a smaller context</p>'
+    if (!picks.length) return $('picks').innerHTML = reaction('ok', 'No model fits these limits', 'Nothing was broken. The program found no model under this budget or with this context window, and it does not guess a context window for models that do not list one. Try a bigger budget or a smaller context.')
     const max = picks[picks.length - 1].cost.total || 1
     $('picks').innerHTML = picks.map((p, i) => `<div class="flex gap-3.5 mb-2.5 p-4 rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm ${i === 0 ? 'border-indigo-500' : 'border-zinc-200 dark:border-zinc-800'}">
       <div class="w-4 font-semibold text-zinc-500">${i + 1}</div>
@@ -309,7 +331,7 @@ $('searchForm').onsubmit = (e) => { e.preventDefault(); runSearch() }
 
 function runSearch(text) {
   const q = (text ?? $('q').value).trim()
-  if (!q) return
+  if (!q) return $('searchOut').innerHTML = reaction('rejected', 'Nothing to search for', 'The search box is empty. Type a word or a model name and press Search.')
   clearFail(); $('hints').classList.add('hidden')
   get('/search?q=' + encodeURIComponent(q)).then((r) => {
     let html = `<p class="text-sm text-zinc-500">searched ${r.timesSearched} time(s)</p>`
@@ -329,7 +351,7 @@ function runSearch(text) {
     html += '<div id="freq"></div>'
     $('searchOut').innerHTML = html
     $('searchOut').dataset.word = (r.searchedInstead || r.query).split(' ')[0]
-  }).catch(fail)
+  }).catch((err) => { $('searchOut').innerHTML = reaction('rejected', 'The search was refused', esc(err.message)) })
 }
 $('searchOut').onclick = (e) => {
   if (e.target.dataset.fix) { $('q').value = e.target.dataset.fix; runSearch() }
@@ -353,33 +375,54 @@ function loadModels() {
       return sort === 'contextWindow' ? y - x : x - y
     })
     $('mCount').textContent = rows.length + ' rows'
-    $('mTable').innerHTML = priceTable(rows, true)
+    $('mTable').innerHTML = rows.length ? priceTable(rows, true) : reaction('ok', 'No model matches this filter', 'That provider has no prices on this tier. Choose another tier or provider.')
   }).catch(fail)
 }
 ;['mProvider', 'mTier', 'mSort'].forEach((id) => $(id).onchange = loadModels)
-$('mTable').onclick = (e) => {
-  if (!e.target.dataset.model) return
-  get('/models/' + e.target.dataset.model).then((c) => {
-    if (!c.length) return
-    $('card').innerHTML = `<div class="relative rounded-2xl border border-indigo-500 bg-white dark:bg-zinc-900 p-5 mb-4">
+$('mTable').onclick = (e) => { if (e.target.dataset.model) openCard(e.target.dataset.model) }
+function openCard(id) {
+  get('/models/' + encodeURIComponent(id)).then((c) => {
+    if (!c.length) {
+      return suggest(id).then((alt) => {
+        $('card').innerHTML = reaction('ok', 'No model called "' + esc(id) + '"', 'It is not in the ' + TOTAL_PRICES + ' prices we crawled.' + (alt.length ? ' Did you mean ' + alt.map((a) => '<a class="link mx-1" data-open="' + esc(a) + '">' + esc(a) + '</a>').join('') + '?' : ''))
+      })
+    }
+    $('card').innerHTML = `<div class="relative rounded-2xl border border-indigo-500 bg-white dark:bg-zinc-900 p-5 mb-4 mt-1">
       <button class="absolute right-3 top-2 text-xl text-zinc-500" id="closeCard">×</button>
       <h3 class="font-semibold">${esc(c[0].model)} ${tag(c[0].provider)}</h3>
       <p class="text-sm my-2 text-zinc-500">${[c[0].contextWindow > 0 ? `context window <b class="text-zinc-900 dark:text-zinc-100">${size(c[0].contextWindow)}</b>` : '', c[0].maxOutput > 0 ? `max output <b class="text-zinc-900 dark:text-zinc-100">${size(c[0].maxOutput)}</b>` : '', `<a class="link" href="${esc(c[0].sourceUrl)}" target="_blank" rel="noreferrer">source</a>`].filter(Boolean).join(' · ')}</p>
       ${priceTable(c, false, true)}</div>`
     $('closeCard').onclick = () => $('card').innerHTML = ''
-  }).catch(fail)
+  }).catch((err) => { $('card').innerHTML = reaction('rejected', 'The model card was refused', esc(err.message)) })
+}
+$('card').onclick = (e) => { if (e.target.dataset.open) openCard(e.target.dataset.open) }
+
+// words that start like the typed name, for "did you mean"
+function suggest(name) {
+  const prefix = String(name).trim().slice(0, Math.max(2, Math.min(6, String(name).trim().length - 1)))
+  if (prefix.length < 2) return Promise.resolve([])
+  return get('/complete?prefix=' + encodeURIComponent(prefix)).then((w) => { const ids = w.filter((x) => /\d/.test(x)); return (ids.length ? ids : w).slice(0, 4) }).catch(() => [])
 }
 
 // compare
 function runCompare() {
   clearFail()
-  get('/compare?ids=' + encodeURIComponent($('cmpText').value)).then((rows) => {
+  const names = $('cmpText').value.split(',').map((n) => n.trim()).filter(Boolean)
+  get('/compare?ids=' + encodeURIComponent($('cmpText').value)).then(async (rows) => {
+    const found = new Set(rows.map((r) => r.model))
+    const missing = names.filter((n) => !found.has(n.toLowerCase()))
+    $('cmpBest').innerHTML = ''
     if (rows.length) {
       const best = rows.reduce((a, b) => (a.input + a.output <= b.input + b.output ? a : b))
       $('cmpBest').innerHTML = `cheapest for input plus output: <b class="text-zinc-900 dark:text-zinc-100">${esc(best.model)}</b>`
     }
-    $('cmpTable').innerHTML = priceTable(rows)
-  }).catch(fail)
+    let note = ''
+    for (const m of missing) {
+      const alt = await suggest(m)
+      note += reaction('ok', 'No model called "' + esc(m) + '"', 'The others are shown anyway.' + (alt.length ? ' Did you mean ' + alt.map((a) => esc(a)).join(', ') + '?' : ''))
+    }
+    $('cmpTable').innerHTML = note + (rows.length ? priceTable(rows) : '')
+  }).catch((err) => { $('cmpBest').innerHTML = ''; $('cmpTable').innerHTML = reaction('rejected', 'The comparison was refused', esc(err.message)) })
 }
 $('cmpForm').onsubmit = (e) => { e.preventDefault(); runCompare() }
 
@@ -507,6 +550,58 @@ $('expRun').onclick = () => {
     }).join('')
   }).catch(fail).finally(() => { b.disabled = false; b.textContent = 'Run again' })
 }
+
+// the what-if buttons of every tab
+const CALC_DEFAULTS = { inputPerDay: '2M', outputPerDay: '500K', provider: '', cachedPercent: '0', promptSize: '', minContext: '', budget: '' }
+function tryCalc(values, checks = {}) {
+  const f = $('calcForm')
+  Object.entries({ ...CALC_DEFAULTS, ...values }).forEach(([k, v]) => { f.elements[k].value = v })
+  f.batchOk.checked = !!checks.batchOk; f.skipFree.checked = !!checks.skipFree
+  f.requestSubmit()
+}
+whatIf('calculator', [
+  ['type "2 million" as tokens', () => tryCalc({ inputPerDay: '2 million' })],
+  ['type 999999999999B', () => tryCalc({ inputPerDay: '999999999999B' })],
+  ['leave the input empty', () => tryCalc({ inputPerDay: '' })],
+  ['ask for 0 tokens', () => tryCalc({ inputPerDay: '0', outputPerDay: '0' })],
+  ['say 150% is cached', () => tryCalc({ cachedPercent: '150' })],
+  ['set a $0.01 budget', () => tryCalc({ budget: '0.01' }, { skipFree: true })],
+  ['need a 100M context window', () => tryCalc({ minContext: '100M' })],
+  ['use a normal workload', () => tryCalc({})],
+])
+whatIf('search', [
+  ['type a typo (gemnii)', () => { $('q').value = 'gemnii'; runSearch() }],
+  ['type symbols (<script>)', () => { $('q').value = '<scr' + 'ipt>alert(1)</scr' + 'ipt>'; runSearch() }],
+  ['search for nothing', () => { $('q').value = ''; runSearch() }],
+  ['type a 100 letter word', () => { $('q').value = 'a'.repeat(100); runSearch() }],
+  ['search a word no page has', () => { $('q').value = 'zzzunknownzzz'; runSearch() }],
+  ['search a phrase (batch api)', () => { $('q').value = 'batch api'; runSearch() }],
+  ['start typing claude-op', () => { $('q').value = 'claude-op'; $('q').focus(); $('q').dispatchEvent(new Event('input')) }],
+])
+whatIf('models', [
+  ['pick xAI on the batch tier', () => { $('mProvider').value = 'xai'; $('mTier').value = 'batch'; loadModels() }],
+  ['open a model that does not exist', () => openCard('claude-opus-9')],
+  ['open a model with a typo', () => openCard('gpt-6.2-astr')],
+  ['sort by the biggest context', () => { $('mProvider').value = ''; $('mTier').value = 'standard'; $('mSort').value = 'contextWindow'; loadModels() }],
+])
+const tryCompare = (v) => { $('cmpText').value = v; runCompare() }
+whatIf('compare', [
+  ['mistype a name (gpt-6.2-astr)', () => tryCompare('gpt-6.2-astr, claude-opus-5-5')],
+  ['add one unknown model', () => tryCompare('claude-opus-5-5, grok-4.7, not-a-model')],
+  ['leave the box empty', () => tryCompare('')],
+  ['compare 12 models', () => tryCompare('a1,a2,a3,a4,a5,a6,a7,a8,a9,b1,b2,b3')],
+  ['use symbols (<b>)', () => tryCompare('<b>')],
+  ['compare normally', () => tryCompare('gpt-6.2-astra, claude-opus-5-5, gemini-4-carbon, grok-4.7, glm-5.3')],
+])
+const tryKind = (kind, v) => { $('tryKind').value = kind; $('tryInput').value = v; $('tryForm').requestSubmit() }
+whatIf('try', [
+  ['count an empty word', () => tryKind('frequency', '')],
+  ['count @@@', () => tryKind('frequency', '@@@')],
+  ['complete "zzzq"', () => tryKind('complete', 'zzzq')],
+  ['complete in capitals', () => tryKind('complete', 'CLAUDE-OP')],
+  ['open the model nothing-here', () => tryKind('card', 'nothing-here')],
+  ['send 999999999999B', () => tryKind('tokens', '999999999999B')],
+])
 
 show('calculator')
 </script>

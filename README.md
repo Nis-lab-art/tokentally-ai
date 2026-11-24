@@ -192,7 +192,7 @@ cd core
 ./run.sh data nishan       # menu with only Nishan's options (abhinav, shrijana, aakriti, khem work too)
 ```
 
-- menu option 18 runs the bad input cases, option 19 runs the measured experiments
+- menu option 18 runs the bad input cases, option 19 runs the measured experiments, option 20 lets you pick one situation (the exit option is now 21)
 - the web page has the tabs Error handling and Experiments
 - `core/test.sh` fails if any case crashes
 
@@ -224,6 +224,28 @@ The experiments compare our data structures with the plain way, measured on the 
 ![field error on the calculator](docs/report/figures/ui-field-error.png)
 
 ![experiments tab](docs/report/figures/ui-experiments.png)
+
+### "What if I..." buttons in the page and the menu
+
+Instead of typing the strange input yourself, every tab has a row of "What if I..." buttons. A button fills in the real form with the strange value and presses the real button, so you see exactly what a user would see. Examples: type "2 million" as tokens, search for symbols, mistype a model name, compare 12 models, open a model that does not exist, ask for a $0.01 budget.
+
+- a wrong value marks the field and says what is wrong under it
+- a refused input shows an amber box with the reason ("Handled: nothing crashed")
+- a safe answer with nothing found shows a green box and, for model names, a "did you mean" list
+- the Error handling tab has the same buttons for the rest (empty word, capitals, a model that is not there, a huge number)
+- in the menu, option 20 "what if I ..." lists the situations of each member as numbers, you pick one and it prints what you type, the result and what the program says
+
+![what if I type 2 million](docs/report/figures/wi-calculator-reject.png)
+
+![what if the budget is too small](docs/report/figures/wi-calculator-nofit.png)
+
+![what if I search with a typo](docs/report/figures/wi-search-typo.png)
+
+![what if I search with symbols](docs/report/figures/wi-search-symbols.png)
+
+![what if I mistype a model name in compare](docs/report/figures/wi-compare-mistype.png)
+
+![what if I open a model that does not exist](docs/report/figures/wi-models-missing.png)
 
 The menu print of the same cases (option 18, shortened to the first member):
 

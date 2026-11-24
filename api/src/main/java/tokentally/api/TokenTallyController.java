@@ -150,6 +150,9 @@ public class TokenTallyController {
                 throw new FieldProblem("budget", "the budget should look like 50 or $49.99");
             }
         }
+        if (w.inputPerDay + w.outputPerDay <= 0) {
+            throw new FieldProblem("inputPerDay", "enter some input or output tokens, a workload of zero costs nothing");
+        }
         w.batchOk = Boolean.parseBoolean(text(body, "batchOk"));
         w.skipFree = Boolean.parseBoolean(text(body, "skipFree"));
         w.provider = text(body, "provider").toLowerCase();

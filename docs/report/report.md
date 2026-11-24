@@ -168,7 +168,7 @@ Figure 16 Price history in the command line menu with the real data (no price ha
 
 ## 7.1 error handling
 
-The presentation questions will ask what happens if a user does something unexpected. Because of that every member's features were tested with bad, odd and extreme inputs. A case is handled when the program gives a clear message or a safe result and does not crash. `ErrorDemo` runs 54 cases and all are handled. The command line menu (option 18), the web page (tab Error handling) and the test runner all use this one class. The web page also has a box where anybody can type anything and see the answer.
+The presentation questions will ask what happens if a user does something unexpected. Because of that every member's features were tested with bad, odd and extreme inputs. A case is handled when the program gives a clear message or a safe result and does not crash. `ErrorDemo` runs 54 cases and all are handled. The command line menu (option 18), the web page (tab Error handling) and the test runner all use this one class. The web page also has a box where anybody can type anything and see the answer, and a row of "What if I..." buttons on every tab that fills in the real form with a strange value (for example "2 million" as tokens, a mistyped model name or a $0.01 budget), so the reaction can be shown without typing. Menu option 20 does the same from a numbered list.
 
 | member | cases | examples |
 |---|---|---|

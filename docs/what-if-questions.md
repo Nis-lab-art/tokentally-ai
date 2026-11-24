@@ -9,7 +9,7 @@ cd core
 ./run.sh data nishan      # only Nishan's options, same for abhinav, shrijana, aakriti, khem
 ```
 
-Option 18 runs the bad input cases, option 19 runs the measured experiments. In the web page open the tabs Error handling and Experiments.
+Option 18 runs the bad input cases, option 19 runs the measured experiments, option 20 lets you pick one situation from a numbered list. In the web page every tab has a row of "What if I..." buttons that fill in the real form for you, and the tabs Error handling and Experiments show the rest.
 
 ## group questions
 

@@ -36,13 +36,14 @@ public class TokenTallyApp {
         "clean a piece of html",
         "error handling demo (bad inputs on every feature)",
         "experiments (measured times on the real data)",
+        "what if I ... (pick a situation, see how it is handled)",
         "exit"
     };
 
     // who built the option, "all" means it uses everybody's work
     private static final String[] OWNER = {
         "all", "Aakriti", "Abhinav", "Khem Raj", "all", "all", "all", "Nishan", "all", "Aakriti",
-        "Shrijana", "all", "all", "Nishan", "Abhinav", "Shrijana", "Khem Raj", "all", "all", ""
+        "Shrijana", "all", "all", "Nishan", "Abhinav", "Shrijana", "Khem Raj", "all", "all", "all", ""
     };
 
     private final Engine engine;
@@ -127,6 +128,7 @@ public class TokenTallyApp {
             case 17 -> cleanHtml();
             case 18 -> errorDemo();
             case 19 -> experiments();
+            case 20 -> whatIf();
             default -> { }
         }
     }
@@ -457,6 +459,44 @@ public class TokenTallyApp {
         int bad = ErrorDemo.crashed(cases).size();
         System.out.println();
         System.out.println(cases.size() + " cases, " + (cases.size() - bad) + " handled, " + bad + " crashed");
+    }
+
+    // pick one situation from the list and see exactly how the program reacts
+    private void whatIf() {
+        var all = ErrorDemo.run(engine);
+        ArrayList<ErrorDemo.Case> list = new ArrayList<>();
+        for (ErrorDemo.Case c : all) {
+            if (member.isEmpty() || c.member.toLowerCase().contains(member) || c.member.equals("shared parts")) {
+                list.add(c);
+            }
+        }
+        String last = "";
+        for (int i = 0; i < list.size(); i++) {
+            ErrorDemo.Case c = list.get(i);
+            if (!c.member.equals(last)) {
+                System.out.println();
+                System.out.println("== " + c.member);
+                last = c.member;
+            }
+            System.out.printf("%3d  %-18s %-34s [%s]%n", i + 1, c.feature, c.scenario, c.input);
+        }
+        while (true) {
+            System.out.println();
+            String pick = ask("what if I ... (number, or enter to go back)");
+            if (pick.isEmpty()) {
+                return;
+            }
+            int n = InputValidator.choice(pick, list.size());
+            if (n == -1) {
+                System.out.println("type a number from 1 to " + list.size());
+                continue;
+            }
+            ErrorDemo.Case c = list.get(n - 1);
+            System.out.println("   what if   " + c.feature + ": " + c.scenario);
+            System.out.println("   you type  " + c.input);
+            System.out.println("   result    " + (c.handled ? (c.kind.startsWith("rejected") ? "REFUSED with a message, nothing crashed" : "ANSWERED safely, nothing crashed") : "CRASHED"));
+            System.out.println("   the program says: " + c.result);
+        }
     }
 
     private void experiments() {
