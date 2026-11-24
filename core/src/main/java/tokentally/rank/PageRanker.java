@@ -29,6 +29,9 @@ public class PageRanker {
     }
 
     public ArrayList<Result> rank(String query, int howMany) {
+        if (query == null || query.isBlank() || howMany <= 0) {
+            return new ArrayList<>(); // no keywords, no ranking
+        }
         HashMap<String, Result> byUrl = new HashMap<>();
         ArrayList<String> seen = new ArrayList<>();
         for (String word : Tokenizer.words(query)) {

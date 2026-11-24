@@ -38,6 +38,9 @@ public class PatternExtractor {
 
     // every kind of pattern with the different values found and how many times
     public static LinkedHashMap<String, LinkedHashMap<String, Integer>> summary(String text) {
+        if (text == null) {
+            text = "";
+        }
         LinkedHashMap<String, LinkedHashMap<String, Integer>> out = new LinkedHashMap<>();
         String lower = text.toLowerCase();
         put(out, "prices", findAll(PRICE, text));

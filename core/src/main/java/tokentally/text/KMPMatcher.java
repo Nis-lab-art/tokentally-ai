@@ -10,6 +10,9 @@ public class KMPMatcher {
     public long comparisons;
 
     public KMPMatcher(String word) {
+        if (word == null || word.isEmpty()) {
+            throw new IllegalArgumentException("the word to search is empty");
+        }
         this.word = word.toLowerCase();
         lps = new int[this.word.length()];
         int len = 0;

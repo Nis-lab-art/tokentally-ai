@@ -30,7 +30,7 @@
   </div>
 
   <nav id="tabs" class="inline-flex gap-0.5 p-1 mb-7 rounded-xl bg-zinc-200/70 dark:bg-zinc-800 flex-wrap"></nav>
-  <div id="error" class="hidden my-3 px-4 py-3 rounded-xl bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300 text-sm"></div>
+  <div id="toasts" class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-[min(22rem,calc(100vw-2rem))]"></div>
 
   <!-- calculator -->
   <section id="calculator" class="tab grid md:grid-cols-[340px_1fr] gap-8 items-start">
@@ -101,6 +101,44 @@
     <div id="histOut"></div>
   </section>
 
+  <!-- error handling -->
+  <section id="errors" class="tab hidden">
+    <div class="flex items-end justify-between flex-wrap gap-3 mb-4">
+      <p class="text-sm text-zinc-500 max-w-2xl">Bad, odd and extreme inputs go through every feature of every member. The program must answer with a clear message or a safe result and never crash. These cases run on the real code when you open this tab.</p>
+      <button id="errRun" class="btn !py-2">Run again</button>
+    </div>
+    <div id="errSummary" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5"></div>
+    <div id="errChips" class="flex gap-1.5 flex-wrap mb-4"></div>
+    <div id="errList" class="space-y-2.5"></div>
+
+    <div class="box mt-8">
+      <h3 class="h">Try to break it yourself</h3>
+      <p class="text-xs text-zinc-500 mb-3">Type anything. Empty text, symbols, a huge number, a wrong name. The server checks it and answers.</p>
+      <form id="tryForm" class="flex gap-2 flex-wrap">
+        <select id="tryKind" class="inp !w-auto">
+          <option value="search">Search text</option>
+          <option value="complete">Word completion</option>
+          <option value="tokens">Token amount (calculator)</option>
+          <option value="compare">Compare models</option>
+          <option value="card">Model card</option>
+          <option value="frequency">Frequency count of a word</option>
+        </select>
+        <input id="tryInput" class="inp flex-1 min-w-[12rem]" placeholder="try: <script>, 2 million, 999999999999B, nothing-here" />
+        <button class="btn">Send</button>
+      </form>
+      <div id="tryOut" class="mt-3"></div>
+    </div>
+  </section>
+
+  <!-- experiments -->
+  <section id="experiments" class="tab hidden">
+    <div class="flex items-end justify-between flex-wrap gap-3 mb-4">
+      <p class="text-sm text-zinc-500 max-w-2xl">Each member compares their data structure or algorithm with the plain way of doing it, measured on the real crawled data. The numbers change a little on every run, the ratio is what matters.</p>
+      <button id="expRun" class="btn !py-2">Run the experiments</button>
+    </div>
+    <div id="expOut"><div class="p-12 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl">press the button, it takes a few seconds</div></div>
+  </section>
+
   <!-- insights -->
   <section id="insights" class="tab hidden">
     <div class="grid md:grid-cols-2 gap-4">
@@ -146,15 +184,50 @@ const $ = (id) => document.getElementById(id)
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
 
 async function call(path, data) {
-  const res = await fetch('/api' + path, data === undefined ? {} : {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+  let res
+  try {
+    res = await fetch('/api' + path, data === undefined ? {} : {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+  } catch (e) {
+    throw new Error('cannot reach the server. Is it running? Start it with run.bat (Windows) or ./run.sh in the api folder')
+  }
   const body = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(body.error || 'request failed')
+  if (!res.ok) {
+    const err = new Error(body.error || 'the server answered with an error (' + res.status + ')')
+    err.field = body.field
+    throw err
+  }
   return body
 }
 const get = (p) => call(p)
-const fail = (e) => { const b = $('error'); b.textContent = e.message; b.classList.remove('hidden') }
-const clearFail = () => $('error').classList.add('hidden')
+
+// friendly messages: a toast in the corner that goes away by itself
+function fail(e) {
+  const t = document.createElement('div')
+  t.className = 'flex gap-3 items-start px-4 py-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950 text-amber-900 dark:text-amber-200 text-sm shadow-lg'
+  t.innerHTML = '<span class="mt-0.5">⚠️</span><div class="flex-1"><b class="block">That did not work</b>' + esc(e.message) + '</div><button class="text-lg leading-none opacity-60 hover:opacity-100">×</button>'
+  t.querySelector('button').onclick = () => t.remove()
+  $('toasts').appendChild(t)
+  setTimeout(() => t.remove(), 8000)
+}
+const clearFail = () => { $('toasts').innerHTML = '' }
+
+// mark one input field of a form and say what is wrong under it
+function clearFieldErrors(form) {
+  form.querySelectorAll('.ferr').forEach((p) => p.remove())
+  form.querySelectorAll('.inp').forEach((i) => i.classList.remove('!border-red-500', '!ring-4', '!ring-red-100'))
+}
+function fieldError(form, name, msg) {
+  const el = form.elements[name]
+  if (!el) return fail(new Error(msg))
+  const d = el.closest('details'); if (d) d.open = true
+  el.classList.add('!border-red-500', '!ring-4', '!ring-red-100')
+  const p = document.createElement('p')
+  p.className = 'ferr col-span-2 text-xs text-red-600 dark:text-red-400 -mt-2 mb-3'
+  p.textContent = msg
+  el.closest('label').insertAdjacentElement('afterend', p)
+  el.focus()
+}
 
 const money = (v) => (v === undefined || v === null || v < 0) ? '–' : v === 0 ? 'free' : '$' + Math.round(v * 10000) / 10000
 const size = (n) => (!n || n < 0) ? '–' : n >= 1000000 ? Math.round(n / 10000) / 100 + 'M' : Math.round(n / 1000) + 'K'
@@ -177,13 +250,13 @@ function priceTable(rows, pickable, flat) {
 }
 
 // tabs
-const TABS = [['calculator', 'Cost calculator'], ['search', 'Search'], ['models', 'Models'], ['compare', 'Compare'], ['history', 'Price history'], ['insights', 'Insights']]
+const TABS = [['calculator', 'Cost calculator'], ['search', 'Search'], ['models', 'Models'], ['compare', 'Compare'], ['history', 'Price history'], ['insights', 'Insights'], ['errors', 'Error handling'], ['experiments', 'Experiments']]
 const loaded = {}
 function show(id) {
   clearFail()
   document.querySelectorAll('.tab').forEach((s) => s.classList.toggle('hidden', s.id !== id))
   $('tabs').innerHTML = TABS.map(([t, label]) => `<button data-tab="${t}" class="px-3.5 py-1.5 text-[13px] font-medium rounded-lg ${t === id ? 'bg-white dark:bg-zinc-950 shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'}">${label}</button>`).join('')
-  if (!loaded[id]) { loaded[id] = true; if (id === 'models') loadModels(); if (id === 'compare') runCompare(); if (id === 'history') loadHistory(); if (id === 'insights') loadInsights() }
+  if (!loaded[id]) { loaded[id] = true; if (id === 'models') loadModels(); if (id === 'compare') runCompare(); if (id === 'history') loadHistory(); if (id === 'insights') loadInsights(); if (id === 'errors') loadErrors() }
 }
 $('tabs').onclick = (e) => { if (e.target.dataset.tab) show(e.target.dataset.tab) }
 
@@ -197,7 +270,7 @@ $('mTier').add(new Option('all tiers', '')); TIERS.forEach((t) => $('mTier').add
 
 // calculator
 $('calcForm').onsubmit = (e) => {
-  e.preventDefault(); clearFail()
+  e.preventDefault(); clearFail(); clearFieldErrors(e.target)
   const f = new FormData(e.target)
   const form = Object.fromEntries(f.entries()); form.batchOk = e.target.batchOk.checked; form.skipFree = e.target.skipFree.checked
   call('/recommend', form).then((picks) => {
@@ -212,7 +285,7 @@ $('calcForm').onsubmit = (e) => {
         <div class="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full my-2.5 overflow-hidden"><div class="h-full bg-indigo-600 rounded-full" style="width:${Math.max(2, p.cost.total / max * 100)}%"></div></div>
         <div class="text-xs text-zinc-500">input $${p.cost.input.toFixed(2)} · cached $${p.cost.cached.toFixed(2)} · output $${p.cost.output.toFixed(2)}${p.price.contextWindow > 0 ? ' · context ' + size(p.price.contextWindow) : ''}</div>
       </div></div>`).join('')
-  }).catch((err) => { fail(err); $('picks').innerHTML = '' })
+  }).catch((err) => { err.field ? fieldError(e.target, err.field, err.message) : fail(err); $('picks').innerHTML = '' })
 }
 
 // search with word completion, spell suggestions, ranked pages and frequency count
@@ -350,6 +423,89 @@ $('crawlBtn').onclick = () => {
   const b = $('crawlBtn'); b.disabled = true; b.textContent = 'crawling…'
   call('/crawl', {}).then((log) => $('crawlLog').textContent = log.join('\n')).catch((e) => $('crawlLog').textContent = e.message)
     .finally(() => { b.disabled = false; b.textContent = 'Crawl the live pages again' })
+}
+
+// error handling tab: every member, every feature
+const MEMBER_COLOR = { 'Nishan Giri': '#d97757', 'Abhinav Pandey': '#10a37f', 'Shrijana Karki': '#4285f4', 'Aakriti Mainali': '#8b5cf6', 'Khem Raj Adhikari': '#71717a', 'shared parts': '#52525b' }
+let errCases = [], errFilter = ''
+function loadErrors() {
+  $('errList').innerHTML = '<p class="text-sm text-zinc-500">running the cases…</p>'
+  get('/error-demo').then((cases) => { errCases = cases; renderErrors() }).catch(fail)
+}
+function renderErrors() {
+  const handled = errCases.filter((c) => c.handled).length
+  const members = [...new Set(errCases.map((c) => c.member))]
+  $('errSummary').innerHTML = [['cases run', errCases.length, ''], ['handled well', handled, 'text-emerald-600'], ['crashed', errCases.length - handled, errCases.length - handled ? 'text-red-600' : 'text-zinc-900 dark:text-zinc-100'], ['members covered', members.length - 1, '']]
+    .map(([k, v, c]) => `<div class="box !p-4"><div class="text-2xl font-semibold ${c}">${v}</div><div class="text-xs text-zinc-500">${k}</div></div>`).join('')
+  $('errChips').innerHTML = ['', ...members].map((m) => `<button data-memberchip="${esc(m)}" class="px-3 py-1 text-xs rounded-full border ${m === errFilter ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:border-indigo-400'}">${m ? esc(m.split(' ')[0]) + ' (' + errCases.filter((c) => c.member === m).length + ')' : 'everyone'}</button>`).join('')
+  // one collapsible block for each member, the chosen member (or the first one) starts open
+  const shownMembers = members.filter((m) => !errFilter || m === errFilter)
+  $('errList').innerHTML = shownMembers.map((m, i) => {
+    const mine = errCases.filter((c) => c.member === m)
+    const good = mine.filter((c) => c.handled).length
+    const rows = mine.map((c) => {
+      const rej = c.kind.startsWith('rejected')
+      return `<div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3.5 flex gap-3">
+        <div class="text-lg leading-6">${c.handled ? (rej ? '🛡️' : '✅') : '❌'}</div>
+        <div class="min-w-0 flex-1">
+          <div class="flex gap-2 items-center flex-wrap text-sm"><b>${esc(c.feature)}</b><span class="text-zinc-500">${esc(c.scenario)}</span></div>
+          <div class="text-xs mt-1 text-zinc-500">input <code class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 break-all">${esc(c.input)}</code></div>
+          <div class="text-sm mt-1.5 break-words"><span class="text-[11px] uppercase tracking-wide font-semibold mr-1.5 ${rej ? 'text-amber-600' : c.handled ? 'text-emerald-600' : 'text-red-600'}">${esc(c.kind)}</span>${esc(c.result)}</div>
+        </div></div>`
+    }).join('')
+    return `<details class="group" ${(errFilter || i === 0) ? 'open' : ''}>
+      <summary class="cursor-pointer list-none flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
+        <span class="w-2.5 h-2.5 rounded-full" style="background:${MEMBER_COLOR[m] || '#888'}"></span>
+        <b class="text-sm">${esc(m)}</b>
+        <span class="text-xs text-zinc-500">${[...new Set(mine.map((c) => c.feature))].join(', ')}</span>
+        <span class="ml-auto text-xs ${good === mine.length ? 'text-emerald-600' : 'text-red-600'} font-medium">${good} of ${mine.length} handled</span>
+        <span class="text-zinc-400 group-open:rotate-90 transition">›</span>
+      </summary>
+      <div class="space-y-2 pt-2.5 pb-3">${rows}</div></details>`
+  }).join('')
+}
+$('errChips').onclick = (e) => { if (e.target.dataset.memberchip !== undefined) { errFilter = e.target.dataset.memberchip; renderErrors() } }
+$('errRun').onclick = loadErrors
+
+// try to break it yourself: the same endpoints the other tabs use
+$('tryForm').onsubmit = (e) => {
+  e.preventDefault()
+  const v = $('tryInput').value, kind = $('tryKind').value
+  const q = encodeURIComponent(v)
+  const request = {
+    search: () => get('/search?q=' + q),
+    complete: () => get('/complete?prefix=' + q),
+    tokens: () => call('/recommend', { inputPerDay: v, outputPerDay: '100K' }),
+    compare: () => get('/compare?ids=' + q),
+    card: () => get('/models/' + q),
+    frequency: () => get('/frequency?word=' + q),
+  }[kind]
+  const show = (ok, text) => $('tryOut').innerHTML = `<div class="rounded-xl px-4 py-3 text-sm ${ok ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200' : 'bg-amber-50 dark:bg-amber-950 text-amber-900 dark:text-amber-200'}">${ok ? '✅' : '🛡️'} ${text}</div>`
+  request().then((r) => {
+    const n = Array.isArray(r) ? r.length : (r.pages ? r.pages.length : 0)
+    show(true, kind === 'search' && r.unknownWords.length ? `answered, "${esc(r.unknownWords.join(', '))}" is not in the pages and ${r.searchedInstead ? 'the search used "' + esc(r.searchedInstead) + '" instead' : 'no close word was found'}` : `answered safely with ${n} result(s)`)
+  }).catch((err) => show(false, 'handled, the server refused with a clear message: <b>' + esc(err.message) + '</b>'))
+}
+
+// experiments tab
+$('expRun').onclick = () => {
+  const b = $('expRun'); b.disabled = true; b.textContent = 'measuring…'
+  get('/experiments').then((rows) => {
+    let last = ''
+    $('expOut').innerHTML = rows.map((r) => {
+      const head = r.member !== last ? `<h4 class="pt-5 pb-1 flex items-center gap-2 text-sm font-semibold"><span class="w-2.5 h-2.5 rounded-full" style="background:${MEMBER_COLOR[r.member] || '#888'}"></span>${esc(r.member)}</h4>` : ''
+      last = r.member
+      const max = Math.max(r.aValue, r.bValue) || 1
+      const bar = (label, v, color) => `<div class="flex items-center gap-3 text-xs"><div class="w-44 shrink-0 text-zinc-600 dark:text-zinc-300 truncate" title="${esc(label)}">${esc(label)}</div><div class="flex-1 h-5 rounded bg-zinc-100 dark:bg-zinc-800 overflow-hidden"><div class="h-full rounded" style="width:${Math.max(1.5, v / max * 100)}%;background:${color}"></div></div><div class="w-24 text-right tabular-nums font-medium">${v.toLocaleString()}</div></div>`
+      return head + `<div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 mb-2.5 shadow-sm">
+        <div class="text-xs text-zinc-500">${esc(r.feature)}</div>
+        <div class="font-semibold text-sm">${esc(r.title)}</div>
+        <div class="text-xs text-zinc-500 mt-0.5 mb-3">${esc(r.question)}</div>
+        <div class="space-y-1.5">${bar(r.aLabel, r.aValue, '#4f46e5')}${bar(r.bLabel, r.bValue, '#a1a1aa')}</div>
+        <div class="text-[11px] text-zinc-500 mt-1.5">${esc(r.unit)}</div>
+        <div class="text-sm mt-2">${esc(r.takeaway)}</div></div>`
+    }).join('')
+  }).catch(fail).finally(() => { b.disabled = false; b.textContent = 'Run again' })
 }
 
 show('calculator')

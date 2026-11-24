@@ -9,6 +9,8 @@ import java.util.Random;
 import tokentally.app.CrawlAll;
 import tokentally.app.DataStore;
 import tokentally.app.Engine;
+import tokentally.app.ErrorDemo;
+import tokentally.app.Experiments;
 import tokentally.app.PriceHistory;
 import tokentally.cost.CostCalculator;
 import tokentally.cost.Recommender;
@@ -67,7 +69,10 @@ public class TestRunner {
         run("spell checker", TestRunner::spell);
         run("trie and word completion", TestRunner::completion);
         run("search frequency saved to a file", TestRunner::searchFrequency);
+        run("hardening: bad input and damaged files", TestRunner::hardening);
         run("price history log", TestRunner::priceHistory);
+        run("error handling demo (no case may crash)", () -> errorDemo(data));
+        run("experiments give sane numbers", () -> experiments(data));
         run("page ranking", TestRunner::ranking);
         run("input validation", TestRunner::validation);
         run("pattern finding", TestRunner::patterns);
@@ -340,6 +345,37 @@ public class TestRunner {
         check(new WordCompleter(t).complete("xyz", 3).isEmpty() && new WordCompleter(t).complete("  ", 3).isEmpty(), "no match and blank prefix");
     }
 
+    static void hardening() throws Exception {
+        check(InputValidator.tokens("999999999999B") == -1, "a token amount of 999 trillion is rejected");
+        check(InputValidator.tokens("1000B") == 1_000_000_000_000L, "1000B is still fine");
+        boolean threw = false;
+        try {
+            new BoyerMoore("");
+        } catch (IllegalArgumentException ex) {
+            threw = true;
+        }
+        check(threw, "boyer moore refuses an empty word");
+        threw = false;
+        try {
+            new KMPMatcher(null);
+        } catch (IllegalArgumentException ex) {
+            threw = true;
+        }
+        check(threw, "kmp refuses a missing word");
+        Trie t = new Trie();
+        t.insert(null, 1);
+        t.insert("", 3);
+        check(t.size() == 0 && t.wordsWithPrefix(null).isEmpty(), "trie ignores null and empty words");
+        check(new PageRanker(new InvertedIndex()).rank(null, 5).isEmpty(), "ranking a null query gives nothing");
+
+        // a damaged prices.csv still loads the good rows
+        Path dir = Files.createTempDirectory("badcsv");
+        Files.writeString(dir.resolve("prices.csv"), String.join(",", DataStore.CSV_HEADER) + "\n"
+            + "openai,gpt-x,standard,1,0.1,2,,,,,,,n,u\nopenai,gpt-y,standard,abc,0.1,2,,,,,,,n,u\nshort,row\n\n");
+        DataStore ds = new DataStore(dir.toString());
+        check(ds.loadPrices().size() == 1 && ds.badRows == 2, "damaged prices rows are skipped and counted");
+    }
+
     static void priceHistory() throws Exception {
         Path dir = Files.createTempDirectory("history");
         PriceHistory h = new PriceHistory(dir);
@@ -373,6 +409,45 @@ public class TestRunner {
         check(again.load().size() == 4, "log loads again from the file");
         Files.writeString(dir.resolve("price_history.csv"), "date,provider,model,tier,input,cached_input,output\nbroken\n", java.nio.charset.StandardCharsets.UTF_8);
         check(again.load().isEmpty(), "broken lines are skipped");
+    }
+
+    static void errorDemo(String folder) throws Exception {
+        Path copy = Files.createTempDirectory("demo");
+        Files.createDirectories(copy);
+        Engine e = new Engine(folder);
+        e.load();
+        ArrayList<ErrorDemo.Case> all = ErrorDemo.run(e);
+        check(all.size() >= 40, "at least 40 error and edge cases (" + all.size() + ")");
+        ArrayList<ErrorDemo.Case> bad = ErrorDemo.crashed(all);
+        for (ErrorDemo.Case c : bad) {
+            check(false, c.feature + " / " + c.scenario + " crashed with " + c.result);
+        }
+        check(bad.isEmpty(), "every case was handled without a crash");
+    }
+
+    static void experiments(String folder) throws Exception {
+        Engine e = new Engine(folder);
+        e.load();
+        ArrayList<Experiments.Row> rows = Experiments.run(e);
+        check(rows.size() >= 10, "at least 10 experiments (" + rows.size() + ")");
+        boolean positive = true;
+        for (Experiments.Row r : rows) {
+            positive = positive && r.aValue >= 0 && r.bValue >= 0 && r.takeaway != null && !r.takeaway.isEmpty();
+        }
+        check(positive, "every experiment has two measured values and a sentence");
+        // the index must beat reading all pages, the trie must beat the scan
+        Experiments.Row index = null;
+        Experiments.Row trie = null;
+        for (Experiments.Row r : rows) {
+            if (r.feature.equals("inverted index")) {
+                index = r;
+            }
+            if (r.feature.equals("word completion")) {
+                trie = r;
+            }
+        }
+        check(index != null && index.aValue * 10 < index.bValue, "inverted index is more than 10 times faster than reading every page");
+        check(trie != null && trie.aValue * 5 < trie.bValue, "trie is more than 5 times faster than scanning every word");
     }
 
     static void searchFrequency() throws Exception {

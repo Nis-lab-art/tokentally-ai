@@ -48,6 +48,10 @@ public class Engine {
         }
         prices = store.loadPrices();
         pages = store.loadPages();
+        if (prices.isEmpty() || pages.isEmpty()) {
+            throw new IllegalStateException("no saved data in " + store.folder() + " and the crawl found nothing, "
+                    + "check the internet connection and the data folder");
+        }
         history.record(today(), prices);
         build();
     }
@@ -134,6 +138,9 @@ public class Engine {
     }
 
     public SearchResult search(String query) {
+        if (query == null || query.isBlank()) {
+            throw new IllegalArgumentException("type something to search for");
+        }
         if (!InputValidator.searchWord(query)) {
             throw new IllegalArgumentException("use letters, digits, spaces, dots and dashes only (max 60 chars)");
         }
@@ -180,6 +187,9 @@ public class Engine {
     }
 
     public ArrayList<String> complete(String prefix, int howMany) {
+        if (prefix == null) {
+            return new ArrayList<>();
+        }
         return completer.complete(prefix.trim().toLowerCase(), howMany);
     }
 
@@ -215,6 +225,9 @@ public class Engine {
     // every tier of one model
     public ArrayList<ModelPrice> card(String model) {
         ArrayList<ModelPrice> out = new ArrayList<>();
+        if (model == null) {
+            return out;
+        }
         for (ModelPrice p : prices) {
             if (p.model.equalsIgnoreCase(model.trim())) {
                 out.add(p);
@@ -225,6 +238,12 @@ public class Engine {
 
     public ArrayList<ModelPrice> compare(String[] models) {
         ArrayList<ModelPrice> out = new ArrayList<>();
+        if (models == null || models.length == 0) {
+            throw new IllegalArgumentException("type at least one model name");
+        }
+        if (models.length > 10) {
+            throw new IllegalArgumentException("compare up to 10 models at a time");
+        }
         for (String m : models) {
             for (ModelPrice p : card(m)) {
                 if (p.tier.equals("standard")) {
@@ -258,6 +277,9 @@ public class Engine {
     }
 
     public ArrayList<Recommender.Pick> recommend(Workload w, int howMany) {
+        if (w.inputPerDay + w.outputPerDay <= 0) {
+            throw new IllegalArgumentException("enter some input or output tokens, a workload of zero costs nothing");
+        }
         return Recommender.recommend(prices, w, howMany);
     }
 

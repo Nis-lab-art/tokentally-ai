@@ -11,6 +11,9 @@ public class BoyerMoore {
     public long comparisons; // how many char checks the last count did
 
     public BoyerMoore(String word) {
+        if (word == null || word.isEmpty()) {
+            throw new IllegalArgumentException("the word to search is empty");
+        }
         this.word = word.toLowerCase();
         int m = this.word.length();
 

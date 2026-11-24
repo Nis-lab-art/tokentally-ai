@@ -22,6 +22,8 @@ public class InputValidator {
     private static final Pattern WORD = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._\\- ]{0,60}$");
     private static final Pattern PERCENT = Pattern.compile("^\\s*(100|\\d{1,2})(\\.\\d+)?\\s*%?\\s*$");
 
+    private static final double MAX_TOKENS = 1e15;
+
     // token amount to a number, or -1 when the text is not a token amount
     public static long tokens(String text) {
         if (text == null) {
@@ -39,6 +41,9 @@ public class InputValidator {
             n *= 1_000_000;
         } else if (unit.equals("b")) {
             n *= 1_000_000_000;
+        }
+        if (n > MAX_TOKENS) {
+            return -1; // a number like 999999999999B is a typo, not a workload
         }
         return Math.round(n);
     }

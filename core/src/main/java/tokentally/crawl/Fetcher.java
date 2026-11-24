@@ -17,16 +17,52 @@ public class Fetcher {
             .build();
 
     // gives the html and the final url after redirects
+    // a timeout, a dropped connection, http 429 or http 5xx is tried one more time after a short wait
     public String[] get(String url) throws Exception {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(url))
-                .header("User-Agent", USER_AGENT)
-                .header("Accept-Language", "en")
-                .timeout(Duration.ofSeconds(30))
-                .GET()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200) {
-            throw new Exception("http " + response.statusCode() + " for " + url);
+        try {
+            return once(url);
+        } catch (RetryableException e) {
+            Thread.sleep(1500);
+            try {
+                return once(url);
+            } catch (RetryableException again) {
+                throw new Exception(again.getMessage() + " (tried twice)");
+            }
+        }
+    }
+
+    private static class RetryableException extends Exception {
+        RetryableException(String message) {
+            super(message);
+        }
+    }
+
+    private String[] once(String url) throws Exception {
+        HttpRequest request;
+        try {
+            request = HttpRequest.newBuilder(URI.create(url))
+                    .header("User-Agent", USER_AGENT)
+                    .header("Accept-Language", "en")
+                    .timeout(Duration.ofSeconds(30))
+                    .GET()
+                    .build();
+        } catch (IllegalArgumentException e) {
+            throw new Exception("bad url " + url);
+        }
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (java.net.http.HttpTimeoutException e) {
+            throw new RetryableException("timeout for " + url);
+        } catch (java.io.IOException e) {
+            throw new RetryableException("no connection for " + url);
+        }
+        int code = response.statusCode();
+        if (code == 429 || code >= 500) {
+            throw new RetryableException("http " + code + " for " + url);
+        }
+        if (code != 200) {
+            throw new Exception("http " + code + " for " + url);
         }
         String type = response.headers().firstValue("content-type").orElse("");
         if (!type.isEmpty() && !type.contains("html") && !type.contains("text")) {

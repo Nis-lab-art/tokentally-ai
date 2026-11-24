@@ -32,10 +32,16 @@ public class SpellChecker {
     }
 
     public boolean isKnown(String word) {
+        if (word == null) {
+            return false;
+        }
         return vocabulary.containsKey(word.toLowerCase());
     }
 
     public ArrayList<Suggestion> suggest(String word, int howMany) {
+        if (word == null || word.isBlank()) {
+            return new ArrayList<>(); // nothing to correct
+        }
         String w = word.toLowerCase();
         Heap<Suggestion> heap = new Heap<>((a, b) -> a.distance != b.distance
                 ? Integer.compare(a.distance, b.distance)

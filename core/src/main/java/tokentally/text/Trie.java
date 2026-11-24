@@ -17,6 +17,9 @@ public class Trie {
 
     // add the word, or add to its count if it is already there
     public void insert(String word, int times) {
+        if (word == null || word.isEmpty() || times <= 0) {
+            return; // nothing to store
+        }
         Node cur = root;
         for (char c : word.toLowerCase().toCharArray()) {
             cur = cur.children.computeIfAbsent(c, k -> new Node());
@@ -28,6 +31,9 @@ public class Trie {
     }
 
     public int count(String word) {
+        if (word == null || word.isEmpty()) {
+            return 0;
+        }
         Node n = find(word.toLowerCase());
         return n == null ? 0 : n.count;
     }
@@ -51,6 +57,9 @@ public class Trie {
     // every word under the prefix with its count
     public ArrayList<Object[]> wordsWithPrefix(String prefix) {
         ArrayList<Object[]> out = new ArrayList<>();
+        if (prefix == null || prefix.isEmpty()) {
+            return out;
+        }
         String p = prefix.toLowerCase();
         Node start = find(p);
         if (start != null) {

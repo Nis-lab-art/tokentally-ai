@@ -46,9 +46,22 @@ public class CrawlAll {
                 log.add(c.provider() + " failed, keeping the old saved data " + crawler.errors);
                 continue;
             }
+            // parse first, so a page redesign that breaks the parser can not wipe the saved data
+            int parsed;
+            try {
+                String startUrl = pages.isEmpty() ? c.startUrl() : pages.get(0).url;
+                parsed = parserFor(c.provider()).parse(crawler.startHtml, startUrl).size();
+            } catch (Exception e) {
+                parsed = 0;
+                log.add(c.provider() + " parser error " + e.getMessage());
+            }
+            if (parsed == 0 && store.loadRaw(c.provider()) != null) {
+                log.add(c.provider() + " page changed and no price was found, keeping the old saved data");
+                continue;
+            }
             store.saveRaw(c.provider(), crawler.startHtml);
             store.savePages(c.provider(), pages);
-            log.add(c.provider() + " crawled " + pages.size() + " pages");
+            log.add(c.provider() + " crawled " + pages.size() + " pages, " + parsed + " prices");
             for (String e : crawler.errors) {
                 log.add("  " + e);
             }

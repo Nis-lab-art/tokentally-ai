@@ -23,7 +23,11 @@ public class SearchFrequency {
         load();
     }
 
-    public int record(String query) {
+    // synchronized because the web page can send two searches at the same time
+    public synchronized int record(String query) {
+        if (query == null) {
+            return 0;
+        }
         String q = query.trim().toLowerCase();
         if (q.isEmpty()) {
             return 0;
@@ -33,12 +37,15 @@ public class SearchFrequency {
         return n;
     }
 
-    public int count(String query) {
+    public synchronized int count(String query) {
+        if (query == null) {
+            return 0;
+        }
         return counts.getOrDefault(query.trim().toLowerCase(), 0);
     }
 
     // the most searched words, ties in a to z order
-    public ArrayList<Object[]> top(int howMany) {
+    public synchronized ArrayList<Object[]> top(int howMany) {
         TreeMap<Integer, TreeSet<String>> byCount = new TreeMap<>((a, b) -> b - a);
         for (var e : counts.entrySet()) {
             byCount.computeIfAbsent(e.getValue(), k -> new TreeSet<>()).add(e.getKey());
@@ -55,7 +62,7 @@ public class SearchFrequency {
         return out;
     }
 
-    public int size() {
+    public synchronized int size() {
         return counts.size();
     }
 

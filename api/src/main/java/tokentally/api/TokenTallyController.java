@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import tokentally.app.Engine;
+import tokentally.app.ErrorDemo;
+import tokentally.app.Experiments;
 import tokentally.cost.Recommender;
 import tokentally.cost.Workload;
 import tokentally.model.ModelPrice;
@@ -91,6 +96,9 @@ public class TokenTallyController {
 
     @GetMapping("/compare")
     public ArrayList<ModelPrice> compare(@RequestParam String ids) {
+        if (ids == null || ids.isBlank()) {
+            throw new IllegalArgumentException("type at least one model name, separated by commas");
+        }
         String[] list = ids.split(",");
         for (String id : list) {
             if (!InputValidator.modelName(id)) {
@@ -124,22 +132,22 @@ public class TokenTallyController {
     @PostMapping("/recommend")
     public ArrayList<Recommender.Pick> recommend(@RequestBody Map<String, Object> body) {
         Workload w = new Workload();
-        w.inputPerDay = tokens(body, "inputPerDay", true);
-        w.outputPerDay = tokens(body, "outputPerDay", true);
-        w.promptSize = Math.max(0, tokens(body, "promptSize", false));
-        w.minContext = Math.max(0, tokens(body, "minContext", false));
+        w.inputPerDay = tokens(body, "inputPerDay", "input tokens per day", true);
+        w.outputPerDay = tokens(body, "outputPerDay", "output tokens per day", true);
+        w.promptSize = Math.max(0, tokens(body, "promptSize", "tokens in one request", false));
+        w.minContext = Math.max(0, tokens(body, "minContext", "smallest context window", false));
         String cached = text(body, "cachedPercent");
         if (!cached.isEmpty()) {
             w.cachedShare = InputValidator.percent(cached);
             if (w.cachedShare < 0) {
-                throw new IllegalArgumentException("cached share must be 0 to 100 percent");
+                throw new FieldProblem("cachedPercent", "the cached share must be a number from 0 to 100");
             }
         }
         String budget = text(body, "budget");
         if (!budget.isEmpty()) {
             w.budget = InputValidator.money(budget);
             if (w.budget < 0) {
-                throw new IllegalArgumentException("budget should look like 50 or $49.99");
+                throw new FieldProblem("budget", "the budget should look like 50 or $49.99");
             }
         }
         w.batchOk = Boolean.parseBoolean(text(body, "batchOk"));
@@ -159,6 +167,18 @@ public class TokenTallyController {
         return engine.history.of(model);
     }
 
+    // bad and extreme inputs on every feature, the same cases as menu option 18
+    @GetMapping("/error-demo")
+    public synchronized ArrayList<ErrorDemo.Case> errorDemo() {
+        return ErrorDemo.run(engine);
+    }
+
+    // measured times on the real data, the same as menu option 19, takes a few seconds
+    @GetMapping("/experiments")
+    public synchronized ArrayList<Experiments.Row> experiments() {
+        return Experiments.run(engine);
+    }
+
     @PostMapping("/crawl")
     public synchronized ArrayList<String> crawl() throws Exception {
         return engine.recrawl();
@@ -169,24 +189,57 @@ public class TokenTallyController {
         return v == null ? "" : v.toString().trim();
     }
 
-    private static long tokens(Map<String, Object> body, String key, boolean required) {
+    private static long tokens(Map<String, Object> body, String key, String label, boolean required) {
         String v = text(body, key);
         if (v.isEmpty()) {
             if (required) {
-                throw new IllegalArgumentException(key + " is required");
+                throw new FieldProblem(key, "enter the " + label + ", for example 2M or 500K");
             }
             return -1;
         }
         long n = InputValidator.tokens(v);
         if (n < 0) {
-            throw new IllegalArgumentException("\"" + v + "\" is not a token amount, use 2M, 500K or 1,000,000");
+            throw new FieldProblem(key, "\"" + v + "\" is not a valid amount for " + label + ", use 2M, 500K or 1,000,000 (not above 1000 trillion)");
         }
         return n;
+    }
+
+    // a problem in one input field, so the page can mark that field
+    static class FieldProblem extends IllegalArgumentException {
+        final String field;
+
+        FieldProblem(String field, String message) {
+            super(message);
+            this.field = field;
+        }
     }
 
     // bad input gives a 400 with a short message instead of a stack trace
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> badInput(IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        Map<String, String> body = new LinkedHashMap<>();
+        body.put("error", e.getMessage());
+        if (e instanceof FieldProblem f) {
+            body.put("field", f.field);
+        }
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, String>> missingParameter(MissingServletRequestParameterException e) {
+        return ResponseEntity.badRequest().body(Map.of("error", "\"" + e.getParameterName() + "\" is missing, fill it in"));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> badBody(HttpMessageNotReadableException e) {
+        return ResponseEntity.badRequest().body(Map.of("error", "the request could not be read, check the values and try again"));
+    }
+
+    // anything we did not expect: a short message for the user, the details stay in the server log
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> unexpected(Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("error", "something went wrong on the server, nothing was changed. Please try again"));
     }
 }

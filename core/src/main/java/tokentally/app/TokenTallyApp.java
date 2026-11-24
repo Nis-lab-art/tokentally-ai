@@ -7,6 +7,7 @@ import tokentally.cost.CostCalculator;
 import tokentally.cost.Recommender;
 import tokentally.cost.Workload;
 import tokentally.model.ModelPrice;
+import tokentally.parse.HtmlCleaner;
 import tokentally.rank.PageRanker;
 import tokentally.regex.InputValidator;
 import tokentally.text.FrequencyCounter;
@@ -29,14 +30,32 @@ public class TokenTallyApp {
         "check the crawled data",
         "crawl the live pages again",
         "price history and changes",
+        "spell check a word",
+        "inverted index lookup of a word",
+        "check an input with the regex validator",
+        "clean a piece of html",
+        "error handling demo (bad inputs on every feature)",
+        "experiments (measured times on the real data)",
         "exit"
     };
 
+    // who built the option, "all" means it uses everybody's work
+    private static final String[] OWNER = {
+        "all", "Aakriti", "Abhinav", "Khem Raj", "all", "all", "all", "Nishan", "all", "Aakriti",
+        "Shrijana", "all", "all", "Nishan", "Abhinav", "Shrijana", "Khem Raj", "all", "all", ""
+    };
+
     private final Engine engine;
+    private String member = ""; // show only the options of this member when set
     private final Scanner in = new Scanner(System.in);
 
     public TokenTallyApp(Engine engine) {
         this.engine = engine;
+    }
+
+    public TokenTallyApp(Engine engine, String member) {
+        this.engine = engine;
+        this.member = member == null ? "" : member.trim().toLowerCase();
     }
 
     public static void main(String[] args) {
@@ -51,14 +70,19 @@ public class TokenTallyApp {
         }
         System.out.println("TokenTally AI  |  " + engine.prices.size() + " model prices  |  "
                 + engine.pages.size() + " pages  |  " + engine.index.words().size() + " words");
-        new TokenTallyApp(engine).loop();
+        // optional second argument: nishan, abhinav, shrijana, aakriti or khem shows only that member's options
+        new TokenTallyApp(engine, args.length > 1 ? args[1] : "").loop();
     }
 
     void loop() {
         while (true) {
             System.out.println();
             for (int i = 0; i < MENU.length; i++) {
-                System.out.printf("%2d  %s%n", i + 1, MENU[i]);
+                String owner = OWNER[i];
+                if (!member.isEmpty() && !owner.isEmpty() && !owner.equals("all") && !owner.toLowerCase().contains(member)) {
+                    continue; // another member's option
+                }
+                System.out.printf("%2d  %-52s %s%n", i + 1, MENU[i], owner.isEmpty() ? "" : "(" + owner + ")");
             }
             if (!in.hasNextLine()) {
                 return; // input closed
@@ -97,6 +121,12 @@ public class TokenTallyApp {
             case 11 -> dataCheck();
             case 12 -> recrawl();
             case 13 -> priceHistory();
+            case 14 -> spellCheck();
+            case 15 -> indexLookup();
+            case 16 -> validate();
+            case 17 -> cleanHtml();
+            case 18 -> errorDemo();
+            case 19 -> experiments();
             default -> { }
         }
     }
@@ -326,6 +356,129 @@ public class TokenTallyApp {
                 ModelPrice.money(c.before.input), ModelPrice.money(c.after.input), c.inputPercent,
                 ModelPrice.money(c.before.output), ModelPrice.money(c.after.output), c.outputPercent);
         }
+    }
+
+    private void spellCheck() {
+        String word = ask("word to check");
+        if (!InputValidator.searchWord(word)) {
+            throw new IllegalArgumentException("use letters, digits, dots and dashes only (max 60 chars)");
+        }
+        if (engine.spell.isKnown(word)) {
+            System.out.println("\"" + word + "\" is spelled right, it is in the pages " + engine.index.total(word.toLowerCase()) + " time(s)");
+            return;
+        }
+        ArrayList<SpellChecker.Suggestion> s = engine.spell.suggest(word, 5);
+        if (s.isEmpty()) {
+            System.out.println("\"" + word + "\" is not in the pages and nothing is within 2 edits of it");
+        }
+        for (SpellChecker.Suggestion x : s) {
+            System.out.printf("   %-30s %d edit(s)  seen %d time(s)%n", x.word, x.distance, x.frequency);
+        }
+    }
+
+    private void indexLookup() {
+        String word = ask("word to look up").toLowerCase();
+        if (!InputValidator.searchWord(word)) {
+            throw new IllegalArgumentException("use letters, digits, dots and dashes only (max 60 chars)");
+        }
+        var postings = engine.index.postings(word);
+        if (postings.isEmpty()) {
+            System.out.println("\"" + word + "\" is on no page");
+            return;
+        }
+        System.out.println("\"" + word + "\" is on " + postings.size() + " page(s), " + engine.index.total(word) + " time(s) in all");
+        postings.entrySet().stream()
+            .sorted((a, b) -> b.getValue().size() - a.getValue().size())
+            .limit(8)
+            .forEach(e -> System.out.printf("   %4d  %s  first positions %s%n", e.getValue().size(), e.getKey(),
+                e.getValue().subList(0, Math.min(5, e.getValue().size()))));
+    }
+
+    private void validate() {
+        System.out.println("what do you want to check?");
+        String[] kinds = {"token amount (2M, 500K)", "money ($49.99)", "percent (20%)", "date (2026-11-24)", "model name", "search text"};
+        for (int i = 0; i < kinds.length; i++) {
+            System.out.println("   " + (i + 1) + "  " + kinds[i]);
+        }
+        int kind = InputValidator.choice(ask("kind"), kinds.length);
+        if (kind == -1) {
+            throw new IllegalArgumentException("type a number from 1 to " + kinds.length);
+        }
+        String v = ask("value");
+        boolean ok;
+        String reading = "";
+        switch (kind) {
+            case 1 -> {
+                long n = InputValidator.tokens(v);
+                ok = n >= 0;
+                reading = ok ? n + " tokens" : "";
+            }
+            case 2 -> {
+                double d = InputValidator.money(v);
+                ok = d >= 0;
+                reading = ok ? "$" + d : "";
+            }
+            case 3 -> {
+                double d = InputValidator.percent(v);
+                ok = d >= 0;
+                reading = ok ? (d * 100) + " percent" : "";
+            }
+            case 4 -> ok = InputValidator.date(v);
+            case 5 -> ok = InputValidator.modelName(v);
+            default -> ok = InputValidator.searchWord(v);
+        }
+        System.out.println(ok ? "valid " + reading : "not valid, " + kinds[kind - 1] + " was expected");
+    }
+
+    private void cleanHtml() {
+        String html = ask("html (one line)");
+        if (html.isBlank()) {
+            throw new IllegalArgumentException("type or paste some html");
+        }
+        System.out.println("title: " + HtmlCleaner.title(html));
+        System.out.println("text : " + HtmlCleaner.text(html).replace('\n', ' '));
+    }
+
+    private void errorDemo() {
+        System.out.println("running bad, odd and extreme inputs through every feature ...");
+        var cases = ErrorDemo.run(engine);
+        String last = "";
+        for (ErrorDemo.Case c : cases) {
+            if (!member.isEmpty() && !c.member.toLowerCase().contains(member) && !c.member.equals("shared parts")) {
+                continue;
+            }
+            if (!c.member.equals(last)) {
+                System.out.println();
+                System.out.println("== " + c.member);
+                last = c.member;
+            }
+            System.out.printf("%s %s / %s  [%s]%n      -> %s%n", c.handled ? "ok " : "BAD", c.feature, c.scenario, c.input, c.result);
+        }
+        int bad = ErrorDemo.crashed(cases).size();
+        System.out.println();
+        System.out.println(cases.size() + " cases, " + (cases.size() - bad) + " handled, " + bad + " crashed");
+    }
+
+    private void experiments() {
+        System.out.println("measuring on the real data, this takes a few seconds ...");
+        String last = "";
+        for (Experiments.Row r : Experiments.run(engine)) {
+            if (!member.isEmpty() && !r.member.toLowerCase().contains(member)) {
+                continue;
+            }
+            if (!r.member.equals(last)) {
+                System.out.println();
+                System.out.println("== " + r.member);
+                last = r.member;
+            }
+            System.out.println(r.feature + ": " + r.title);
+            System.out.printf("      %-28s %12s%n      %-28s %12s   (%s)%n      %s%n",
+                r.aLabel, trimNumber(r.aValue), r.bLabel, trimNumber(r.bValue), r.unit, r.takeaway);
+        }
+    }
+
+    private static String trimNumber(double v) {
+        return v == Math.rint(v) ? String.valueOf((long) v) : String.valueOf(v);
     }
 
     // ---------------- helpers ----------------

@@ -20,6 +20,7 @@ public class DataStore {
         "long_input", "long_cached_input", "long_output", "long_threshold", "context_window", "max_output", "notes", "url"};
 
     private final Path dir;
+    public int badRows; // rows of prices.csv that could not be read the last time it was loaded
 
     public DataStore(String folder) {
         this.dir = Path.of(folder);
@@ -112,6 +113,7 @@ public class DataStore {
 
     public ArrayList<ModelPrice> loadPrices() throws IOException {
         ArrayList<ModelPrice> list = new ArrayList<>();
+        badRows = 0;
         Path f = dir.resolve("prices.csv");
         if (!Files.exists(f)) {
             return list;
@@ -122,22 +124,32 @@ public class DataStore {
                 header = false;
                 continue;
             }
-            String[] c = splitCsv(line);
-            if (c.length < CSV_HEADER.length) {
+            if (line.isBlank()) {
                 continue;
             }
-            ModelPrice p = new ModelPrice(c[0], c[1], c[2]);
-            p.input = dbl(c[3]);
-            p.cachedInput = dbl(c[4]);
-            p.output = dbl(c[5]);
-            p.longInput = dbl(c[6]);
-            p.longCachedInput = dbl(c[7]);
-            p.longOutput = dbl(c[8]);
-            p.longThreshold = (long) dbl(c[9]);
-            p.contextWindow = (long) dbl(c[10]);
-            p.maxOutput = (long) dbl(c[11]);
-            p.notes = c[12];
-            p.sourceUrl = c[13];
+            String[] c = splitCsv(line);
+            if (c.length < CSV_HEADER.length) {
+                badRows++;
+                continue;
+            }
+            ModelPrice p;
+            try {
+                p = new ModelPrice(c[0], c[1], c[2]);
+                p.input = dbl(c[3]);
+                p.cachedInput = dbl(c[4]);
+                p.output = dbl(c[5]);
+                p.longInput = dbl(c[6]);
+                p.longCachedInput = dbl(c[7]);
+                p.longOutput = dbl(c[8]);
+                p.longThreshold = (long) dbl(c[9]);
+                p.contextWindow = (long) dbl(c[10]);
+                p.maxOutput = (long) dbl(c[11]);
+                p.notes = c[12];
+                p.sourceUrl = c[13];
+            } catch (NumberFormatException e) {
+                badRows++; // a damaged row is skipped, the rest still loads
+                continue;
+            }
             list.add(p);
         }
         return list;

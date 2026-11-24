@@ -17,6 +17,9 @@ public class InvertedIndex {
     private final HashMap<String, Integer> pageLengths = new HashMap<>();
 
     public void add(Page page) {
+        if (page == null || page.text == null || page.url == null) {
+            return; // nothing to index
+        }
         ArrayList<String> words = Tokenizer.words(page.text);
         pageLengths.put(page.url, words.size());
         for (int pos = 0; pos < words.size(); pos++) {
@@ -33,6 +36,9 @@ public class InvertedIndex {
 
     // pages that have the word and its positions there
     public HashMap<String, ArrayList<Integer>> postings(String word) {
+        if (word == null) {
+            return new HashMap<>();
+        }
         HashMap<String, ArrayList<Integer>> p = index.get(word.toLowerCase());
         return p == null ? new HashMap<>() : p;
     }

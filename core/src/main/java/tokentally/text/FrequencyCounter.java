@@ -18,7 +18,13 @@ public class FrequencyCounter {
     }
 
     public static Result count(String word, Page page) {
-        String text = page.text.toLowerCase();
+        if (word == null || word.isBlank()) {
+            throw new IllegalArgumentException("type a word to count");
+        }
+        if (page == null) {
+            throw new IllegalArgumentException("no page to count in");
+        }
+        String text = page.text == null ? "" : page.text.toLowerCase();
         BoyerMoore bm = new BoyerMoore(word);
         KMPMatcher kmp = new KMPMatcher(word);
         Result r = new Result();

@@ -10,6 +10,9 @@ public class HtmlCleaner {
 
     // the readable text of a page with one block per line
     public static String text(String html) {
+        if (html == null || html.isBlank()) {
+            return "";
+        }
         String full = text(html, DROP);
         // some pages (ai studio) keep all the content inside noscript, so try again without dropping the chrome
         if (full.length() < 400) {
@@ -36,6 +39,9 @@ public class HtmlCleaner {
 
     // text inside the title tag
     public static String title(String html) {
+        if (html == null) {
+            return "";
+        }
         int a = html.indexOf("<title");
         if (a < 0) {
             return "";
