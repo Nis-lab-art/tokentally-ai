@@ -27,7 +27,7 @@ import tokentally.model.Page;
 import tokentally.regex.InputValidator;
 import tokentally.text.FrequencyCounter;
 
-// rest endpoints for the react ui. each one just calls the engine
+// web requests, each one calls the engine
 @RestController
 @RequestMapping("/api")
 public class TokenTallyController {
