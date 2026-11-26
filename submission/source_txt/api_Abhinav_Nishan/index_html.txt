@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TokenTally AI</title>
+<!-- tailwind play script saved in this folder (v3.4.17) so the page works without internet -->
+<script src="tailwind.js"></script>
+<script>tailwind.config = { darkMode: 'media' }</script>
+<style>
+  .dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; background: var(--c, #a1a1aa); }
+  .dot.openai { --c: #10a37f } .dot.gemini { --c: #4285f4 } .dot.anthropic { --c: #d97757 }
+  .dot.zai { --c: #8b5cf6 } .dot.xai { --c: #71717a }
+</style>
+</head>
+<body class="bg-stone-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 antialiased">
+<div class="max-w-5xl mx-auto px-5 py-8">
+
+  <header class="flex items-center justify-between flex-wrap gap-3">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white grid place-items-center text-sm font-bold">T</div>
+      <h1 class="text-lg font-semibold">TokenTally AI</h1>
+    </div>
+    <div id="stats" class="flex gap-1.5 text-xs text-zinc-500"></div>
+  </header>
+
+  <div class="mt-8 mb-6">
+    <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">What will your AI workload really cost?</h2>
+    <p class="mt-2 text-zinc-500 max-w-xl">Prices from OpenAI, Gemini, Claude, Z.ai and xAI in one place. Search, compare and find the cheapest model.</p>
+  </div>
+
+  <nav id="tabs" class="inline-flex gap-0.5 p-1 mb-7 rounded-xl bg-zinc-200/70 dark:bg-zinc-800 flex-wrap"></nav>
+  <div id="toasts" class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-[min(22rem,calc(100vw-2rem))]"></div>
+
+  <!-- calculator -->
+  <section id="calculator" class="tab grid md:grid-cols-[340px_1fr] gap-8 items-start">
+    <div id="wi-calculator" class="md:col-span-2 -mb-3"></div>
+    <form id="calcForm" class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm">
+      <h3 class="font-semibold text-sm mb-4">Your workload</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="lab">Input tokens / day<input name="inputPerDay" value="2M" class="inp" /></label>
+        <label class="lab">Output tokens / day<input name="outputPerDay" value="500K" class="inp" /></label>
+      </div>
+      <label class="lab">Provider<select name="provider" class="inp"><option value="">all</option></select></label>
+      <label class="flex items-center gap-2 text-sm mb-2"><input type="checkbox" name="batchOk" class="accent-indigo-600" /> batch or flex is fine</label>
+      <label class="flex items-center gap-2 text-sm mb-4"><input type="checkbox" name="skipFree" class="accent-indigo-600" /> hide free models</label>
+      <details class="mb-4">
+        <summary class="cursor-pointer text-xs font-medium text-zinc-500 mb-3">More options</summary>
+        <label class="lab">Input that hits the cache (%)<input name="cachedPercent" value="0" class="inp" /></label>
+        <label class="lab">Tokens in one request<input name="promptSize" placeholder="like 250K" class="inp" /></label>
+        <label class="lab">Smallest context window<input name="minContext" placeholder="like 200K" class="inp" /></label>
+        <label class="lab">Monthly budget ($)<input name="budget" placeholder="no limit" class="inp" /></label>
+      </details>
+      <button class="btn w-full">Find the cheapest</button>
+    </form>
+    <div>
+      <h3 class="font-semibold text-sm mb-3">Cheapest per month</h3>
+      <div id="picks"><div class="p-12 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl">fill in your workload and press the button</div></div>
+    </div>
+  </section>
+
+  <!-- search -->
+  <section id="search" class="tab hidden">
+    <div id="wi-search" class="mb-4"></div>
+    <form id="searchForm" class="flex gap-2">
+      <div class="relative flex-1">
+        <input id="q" autocomplete="off" placeholder="try gemnii, batch api or claude-opus" class="inp !py-3 !px-4 !text-base !rounded-xl" />
+        <ul id="hints" class="hidden absolute z-10 left-0 right-0 mt-1.5 p-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg"></ul>
+      </div>
+      <button class="btn !px-6 !rounded-xl">Search</button>
+    </form>
+    <div id="searchOut" class="mt-4"></div>
+  </section>
+
+  <!-- models -->
+  <section id="models" class="tab hidden">
+    <div id="wi-models" class="mb-4"></div>
+    <div class="flex gap-2 items-center flex-wrap mb-3">
+      <select id="mProvider" class="inp !w-auto"><option value="">all providers</option></select>
+      <select id="mTier" class="inp !w-auto"></select>
+      <select id="mSort" class="inp !w-auto">
+        <option value="input">cheapest input</option><option value="output">cheapest output</option>
+        <option value="contextWindow">biggest context</option><option value="model">name</option>
+      </select>
+      <span id="mCount" class="text-sm text-zinc-500"></span>
+    </div>
+    <div id="card"></div>
+    <div id="mTable"></div>
+  </section>
+
+  <!-- compare -->
+  <section id="compare" class="tab hidden">
+    <div id="wi-compare" class="mb-4"></div>
+    <form id="cmpForm" class="relative">
+      <input id="cmpText" type="hidden" value="gpt-6.2-astra, claude-opus-5-5, gemini-4-carbon, grok-4.7, glm-5.3" />
+      <div id="cmpBox" class="flex flex-wrap items-center gap-1.5 p-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100 dark:focus-within:ring-indigo-950 cursor-text">
+        <div id="cmpChips" class="contents"></div>
+        <input id="cmpAdd" autocomplete="off" role="combobox" aria-label="Add a model to compare" class="flex-1 min-w-[11rem] bg-transparent outline-none text-sm px-2 py-1.5" />
+      </div>
+      <ul id="cmpList" class="hidden absolute z-10 left-0 right-0 mt-1.5 p-1.5 max-h-72 overflow-auto rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg"></ul>
+    </form>
+    <p class="text-xs text-zinc-500 mt-2">Click the box and pick a model, or type part of its name. × removes it. Up to 10.</p>
+    <p id="cmpBest" class="text-sm text-zinc-500 my-3"></p>
+    <div id="cmpTable" class="mt-3"></div>
+  </section>
+
+  <!-- price history -->
+  <section id="history" class="tab hidden">
+    <p class="text-sm text-zinc-500 mb-4">Every crawl is saved with its date. A line shows up here when a price moves, so you can see who got cheaper or more expensive.</p>
+    <div id="histOut"></div>
+  </section>
+
+  <!-- error handling -->
+  <section id="errors" class="tab hidden">
+    <div class="flex items-end justify-between flex-wrap gap-3 mb-4">
+      <p class="text-sm text-zinc-500 max-w-2xl">Bad, odd and extreme inputs go through every feature of every member. The program must answer with a clear message or a safe result and never crash. These cases run on the real code when you open this tab.</p>
+      <button id="errRun" class="btn !py-2">Run again</button>
+    </div>
+    <div id="errSummary" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5"></div>
+    <div id="errChips" class="flex gap-1.5 flex-wrap mb-4"></div>
+    <div id="errList" class="space-y-2.5"></div>
+
+    <div class="box mt-8">
+      <h3 class="h">Try to break it yourself</h3>
+      <p class="text-xs text-zinc-500 mb-3">Type anything. Empty text, symbols, a huge number, a wrong name. The server checks it and answers.</p>
+      <div id="wi-try" class="mb-3"></div>
+      <form id="tryForm" class="flex gap-2 flex-wrap">
+        <select id="tryKind" class="inp !w-auto">
+          <option value="search">Search text</option>
+          <option value="complete">Word completion</option>
+          <option value="tokens">Token amount (calculator)</option>
+          <option value="compare">Compare models</option>
+          <option value="card">Model card</option>
+          <option value="frequency">Frequency count of a word</option>
+        </select>
+        <input id="tryInput" class="inp flex-1 min-w-[12rem]" placeholder="try: <script>, 2 million, 999999999999B, nothing-here" />
+        <button class="btn">Send</button>
+      </form>
+      <div id="tryOut" class="mt-3"></div>
+    </div>
+  </section>
+
+  <!-- experiments -->
+  <section id="experiments" class="tab hidden">
+    <div class="flex items-end justify-between flex-wrap gap-3 mb-4">
+      <p class="text-sm text-zinc-500 max-w-2xl">Each member compares their data structure or algorithm with the plain way of doing it, measured on the real crawled data. The numbers change a little on every run, the ratio is what matters.</p>
+      <button id="expRun" class="btn !py-2">Run the experiments</button>
+    </div>
+    <div id="expOut"><div class="p-12 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl">press the button, it takes a few seconds</div></div>
+  </section>
+
+  <!-- insights -->
+  <section id="insights" class="tab hidden">
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="box"><h3 class="h">Top searches</h3><div id="top"></div></div>
+      <div class="box">
+        <h3 class="h">Data check</h3><div id="problems" class="text-sm mb-3"></div>
+        <button id="crawlBtn" class="btn w-full">Crawl the live pages again</button>
+        <pre id="crawlLog" class="text-xs whitespace-pre-wrap max-h-56 overflow-auto mt-3"></pre>
+      </div>
+    </div>
+    <h3 class="h mt-7">Free models</h3><div id="free"></div>
+    <h3 class="h mt-7">Price warnings</h3><div id="warnings"></div>
+    <h3 class="h mt-7">Patterns found with regex</h3>
+    <select id="patUrl" class="inp !w-auto"></select>
+    <div id="patterns" class="grid sm:grid-cols-2 md:grid-cols-3 gap-3 mt-3 text-sm"></div>
+  </section>
+
+  <footer class="mt-14 text-xs text-center text-zinc-500">COMP 8547 Group 10 · prices come from the official pricing pages</footer>
+</div>
+
+<style type="text/tailwindcss">
+  @layer components {
+    .inp { @apply w-full px-3 py-2.5 text-sm rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-950; }
+    select.inp { @apply appearance-none pr-9 cursor-pointer; background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 14px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 8l5 5 5-5'/%3E%3C/svg%3E"); }
+    .lab { @apply block text-xs font-medium text-zinc-500 mb-3.5; }
+    .lab .inp { @apply mt-1.5; }
+    .btn { @apply px-5 py-2.5 text-sm font-medium rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50; }
+    .box { @apply rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm; }
+    .h { @apply font-semibold text-sm mb-3; }
+    .th { @apply px-3.5 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-zinc-500 whitespace-nowrap; }
+    .td { @apply px-3.5 py-2.5 border-t border-zinc-100 dark:border-zinc-800 whitespace-nowrap; }
+    .note { @apply my-3 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-sm; }
+    .link { @apply text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer; }
+  }
+</style>
+
+<script>
+// small helpers to call the spring boot api
+const PROVIDERS = ['openai', 'gemini', 'anthropic', 'zai', 'xai']
+const TIERS = ['standard', 'batch', 'flex', 'priority', 'fast']
+const $ = (id) => document.getElementById(id)
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+
+async function call(path, data) {
+  let res
+  try {
+    res = await fetch('/api' + path, data === undefined ? {} : {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+  } catch (e) {
+    throw new Error('cannot reach the server. Is it running? Start it with run.bat (Windows) or ./run.sh in the api folder')
+  }
+  const body = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    const err = new Error(body.error || 'the server answered with an error (' + res.status + ')')
+    err.field = body.field
+    throw err
+  }
+  return body
+}
+const get = (p) => call(p)
+
+// friendly messages: a toast in the corner that goes away by itself
+function fail(e) {
+  const t = document.createElement('div')
+  t.className = 'flex gap-3 items-start px-4 py-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950 text-amber-900 dark:text-amber-200 text-sm shadow-lg'
+  t.innerHTML = '<span class="mt-0.5">⚠️</span><div class="flex-1"><b class="block">That did not work</b>' + esc(e.message) + '</div><button class="text-lg leading-none opacity-60 hover:opacity-100">×</button>'
+  t.querySelector('button').onclick = () => t.remove()
+  $('toasts').appendChild(t)
+  setTimeout(() => t.remove(), 8000)
+}
+const clearFail = () => { $('toasts').innerHTML = '' }
+
+// mark one input field of a form and say what is wrong under it
+function clearFieldErrors(form) {
+  form.querySelectorAll('.ferr').forEach((p) => p.remove())
+  form.querySelectorAll('.inp').forEach((i) => i.classList.remove('!border-red-500', '!ring-4', '!ring-red-100'))
+}
+function fieldError(form, name, msg) {
+  const el = form.elements[name]
+  if (!el) return fail(new Error(msg))
+  const d = el.closest('details'); if (d) d.open = true
+  el.classList.add('!border-red-500', '!ring-4', '!ring-red-100')
+  const p = document.createElement('p')
+  p.className = 'ferr col-span-2 text-xs text-red-600 dark:text-red-400 -mt-2 mb-3'
+  p.textContent = msg
+  el.closest('label').insertAdjacentElement('afterend', p)
+  el.focus()
+}
+
+const money = (v) => (v === undefined || v === null || v < 0) ? '–' : v === 0 ? 'free' : '$' + Math.round(v * 10000) / 10000
+const size = (n) => (!n || n < 0) ? '–' : n >= 1000000 ? Math.round(n / 10000) / 100 + 'M' : Math.round(n / 1000) + 'K'
+const tag = (p) => `<span class="dot ${esc(p)} text-xs text-zinc-500">${esc(p)}</span>`
+
+// one table layout for model prices used on every tab
+function priceTable(rows, pickable, flat) {
+  const head = ['model', 'provider', 'tier', 'input', 'cached', 'output', 'long input', 'context', 'notes']
+  const num = [3, 4, 5, 6, 7]
+  return `<div class="overflow-x-auto ${flat ? '' : 'rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm'}"><table class="w-full text-[13px]">
+    <thead><tr>${head.map((h, i) => `<th class="th ${num.includes(i) ? '!text-right' : ''}">${h}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map((p) => `<tr class="hover:bg-stone-50 dark:hover:bg-zinc-800/50">
+      <td class="td">${pickable ? `<a class="link" data-model="${esc(p.model)}">${esc(p.model)}</a>` : esc(p.model)}</td>
+      <td class="td">${tag(p.provider)}</td><td class="td">${esc(p.tier)}</td>
+      <td class="td text-right tabular-nums">${money(p.input)}</td><td class="td text-right tabular-nums">${money(p.cachedInput)}</td>
+      <td class="td text-right tabular-nums">${money(p.output)}</td><td class="td text-right tabular-nums">${money(p.longInput)}</td>
+      <td class="td text-right tabular-nums">${size(p.contextWindow)}</td>
+      <td class="td text-xs text-zinc-500 max-w-[260px] truncate" title="${esc(p.notes)}">${esc(p.notes)}</td></tr>`).join('')}
+    </tbody></table></div>`
+}
+
+// a friendly box that says how the program reacted: ok (answered safely) or rejected (refused with a reason)
+function reaction(kind, title, text) {
+  const rejected = kind === 'rejected'
+  return `<div class="mb-3 flex gap-3 rounded-xl px-4 py-3 text-sm border ${rejected ? 'bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950 dark:border-amber-900 dark:text-amber-200' : 'bg-emerald-50 border-emerald-200 text-emerald-900 dark:bg-emerald-950 dark:border-emerald-900 dark:text-emerald-200'}">
+    <span>${rejected ? '🛡️' : '✅'}</span><div><b class="block">${title}</b>${text}${rejected ? '<div class="text-xs mt-1 opacity-70">Handled: the program refused the input with this message and nothing crashed.</div>' : ''}</div></div>`
+}
+
+// "What if I..." buttons: each one fills in the real form and presses the real button
+function whatIf(id, items) {
+  const box = $('wi-' + id)
+  box.innerHTML = `<div class="flex flex-wrap items-center gap-1.5"><span class="text-xs font-semibold text-zinc-500 mr-1">What if I…</span>` +
+    items.map(([label], i) => `<button type="button" data-wi="${i}" class="px-2.5 py-1 text-xs rounded-full border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-200 hover:border-indigo-400 hover:text-indigo-600">${esc(label)}</button>`).join('') + '</div>'
+  box.onclick = (e) => { const i = e.target.dataset.wi; if (i !== undefined) { clearFail(); items[i][1]() } }
+}
+
+// tabs
+const TABS = [['calculator', 'Cost calculator'], ['search', 'Search'], ['models', 'Models'], ['compare', 'Compare'], ['history', 'Price history'], ['insights', 'Insights'], ['errors', 'Error handling'], ['experiments', 'Experiments']]
+const loaded = {}
+function show(id) {
+  clearFail()
+  document.querySelectorAll('.tab').forEach((s) => s.classList.toggle('hidden', s.id !== id))
+  $('tabs').innerHTML = TABS.map(([t, label]) => `<button data-tab="${t}" class="px-3.5 py-1.5 text-[13px] font-medium rounded-lg ${t === id ? 'bg-white dark:bg-zinc-950 shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100'}">${label}</button>`).join('')
+  if (!loaded[id]) { loaded[id] = true; if (id === 'models') loadModels(); if (id === 'compare') runCompare(); if (id === 'history') loadHistory(); if (id === 'insights') loadInsights(); if (id === 'errors') loadErrors() }
+}
+$('tabs').onclick = (e) => { if (e.target.dataset.tab) show(e.target.dataset.tab) }
+
+// header stats and dropdowns
+let TOTAL_PRICES = 0
+get('/stats').then((s) => {
+  TOTAL_PRICES = s.prices
+  $('stats').innerHTML = [['prices', s.prices], ['pages', s.pages], ['words', s.words]]
+    .map(([k, v]) => `<span class="px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"><b class="text-zinc-900 dark:text-zinc-100">${v}</b> ${k}</span>`).join('')
+}).catch(() => fail(new Error('the api is not running, start it with ./run.sh in api')))
+document.querySelectorAll('select[name=provider], #mProvider').forEach((s) => PROVIDERS.forEach((p) => s.add(new Option(p, p))))
+$('mTier').add(new Option('all tiers', '')); TIERS.forEach((t) => $('mTier').add(new Option(t, t))); $('mTier').value = 'standard'
+
+// calculator
+$('calcForm').onsubmit = (e) => {
+  e.preventDefault(); clearFail(); clearFieldErrors(e.target)
+  const f = new FormData(e.target)
+  const form = Object.fromEntries(f.entries()); form.batchOk = e.target.batchOk.checked; form.skipFree = e.target.skipFree.checked
+  call('/recommend', form).then((picks) => {
+    if (!picks.length) return $('picks').innerHTML = reaction('ok', 'No model fits these limits', 'Nothing was broken. The program found no model under this budget or with this context window, and it does not guess a context window for models that do not list one. Try a bigger budget or a smaller context.')
+    const max = picks[picks.length - 1].cost.total || 1
+    $('picks').innerHTML = picks.map((p, i) => `<div class="flex gap-3.5 mb-2.5 p-4 rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm ${i === 0 ? 'border-indigo-500' : 'border-zinc-200 dark:border-zinc-800'}">
+      <div class="w-4 font-semibold text-zinc-500">${i + 1}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex gap-2.5 items-center flex-wrap"><b>${esc(p.price.model)}</b>${tag(p.price.provider)}
+          <span class="text-sm text-zinc-500">${esc(p.why)}${p.cost.longPrices ? ', long context prices' : ''}</span>
+          <span class="ml-auto font-semibold text-lg tabular-nums">$${p.cost.total.toFixed(2)}</span></div>
+        <div class="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full my-2.5 overflow-hidden"><div class="h-full bg-indigo-600 rounded-full" style="width:${Math.max(2, p.cost.total / max * 100)}%"></div></div>
+        <div class="text-xs text-zinc-500">input $${p.cost.input.toFixed(2)} · cached $${p.cost.cached.toFixed(2)} · output $${p.cost.output.toFixed(2)}${p.price.contextWindow > 0 ? ' · context ' + size(p.price.contextWindow) : ''}</div>
+      </div></div>`).join('')
+  }).catch((err) => { err.field ? fieldError(e.target, err.field, err.message) : fail(err); $('picks').innerHTML = '' })
+}
+
+// search with word completion, spell suggestions, ranked pages and frequency count
+let hintTimer
+$('q').oninput = () => {
+  clearTimeout(hintTimer)
+  const last = $('q').value.split(' ').pop()
+  if (last.length < 2) return $('hints').classList.add('hidden')
+  hintTimer = setTimeout(() => get('/complete?prefix=' + encodeURIComponent(last)).then((h) => {
+    $('hints').innerHTML = h.map((w) => `<li data-w="${esc(w)}" class="px-3 py-2 text-sm rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950">${esc(w)}</li>`).join('')
+    $('hints').classList.toggle('hidden', !h.length)
+  }).catch(() => {}), 150)
+}
+$('hints').onmousedown = (e) => {
+  if (!e.target.dataset.w) return
+  const words = $('q').value.split(' '); words[words.length - 1] = e.target.dataset.w
+  $('q').value = words.join(' '); runSearch()
+}
+$('q').onblur = () => $('hints').classList.add('hidden')
+$('searchForm').onsubmit = (e) => { e.preventDefault(); runSearch() }
+
+function runSearch(text) {
+  const q = (text ?? $('q').value).trim()
+  if (!q) return $('searchOut').innerHTML = reaction('rejected', 'Nothing to search for', 'The search box is empty. Type a word or a model name and press Search.')
+  clearFail(); $('hints').classList.add('hidden')
+  get('/search?q=' + encodeURIComponent(q)).then((r) => {
+    let html = `<p class="text-sm text-zinc-500">searched ${r.timesSearched} time(s)</p>`
+    r.unknownWords.forEach((w) => {
+      const sug = r.suggestions[w] || []
+      html += `<div class="note">"${esc(w)}" is not in the pages. ${sug.length ? 'did you mean ' + sug.map((s) => `<a class="link mx-1" data-fix="${esc(s.word)}">${esc(s.word)}</a>`).join('') : 'nothing close was found.'}</div>`
+    })
+    if (r.searchedInstead) html += `<p class="my-2">showing results for <b>${esc(r.searchedInstead)}</b></p>`
+    if (r.models.length) html += `<h3 class="h mt-6">Models</h3>` + priceTable(r.models)
+    html += `<h3 class="h mt-6">Pages ranked by keyword count</h3>`
+    html += !r.pages.length ? '<p class="text-zinc-500">no page has these words</p>' : `<div class="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm"><table class="w-full text-[13px]">
+      <thead><tr><th class="th">#</th><th class="th">score</th><th class="th">keywords</th><th class="th">page</th><th class="th"></th></tr></thead><tbody>
+      ${r.pages.map((p, i) => `<tr><td class="td">${i + 1}</td><td class="td">${p.score}</td><td class="td">${p.keywordsFound}</td>
+        <td class="td"><a class="link" href="${esc(p.url)}" target="_blank" rel="noreferrer">${esc(p.url.replace('https://', ''))}</a></td>
+        <td class="td"><button class="btn !py-1 !px-2.5 !text-xs !rounded-lg" data-count="${esc(p.url)}">count</button></td></tr>`).join('')}
+      </tbody></table></div>`
+    html += '<div id="freq"></div>'
+    $('searchOut').innerHTML = html
+    $('searchOut').dataset.word = (r.searchedInstead || r.query).split(' ')[0]
+  }).catch((err) => { $('searchOut').innerHTML = reaction('rejected', 'The search was refused', esc(err.message)) })
+}
+$('searchOut').onclick = (e) => {
+  if (e.target.dataset.fix) { $('q').value = e.target.dataset.fix; runSearch() }
+  const url = e.target.dataset.count
+  if (url) {
+    const word = $('searchOut').dataset.word
+    get('/frequency?word=' + encodeURIComponent(word) + '&url=' + encodeURIComponent(url)).then((r) => {
+      const x = r[0] || { boyerMoore: 0, kmp: 0 }
+      $('freq').innerHTML = `<div class="note">"${esc(word)}" shows up <b>${x.boyerMoore}</b> time(s) on ${esc(url.replace('https://', ''))}. Boyer-Moore checked ${x.bmComparisons ?? 0} chars, KMP checked ${x.kmpComparisons ?? 0}.</div>`
+    }).catch(fail)
+  }
+}
+
+// models with filters and a card for one model
+function loadModels() {
+  get(`/models?provider=${$('mProvider').value}&tier=${$('mTier').value}`).then((rows) => {
+    const sort = $('mSort').value
+    rows.sort((a, b) => {
+      if (sort === 'model') return a.model.localeCompare(b.model)
+      const x = a[sort] < 0 ? Infinity : a[sort], y = b[sort] < 0 ? Infinity : b[sort]
+      return sort === 'contextWindow' ? y - x : x - y
+    })
+    $('mCount').textContent = rows.length + ' rows'
+    $('mTable').innerHTML = rows.length ? priceTable(rows, true) : reaction('ok', 'No model matches this filter', 'That provider has no prices on this tier. Choose another tier or provider.')
+  }).catch(fail)
+}
+;['mProvider', 'mTier', 'mSort'].forEach((id) => $(id).onchange = loadModels)
+$('mTable').onclick = (e) => { if (e.target.dataset.model) openCard(e.target.dataset.model) }
+function openCard(id) {
+  get('/models/' + encodeURIComponent(id)).then((c) => {
+    if (!c.length) {
+      return suggest(id).then((alt) => {
+        $('card').innerHTML = reaction('ok', 'No model called "' + esc(id) + '"', 'It is not in the ' + TOTAL_PRICES + ' prices we crawled.' + (alt.length ? ' Did you mean ' + alt.map((a) => '<a class="link mx-1" data-open="' + esc(a) + '">' + esc(a) + '</a>').join('') + '?' : ''))
+      })
+    }
+    $('card').innerHTML = `<div class="relative rounded-2xl border border-indigo-500 bg-white dark:bg-zinc-900 p-5 mb-4 mt-1">
+      <button class="absolute right-3 top-2 text-xl text-zinc-500" id="closeCard">×</button>
+      <h3 class="font-semibold">${esc(c[0].model)} ${tag(c[0].provider)}</h3>
+      <p class="text-sm my-2 text-zinc-500">${[c[0].contextWindow > 0 ? `context window <b class="text-zinc-900 dark:text-zinc-100">${size(c[0].contextWindow)}</b>` : '', c[0].maxOutput > 0 ? `max output <b class="text-zinc-900 dark:text-zinc-100">${size(c[0].maxOutput)}</b>` : '', `<a class="link" href="${esc(c[0].sourceUrl)}" target="_blank" rel="noreferrer">source</a>`].filter(Boolean).join(' · ')}</p>
+      ${priceTable(c, false, true)}</div>`
+    $('closeCard').onclick = () => $('card').innerHTML = ''
+  }).catch((err) => { $('card').innerHTML = reaction('rejected', 'The model card was refused', esc(err.message)) })
+}
+$('card').onclick = (e) => { if (e.target.dataset.open) openCard(e.target.dataset.open) }
+
+// words that start like the typed name, for "did you mean"
+function suggest(name) {
+  const prefix = String(name).trim().slice(0, Math.max(2, Math.min(6, String(name).trim().length - 1)))
+  if (prefix.length < 2) return Promise.resolve([])
+  return get('/complete?prefix=' + encodeURIComponent(prefix)).then((w) => { const ids = w.filter((x) => /\d/.test(x)); return (ids.length ? ids : w).slice(0, 4) }).catch(() => [])
+}
+
+// compare
+function runCompare() {
+  clearFail(); renderCmpChips()
+  const names = $('cmpText').value.split(',').map((n) => n.trim()).filter(Boolean)
+  get('/compare?ids=' + encodeURIComponent($('cmpText').value)).then(async (rows) => {
+    const found = new Set(rows.map((r) => r.model))
+    const missing = names.filter((n) => !found.has(n.toLowerCase()))
+    $('cmpBest').innerHTML = ''
+    if (rows.length) {
+      const best = rows.reduce((a, b) => (a.input + a.output <= b.input + b.output ? a : b))
+      $('cmpBest').innerHTML = `cheapest for input plus output: <b class="text-zinc-900 dark:text-zinc-100">${esc(best.model)}</b>`
+    }
+    let note = ''
+    for (const m of missing) {
+      const alt = await suggest(m)
+      note += reaction('ok', 'No model called "' + esc(m) + '"', 'The others are shown anyway.' + (alt.length ? ' Did you mean ' + alt.map((a) => esc(a)).join(', ') + '?' : ''))
+    }
+    $('cmpTable').innerHTML = note + (rows.length ? priceTable(rows) : '')
+  }).catch((err) => { $('cmpBest').innerHTML = ''; $('cmpTable').innerHTML = reaction('rejected', 'The comparison was refused', esc(err.message)) })
+}
+// model picker: chosen models are chips, the list below filters while you type
+let cmpAll = [], cmpActive = 0
+get('/models?tier=standard').then((rows) => { cmpAll = rows; renderCmpChips() }).catch(() => {})
+const cmpNames = () => $('cmpText').value.split(',').map((n) => n.trim()).filter(Boolean)
+
+function renderCmpChips() {
+  const names = cmpNames()
+  $('cmpChips').innerHTML = names.map((n, i) => {
+    const m = cmpAll.find((r) => r.model === n.toLowerCase())
+    const look = m || !cmpAll.length ? 'border-zinc-200 dark:border-zinc-700 bg-stone-50 dark:bg-zinc-800' : 'border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950'
+    return `<span class="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-lg border text-sm ${look}">${m ? `<span class="dot ${esc(m.provider)} -mr-1.5"></span>` : ''}${esc(n)}<button type="button" data-remove="${i}" aria-label="remove ${esc(n)}" class="px-1 text-zinc-500 hover:text-red-600">×</button></span>`
+  }).join('')
+  $('cmpAdd').placeholder = names.length ? 'add a model…' : 'pick the models to compare…'
+}
+
+const cmpMatches = () => {
+  const q = $('cmpAdd').value.trim().toLowerCase()
+  const chosen = new Set(cmpNames().map((n) => n.toLowerCase()))
+  return cmpAll.filter((r) => !chosen.has(r.model) && (r.model.includes(q) || r.provider.includes(q)))
+}
+function renderCmpList() {
+  const found = cmpMatches()
+  cmpActive = Math.max(0, Math.min(cmpActive, found.length - 1))
+  $('cmpList').innerHTML = found.length ? found.map((r, i) => `<li data-add="${esc(r.model)}" class="flex items-center gap-3 px-3 py-2 text-sm rounded-lg cursor-pointer ${i === cmpActive ? 'bg-indigo-50 dark:bg-indigo-950' : ''}">
+      <span class="flex-1">${esc(r.model)}</span>${tag(r.provider)}<span class="w-32 text-right text-xs text-zinc-500 tabular-nums">${money(r.input)} in · ${money(r.output)} out</span></li>`).join('')
+    : '<li class="px-3 py-2 text-sm text-zinc-500">no model matches, press Enter to check this name anyway</li>'
+  $('cmpList').classList.remove('hidden')
+  $('cmpList').children[cmpActive]?.scrollIntoView({ block: 'nearest' })
+}
+const closeCmpList = () => $('cmpList').classList.add('hidden')
+
+function setCmp(names) {
+  $('cmpText').value = names.join(', ')
+  if (names.length) return runCompare()
+  renderCmpChips(); $('cmpBest').innerHTML = ''; $('cmpTable').innerHTML = ''
+}
+function addCmp(text) {
+  const names = cmpNames()
+  text.split(',').map((n) => n.trim()).filter(Boolean).forEach((n) => { if (!names.some((x) => x.toLowerCase() === n.toLowerCase())) names.push(n) })
+  if (names.length > 10) return fail(new Error('compare up to 10 models at a time, remove one first'))
+  $('cmpAdd').value = ''; cmpActive = 0
+  setCmp(names)
+}
+
+$('cmpBox').onclick = (e) => {
+  const i = e.target.dataset.remove
+  if (i !== undefined) { setCmp(cmpNames().filter((_, j) => j !== Number(i))); return closeCmpList() }
+  $('cmpAdd').focus(); renderCmpList()
+}
+$('cmpAdd').onfocus = renderCmpList
+$('cmpAdd').oninput = () => { cmpActive = 0; renderCmpList() }
+$('cmpAdd').onblur = closeCmpList
+$('cmpAdd').onkeydown = (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); cmpActive += e.key === 'ArrowDown' ? 1 : -1; renderCmpList() }
+  if (e.key === 'Escape') closeCmpList()
+  if (e.key === 'Backspace' && !$('cmpAdd').value) { setCmp(cmpNames().slice(0, -1)); renderCmpList() }
+}
+// mousedown keeps the focus in the box, so several models can be picked one after another
+$('cmpList').onmousedown = (e) => {
+  e.preventDefault()
+  const li = e.target.closest('[data-add]')
+  if (li) { addCmp(li.dataset.add); renderCmpList() }
+}
+$('cmpForm').onsubmit = (e) => {
+  e.preventDefault()
+  const typed = $('cmpAdd').value.trim()
+  if (!typed) return
+  const pick = typed.includes(',') ? null : cmpMatches()[cmpActive]
+  addCmp(pick ? pick.model : typed); closeCmpList()
+}
+
+// price history: real changes and new models from the log, plus a clearly marked example
+function historyTable(heads, rows) {
+  return `<div class="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm"><table class="w-full text-[13px]">
+    <thead><tr>${heads.map((h) => `<th class="th">${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`
+}
+function changeTable(rows) {
+  const arrow = (a, b, pct) => `${money(a)} → <b>${money(b)}</b> ${pct ? `<span class="${pct < 0 ? 'text-emerald-600' : 'text-red-600'}">${pct > 0 ? '+' : ''}${pct}%</span>` : ''}`
+  return historyTable(['date', 'model', 'provider', 'tier', 'input', 'output'], rows.map((c) => `<tr><td class="td">${esc(c.after.date)}</td><td class="td">${esc(c.after.model)}</td><td class="td">${tag(c.after.provider)}</td><td class="td">${esc(c.after.tier)}</td>
+    <td class="td">${arrow(c.before.input, c.after.input, c.inputPercent)}</td><td class="td">${arrow(c.before.output, c.after.output, c.outputPercent)}</td></tr>`))
+}
+function loadHistory() {
+  Promise.all([get('/history/changes'), get('/history/new')]).then(([changes, added]) => {
+    let html = changes.length ? '<h3 class="h">Prices that moved</h3>' + changeTable(changes)
+      : '<div class="p-10 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl">no price has changed since tracking started<br><span class="text-xs">"Crawl the live pages again" on the Insights tab checks for new prices</span></div>'
+    if (added.length) html += '<h3 class="h mt-6">New since tracking started</h3>' + historyTable(['date', 'model', 'provider', 'tier', 'input', 'output'], added.map((e) => `<tr><td class="td">${esc(e.date)}</td><td class="td">${esc(e.model)}</td><td class="td">${tag(e.provider)}</td><td class="td">${esc(e.tier)}</td><td class="td">${money(e.input)}</td><td class="td">${money(e.output)}</td></tr>`))
+    html += '<button id="histExample" class="btn mt-5">Show me an example of a price change</button><div id="histDemo" class="mt-4"></div>'
+    $('histOut').innerHTML = html
+    $('histExample').onclick = showHistoryExample
+  }).catch(fail)
+}
+// takes two real prices and pretends they moved. nothing is saved
+function showHistoryExample() {
+  get('/models?tier=standard').then((rows) => {
+    const picks = [['gpt-6.2-astra', 0.75], ['claude-opus-5-5', 1.1]].map(([id, factor]) => [rows.find((r) => r.model === id), factor]).filter(([m]) => m)
+    const round = (v) => Math.round(v * 10000) / 10000
+    const example = picks.map(([m, f]) => ({ after: { date: 'example', model: m.model, provider: m.provider, tier: m.tier, input: round(m.input * f), output: round(m.output * f) },
+      before: m, inputPercent: Math.round((f - 1) * 100), outputPercent: Math.round((f - 1) * 100) }))
+    $('histDemo').innerHTML = '<div class="note !bg-amber-50 !text-amber-900 dark:!bg-amber-950 dark:!text-amber-200"><b>Example only.</b> These two changes are made up to show how the tab looks. They are not real prices and nothing is saved.</div>' + changeTable(example)
+  }).catch(fail)
+}
+
+// insights
+function loadInsights() {
+  get('/top-searches').then((t) => $('top').innerHTML = t.length
+    ? `<ol class="list-decimal pl-5 leading-7 text-sm">${t.map((x) => `<li><b>${x.count}</b> ${esc(x.word)}</li>`).join('')}</ol>`
+    : '<p class="text-sm text-zinc-500">nothing searched yet</p>').catch(fail)
+  get('/problems').then((p) => $('problems').innerHTML = Object.keys(p).length === 0
+    ? 'every crawled price passed the regex and sanity checks'
+    : Object.entries(p).map(([k, v]) => `<p>${esc(k)}: ${esc(v.join(', '))}</p>`).join('')).catch(fail)
+  get('/free').then((r) => $('free').innerHTML = priceTable(r)).catch(fail)
+  get('/warnings').then((r) => $('warnings').innerHTML = priceTable(r)).catch(fail)
+  get('/pages').then((pages) => {
+    $('patUrl').innerHTML = `<option value="">all ${pages.length} pages</option>` + pages.map((p) => `<option value="${esc(p.url)}">${esc(p.url.replace('https://', ''))}</option>`).join('')
+    loadPatterns()
+  }).catch(fail)
+}
+function loadPatterns() {
+  get('/patterns?url=' + encodeURIComponent($('patUrl').value)).then((found) => {
+    $('patterns').innerHTML = Object.entries(found).map(([kind, items]) => `<div class="box !p-4">
+      <h4 class="font-semibold text-sm mb-2 capitalize">${esc(kind)} <span class="text-zinc-500 font-normal">(${Object.keys(items).length})</span></h4>
+      ${Object.entries(items).slice(0, 10).map(([v, n]) => `<div><span class="text-zinc-500">${n}×</span> ${esc(v)}</div>`).join('')}</div>`).join('')
+  }).catch(fail)
+}
+$('patUrl').onchange = loadPatterns
+$('crawlBtn').onclick = () => {
+  const b = $('crawlBtn'); b.disabled = true; b.textContent = 'crawling…'
+  call('/crawl', {}).then((log) => $('crawlLog').textContent = log.join('\n')).catch((e) => $('crawlLog').textContent = e.message)
+    .finally(() => { b.disabled = false; b.textContent = 'Crawl the live pages again' })
+}
+
+// error handling tab: every member, every feature
+const MEMBER_COLOR = { 'Nishan Giri': '#d97757', 'Abhinav Pandey': '#10a37f', 'Shrijana Karki': '#4285f4', 'Aakriti Mainali': '#8b5cf6', 'Khem Raj Adhikari': '#71717a', 'shared parts': '#52525b' }
+let errCases = [], errFilter = ''
+function loadErrors() {
+  $('errList').innerHTML = '<p class="text-sm text-zinc-500">running the cases…</p>'
+  get('/error-demo').then((cases) => { errCases = cases; renderErrors() }).catch(fail)
+}
+function renderErrors() {
+  const handled = errCases.filter((c) => c.handled).length
+  const members = [...new Set(errCases.map((c) => c.member))]
+  $('errSummary').innerHTML = [['cases run', errCases.length, ''], ['handled well', handled, 'text-emerald-600'], ['crashed', errCases.length - handled, errCases.length - handled ? 'text-red-600' : 'text-zinc-900 dark:text-zinc-100'], ['members covered', members.length - 1, '']]
+    .map(([k, v, c]) => `<div class="box !p-4"><div class="text-2xl font-semibold ${c}">${v}</div><div class="text-xs text-zinc-500">${k}</div></div>`).join('')
+  $('errChips').innerHTML = ['', ...members].map((m) => `<button data-memberchip="${esc(m)}" class="px-3 py-1 text-xs rounded-full border ${m === errFilter ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:border-indigo-400'}">${m ? esc(m.split(' ')[0]) + ' (' + errCases.filter((c) => c.member === m).length + ')' : 'everyone'}</button>`).join('')
+  // one collapsible block for each member, the chosen member (or the first one) starts open
+  const shownMembers = members.filter((m) => !errFilter || m === errFilter)
+  $('errList').innerHTML = shownMembers.map((m, i) => {
+    const mine = errCases.filter((c) => c.member === m)
+    const good = mine.filter((c) => c.handled).length
+    const rows = mine.map((c) => {
+      const rej = c.kind.startsWith('rejected')
+      return `<div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3.5 flex gap-3">
+        <div class="text-lg leading-6">${c.handled ? (rej ? '🛡️' : '✅') : '❌'}</div>
+        <div class="min-w-0 flex-1">
+          <div class="flex gap-2 items-center flex-wrap text-sm"><b>${esc(c.feature)}</b><span class="text-zinc-500">${esc(c.scenario)}</span></div>
+          <div class="text-xs mt-1 text-zinc-500">input <code class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 break-all">${esc(c.input)}</code></div>
+          <div class="text-sm mt-1.5 break-words"><span class="text-[11px] uppercase tracking-wide font-semibold mr-1.5 ${rej ? 'text-amber-600' : c.handled ? 'text-emerald-600' : 'text-red-600'}">${esc(c.kind)}</span>${esc(c.result)}</div>
+        </div></div>`
+    }).join('')
+    return `<details class="group" ${(errFilter || i === 0) ? 'open' : ''}>
+      <summary class="cursor-pointer list-none flex items-center gap-2.5 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
+        <span class="w-2.5 h-2.5 rounded-full" style="background:${MEMBER_COLOR[m] || '#888'}"></span>
+        <b class="text-sm">${esc(m)}</b>
+        <span class="text-xs text-zinc-500">${[...new Set(mine.map((c) => c.feature))].join(', ')}</span>
+        <span class="ml-auto text-xs ${good === mine.length ? 'text-emerald-600' : 'text-red-600'} font-medium">${good} of ${mine.length} handled</span>
+        <span class="text-zinc-400 group-open:rotate-90 transition">›</span>
+      </summary>
+      <div class="space-y-2 pt-2.5 pb-3">${rows}</div></details>`
+  }).join('')
+}
+$('errChips').onclick = (e) => { if (e.target.dataset.memberchip !== undefined) { errFilter = e.target.dataset.memberchip; renderErrors() } }
+$('errRun').onclick = loadErrors
+
+// try to break it yourself: the same endpoints the other tabs use
+$('tryForm').onsubmit = (e) => {
+  e.preventDefault()
+  const v = $('tryInput').value, kind = $('tryKind').value
+  const q = encodeURIComponent(v)
+  const request = {
+    search: () => get('/search?q=' + q),
+    complete: () => get('/complete?prefix=' + q),
+    tokens: () => call('/recommend', { inputPerDay: v, outputPerDay: '100K' }),
+    compare: () => get('/compare?ids=' + q),
+    card: () => get('/models/' + q),
+    frequency: () => get('/frequency?word=' + q),
+  }[kind]
+  const show = (ok, text) => $('tryOut').innerHTML = `<div class="rounded-xl px-4 py-3 text-sm ${ok ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200' : 'bg-amber-50 dark:bg-amber-950 text-amber-900 dark:text-amber-200'}">${ok ? '✅' : '🛡️'} ${text}</div>`
+  request().then((r) => {
+    const n = Array.isArray(r) ? r.length : (r.pages ? r.pages.length : 0)
+    show(true, kind === 'search' && r.unknownWords.length ? `answered, "${esc(r.unknownWords.join(', '))}" is not in the pages and ${r.searchedInstead ? 'the search used "' + esc(r.searchedInstead) + '" instead' : 'no close word was found'}` : `answered safely with ${n} result(s)`)
+  }).catch((err) => show(false, 'handled, the server refused with a clear message: <b>' + esc(err.message) + '</b>'))
+}
+
+// experiments tab
+$('expRun').onclick = () => {
+  const b = $('expRun'); b.disabled = true; b.textContent = 'measuring…'
+  get('/experiments').then((rows) => {
+    let last = ''
+    $('expOut').innerHTML = rows.map((r) => {
+      const head = r.member !== last ? `<h4 class="pt-5 pb-1 flex items-center gap-2 text-sm font-semibold"><span class="w-2.5 h-2.5 rounded-full" style="background:${MEMBER_COLOR[r.member] || '#888'}"></span>${esc(r.member)}</h4>` : ''
+      last = r.member
+      const max = Math.max(r.aValue, r.bValue) || 1
+      const bar = (label, v, color) => `<div class="flex items-center gap-3 text-xs"><div class="w-44 shrink-0 text-zinc-600 dark:text-zinc-300 truncate" title="${esc(label)}">${esc(label)}</div><div class="flex-1 h-5 rounded bg-zinc-100 dark:bg-zinc-800 overflow-hidden"><div class="h-full rounded" style="width:${Math.max(1.5, v / max * 100)}%;background:${color}"></div></div><div class="w-24 text-right tabular-nums font-medium">${v.toLocaleString()}</div></div>`
+      return head + `<div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 mb-2.5 shadow-sm">
+        <div class="text-xs text-zinc-500">${esc(r.feature)}</div>
+        <div class="font-semibold text-sm">${esc(r.title)}</div>
+        <div class="text-xs text-zinc-500 mt-0.5 mb-3">${esc(r.question)}</div>
+        <div class="space-y-1.5">${bar(r.aLabel, r.aValue, '#4f46e5')}${bar(r.bLabel, r.bValue, '#a1a1aa')}</div>
+        <div class="text-[11px] text-zinc-500 mt-1.5">${esc(r.unit)}</div>
+        <div class="text-sm mt-2">${esc(r.takeaway)}</div></div>`
+    }).join('')
+  }).catch(fail).finally(() => { b.disabled = false; b.textContent = 'Run again' })
+}
+
+// the what-if buttons of every tab
+const CALC_DEFAULTS = { inputPerDay: '2M', outputPerDay: '500K', provider: '', cachedPercent: '0', promptSize: '', minContext: '', budget: '' }
+function tryCalc(values, checks = {}) {
+  const f = $('calcForm')
+  Object.entries({ ...CALC_DEFAULTS, ...values }).forEach(([k, v]) => { f.elements[k].value = v })
+  f.batchOk.checked = !!checks.batchOk; f.skipFree.checked = !!checks.skipFree
+  f.requestSubmit()
+}
+whatIf('calculator', [
+  ['type "2 million" as tokens', () => tryCalc({ inputPerDay: '2 million' })],
+  ['type 999999999999B', () => tryCalc({ inputPerDay: '999999999999B' })],
+  ['leave the input empty', () => tryCalc({ inputPerDay: '' })],
+  ['ask for 0 tokens', () => tryCalc({ inputPerDay: '0', outputPerDay: '0' })],
+  ['say 150% is cached', () => tryCalc({ cachedPercent: '150' })],
+  ['set a $0.01 budget', () => tryCalc({ budget: '0.01' }, { skipFree: true })],
+  ['need a 100M context window', () => tryCalc({ minContext: '100M' })],
+  ['use a normal workload', () => tryCalc({})],
+])
+whatIf('search', [
+  ['type a typo (gemnii)', () => { $('q').value = 'gemnii'; runSearch() }],
+  ['type symbols (<script>)', () => { $('q').value = '<scr' + 'ipt>alert(1)</scr' + 'ipt>'; runSearch() }],
+  ['search for nothing', () => { $('q').value = ''; runSearch() }],
+  ['type a 100 letter word', () => { $('q').value = 'a'.repeat(100); runSearch() }],
+  ['search a word no page has', () => { $('q').value = 'zzzunknownzzz'; runSearch() }],
+  ['search a phrase (batch api)', () => { $('q').value = 'batch api'; runSearch() }],
+  ['start typing claude-op', () => { $('q').value = 'claude-op'; $('q').focus(); $('q').dispatchEvent(new Event('input')) }],
+])
+whatIf('models', [
+  ['pick xAI on the batch tier', () => { $('mProvider').value = 'xai'; $('mTier').value = 'batch'; loadModels() }],
+  ['open a model that does not exist', () => openCard('claude-opus-9')],
+  ['open a model with a typo', () => openCard('gpt-6.2-astr')],
+  ['sort by the biggest context', () => { $('mProvider').value = ''; $('mTier').value = 'standard'; $('mSort').value = 'contextWindow'; loadModels() }],
+])
+const tryCompare = (v) => { $('cmpText').value = v; runCompare() }
+whatIf('compare', [
+  ['mistype a name (gpt-6.2-astr)', () => tryCompare('gpt-6.2-astr, claude-opus-5-5')],
+  ['add one unknown model', () => tryCompare('claude-opus-5-5, grok-4.7, not-a-model')],
+  ['leave the box empty', () => tryCompare('')],
+  ['compare 12 models', () => tryCompare('a1,a2,a3,a4,a5,a6,a7,a8,a9,b1,b2,b3')],
+  ['use symbols (<b>)', () => tryCompare('<b>')],
+  ['compare normally', () => tryCompare('gpt-6.2-astra, claude-opus-5-5, gemini-4-carbon, grok-4.7, glm-5.3')],
+])
+const tryKind = (kind, v) => { $('tryKind').value = kind; $('tryInput').value = v; $('tryForm').requestSubmit() }
+whatIf('try', [
+  ['count an empty word', () => tryKind('frequency', '')],
+  ['count @@@', () => tryKind('frequency', '@@@')],
+  ['complete "zzzq"', () => tryKind('complete', 'zzzq')],
+  ['complete in capitals', () => tryKind('complete', 'CLAUDE-OP')],
+  ['open the model nothing-here', () => tryKind('card', 'nothing-here')],
+  ['send 999999999999B', () => tryKind('tokens', '999999999999B')],
+])
+
+show('calculator')
+</script>
+</body>
+</html>

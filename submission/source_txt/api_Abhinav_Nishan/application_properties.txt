@@ -1,0 +1,3 @@
+server.port=8080
+# folder with the saved crawl data, shared with the command line app
+tokentally.data=../core/data
