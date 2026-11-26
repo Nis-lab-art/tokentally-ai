@@ -22,7 +22,9 @@ openai,gpt-6.2-sol,ultrafast,6,0.3,30,,,,,,,"cache write 30m $7.5 | scheduled pr
 openai,gpt-6-cyber,standard,20,2,100,,,,,,,cache write 30m $25,https://developers.openai.com/api/docs/pricing
 openai,gpt-6-rosalind,standard,10,1,50,,,,,,,cache write 30m $12.5,https://developers.openai.com/api/docs/pricing
 openai,gpt-6.2-astra-law,standard,8,0.4,40,,,,,,,cache write 30m $10,https://developers.openai.com/api/docs/pricing
+openai,gpt-6.2-astra-healthcare,standard,8,0.4,40,,,,,,,cache write 30m $10,https://developers.openai.com/api/docs/pricing
 openai,chat-latest,standard,5,0.5,30,,,,,,,,https://developers.openai.com/api/docs/pricing
+openai,gpt-6.2-astra-healthcare,fast,16,0.8,80,,,,,,,,https://developers.openai.com/api/docs/pricing
 gemini,gemini-4-carbon,standard,2,0.1,10,,,,,,,,https://aistudio.google.com/docs/pricing
 gemini,gemini-4-carbon,batch,1,0.05,5,,,,,,,,https://aistudio.google.com/docs/pricing
 gemini,gemini-4-carbon,flex,1,0.05,5,,,,,,,,https://aistudio.google.com/docs/pricing

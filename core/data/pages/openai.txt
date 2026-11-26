@@ -655,11 +655,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -830,13 +830,21 @@ Cyber Trusted Access: Daybreak gpt-6-cyber $20.00 $100.00 $2.00 $25.00 $50.00
 Life Sciences Trusted Access: Rosalind gpt-6-rosalind $10.00 $50.00 $1.00 $12.50 $25.00
 Legal model configurations gpt-6.2-astra-law $8.00 $40.00 $0.40 $10.00 $20.00
 gpt-6-astra-law $10.00 $50.00 $1.00 - -
+Healthcare model configurations gpt-6.2-astra-healthcare $8.00 $40.00 $0.40 $10.00 $20.00
+gpt-6.2-sol-healthcare $2.00 $10.00 $0.10 $2.50 $5.00
+gpt-6-astra-healthcare $10.00 $50.00 $1.00 - -
+gpt-6.1-sol-healthcare $2.00 $10.00 $0.10 - -
 ChatGPT chat-latest $5.00 $30.00 $0.50 - -
 All models
-GPT-6 Astra for Law, GPT-6.2 Astra for Law, and GPT-6 Rosalind promotional pricing is available at least through December 31, 2026.
+GPT-6 Astra for Law, GPT-6.2 Astra for Law, GPT-6 Rosalind, GPT-6.2 Astra Healthcare, GPT-6.2 Sol Healthcare, GPT-6 Astra Healthcare, and GPT-6.1 Sol Healthcare promotional pricing is available at least through December 31, 2026.
 Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March 5, 2026. For standalone FedRAMP endpoints, GPT-6 Rosalind rates are 10% above the corresponding global rates.
 Fast
 Prompt caching
 Category Model Input Output Cached input
+Healthcare model configurations gpt-6.2-astra-healthcare $16.00 $80.00 $0.80
+gpt-6.2-sol-healthcare $4.00 $20.00 $0.20
+gpt-6-astra-healthcare $20.00 $100.00 $2.00
+gpt-6.1-sol-healthcare $4.00 $20.00 $0.20
 All models
 Regional processing (data residency) endpoints are charged a 10% uplift for models released on or after March 5, 2026.
 Tools
@@ -1549,11 +1557,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -2397,11 +2405,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -3238,11 +3246,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -4079,11 +4087,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -4936,11 +4944,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -5796,11 +5804,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -6640,11 +6648,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -7498,11 +7506,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -8305,11 +8313,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -9112,11 +9120,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -9942,11 +9950,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -10772,11 +10780,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -11585,11 +11593,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -12426,11 +12434,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -13266,11 +13274,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -14080,11 +14088,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -14890,11 +14898,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API
@@ -15700,11 +15708,11 @@ Showcase Blog Cookbook Learn Community
 Docs Showcase
 All posts
 Recent
+Production monitoring with Codex
 Building security review into your SDLC with Codex Security
 How I stay in the flow with Ultrafast
 Time awareness and async input for personal agents
 Prompting GPT-Live for languages and regional accents
-Securing persistent agents like OpenClaw at OpenAI
 Topics
 General
 API

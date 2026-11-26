@@ -193,3 +193,5 @@ date,provider,model,tier,input,cached_input,output
 2026-11-24,xai,grok-4.20-0309-non-reasoning,batch,1,0.16,2
 2026-11-24,xai,grok-4.20-multi-agent-0309,batch,1,0.16,2
 2026-11-24,xai,grok-4.7-fast,fast,4,1,12
+2026-11-26,openai,gpt-6.2-astra-healthcare,standard,8,0.4,40
+2026-11-26,openai,gpt-6.2-astra-healthcare,fast,16,0.8,80

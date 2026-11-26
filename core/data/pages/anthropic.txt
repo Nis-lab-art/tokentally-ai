@@ -496,16 +496,16 @@ Runtime is measured to the millisecond and accrues only while the session’s st
 Worked example
 A 1-hour coding session using Claude Opus 5.5 that consumes 50,000 input tokens and 15,000 output tokens:
 Line item Calculation Cost
-Input tokens 50,000 × $4 / 1,000,000 $0.20 USD
-Output tokens 15,000 × $20 / 1,000,000 $0.30 USD
-Session runtime 1.0 hour × $0.08 $0.08 USD
+Input tokens 50,000 × $4 USD / 1,000,000 $0.20 USD
+Output tokens 15,000 × $20 USD / 1,000,000 $0.30 USD
+Session runtime 1.0 hour × $0.08 USD $0.08 USD
 Total $0.58 USD
 If prompt caching is active and 40,000 of the input tokens are cache reads:
 Line item Calculation Cost
-Uncached input tokens 10,000 × $4 / 1,000,000 $0.04 USD
-Cache read tokens 40,000 × $4 × 0.05 / 1,000,000 $0.008 USD
-Output tokens 15,000 × $20 / 1,000,000 $0.30 USD
-Session runtime 1.0 hour × $0.08 $0.08 USD
+Uncached input tokens 10,000 × $4 USD / 1,000,000 $0.04 USD
+Cache read tokens 40,000 × $4 USD × 0.05 / 1,000,000 $0.008 USD
+Output tokens 15,000 × $20 USD / 1,000,000 $0.30 USD
+Session runtime 1.0 hour × $0.08 USD $0.08 USD
 Total $0.428 USD
 Additional pricing considerations
 Cost optimization strategies
@@ -867,7 +867,7 @@ Good to know
 Adaptive thinking is always on and can’t be turned off. Control thinking depth with the effort parameter .
 Forced tool use ( tool_choice types any and tool ) returns a 400 error. See Thinking and tool choice .
 Omit temperature , top_p , and top_k . See Sampling parameters for the values that return a 400 error.
-Claude Fable 5.2 requires 30-day data retention and isn’t available under zero data retention unless expressly authorized by Anthropic. See Model-specific data retention requirements .
+Claude Fable 5.2 requires 30-day data retention and isn’t available under legacy zero data retention (Legacy ZDR) unless expressly authorized by Anthropic. See Model-specific data retention requirements .
 Query limits and capabilities programmatically with the Models API Preview with links to the API reference available — press Tab until focus enters the card, Escape to return. .
 Resources
 
@@ -1827,10 +1827,10 @@ Amazon Bedrock (bedrock-runtime)
 Claude Opus 4.5 is on the bedrock-runtime endpoint (the InvokeModel and Converse APIs), with Bedrock-style model IDs.
 Was this page helpful?
  
+ Console
 Cookie settings
 We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
 Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
- Console
 @@url https://platform.claude.com/docs/en/models/sonnet-5/overview
 @@title Claude Sonnet 5 - Claude Platform Docs
 How it compares to the current lineup
@@ -1976,10 +1976,10 @@ Amazon Bedrock (bedrock-runtime)
 Claude Sonnet 4.6 is on the bedrock-runtime endpoint (the InvokeModel and Converse APIs), with Bedrock-style model IDs.
 Was this page helpful?
  
+ Console
 Cookie settings
 We use cookies to deliver and improve our services, analyze site usage, and if you agree, to customize or personalize your experience and market our services to you. You can read our Cookie Policy here (opens in new tab) .
 Customize Customize cookie settings Reject Reject all cookies Accept Accept all cookies
- Console
 @@url https://platform.claude.com/docs/en/models/sonnet-4-5/overview
 @@title Claude Sonnet 4.5 - Claude Platform Docs
 How it compares to the current lineup

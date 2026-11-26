@@ -312,6 +312,8 @@ Show batch API pricing
 Details
 Model name
 grok-4.7
+Aliases
+grok-4.7-latest
 Region
 us-east-1
 Batch API
@@ -383,6 +385,8 @@ Show batch API pricing
 Details
 Model name
 grok-4.6
+Aliases
+grok-4.6-latest
 Region
 us-east-1
 Batch API
