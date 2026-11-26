@@ -500,16 +500,34 @@ $('cmpForm').onsubmit = (e) => {
   addCmp(pick ? pick.model : typed); closeCmpList()
 }
 
-// price history
+// price history: real changes and new models from the log, plus a clearly marked example
+function historyTable(heads, rows) {
+  return `<div class="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm"><table class="w-full text-[13px]">
+    <thead><tr>${heads.map((h) => `<th class="th">${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`
+}
+function changeTable(rows) {
+  const arrow = (a, b, pct) => `${money(a)} → <b>${money(b)}</b> ${pct ? `<span class="${pct < 0 ? 'text-emerald-600' : 'text-red-600'}">${pct > 0 ? '+' : ''}${pct}%</span>` : ''}`
+  return historyTable(['date', 'model', 'provider', 'tier', 'input', 'output'], rows.map((c) => `<tr><td class="td">${esc(c.after.date)}</td><td class="td">${esc(c.after.model)}</td><td class="td">${tag(c.after.provider)}</td><td class="td">${esc(c.after.tier)}</td>
+    <td class="td">${arrow(c.before.input, c.after.input, c.inputPercent)}</td><td class="td">${arrow(c.before.output, c.after.output, c.outputPercent)}</td></tr>`))
+}
 function loadHistory() {
-  get('/history/changes').then((rows) => {
-    if (!rows.length) return $('histOut').innerHTML = '<div class="p-12 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl">no price has changed yet<br><span class="text-xs">press "Crawl the live pages again" on the Insights tab on another day to see changes</span></div>'
-    const arrow = (a, b, pct) => `${money(a)} → <b>${money(b)}</b> ${pct ? `<span class="${pct < 0 ? 'text-emerald-600' : 'text-red-600'}">${pct > 0 ? '+' : ''}${pct}%</span>` : ''}`
-    $('histOut').innerHTML = `<div class="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm"><table class="w-full text-[13px]">
-      <thead><tr><th class="th">date</th><th class="th">model</th><th class="th">provider</th><th class="th">tier</th><th class="th">input</th><th class="th">output</th></tr></thead><tbody>
-      ${rows.map((c) => `<tr><td class="td">${esc(c.after.date)}</td><td class="td">${esc(c.after.model)}</td><td class="td">${tag(c.after.provider)}</td><td class="td">${esc(c.after.tier)}</td>
-        <td class="td">${arrow(c.before.input, c.after.input, c.inputPercent)}</td><td class="td">${arrow(c.before.output, c.after.output, c.outputPercent)}</td></tr>`).join('')}
-      </tbody></table></div>`
+  Promise.all([get('/history/changes'), get('/history/new')]).then(([changes, added]) => {
+    let html = changes.length ? '<h3 class="h">Prices that moved</h3>' + changeTable(changes)
+      : '<div class="p-10 text-center text-zinc-500 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl">no price has changed since tracking started<br><span class="text-xs">"Crawl the live pages again" on the Insights tab checks for new prices</span></div>'
+    if (added.length) html += '<h3 class="h mt-6">New since tracking started</h3>' + historyTable(['date', 'model', 'provider', 'tier', 'input', 'output'], added.map((e) => `<tr><td class="td">${esc(e.date)}</td><td class="td">${esc(e.model)}</td><td class="td">${tag(e.provider)}</td><td class="td">${esc(e.tier)}</td><td class="td">${money(e.input)}</td><td class="td">${money(e.output)}</td></tr>`))
+    html += '<button id="histExample" class="btn mt-5">Show me an example of a price change</button><div id="histDemo" class="mt-4"></div>'
+    $('histOut').innerHTML = html
+    $('histExample').onclick = showHistoryExample
+  }).catch(fail)
+}
+// takes two real prices and pretends they moved. nothing is saved
+function showHistoryExample() {
+  get('/models?tier=standard').then((rows) => {
+    const picks = [['gpt-6.2-astra', 0.75], ['claude-opus-5-5', 1.1]].map(([id, factor]) => [rows.find((r) => r.model === id), factor]).filter(([m]) => m)
+    const round = (v) => Math.round(v * 10000) / 10000
+    const example = picks.map(([m, f]) => ({ after: { date: 'example', model: m.model, provider: m.provider, tier: m.tier, input: round(m.input * f), output: round(m.output * f) },
+      before: m, inputPercent: Math.round((f - 1) * 100), outputPercent: Math.round((f - 1) * 100) }))
+    $('histDemo').innerHTML = '<div class="note !bg-amber-50 !text-amber-900 dark:!bg-amber-950 dark:!text-amber-200"><b>Example only.</b> These two changes are made up to show how the tab looks. They are not real prices and nothing is saved.</div>' + changeTable(example)
   }).catch(fail)
 }
 

@@ -128,6 +128,22 @@ public class PriceHistory {
         return out;
     }
 
+    // prices that showed up after the first day of the log, so new models or new tiers, newest first
+    public ArrayList<Entry> added() throws IOException {
+        ArrayList<Entry> out = new ArrayList<>();
+        HashMap<String, Entry> seen = new HashMap<>();
+        String firstDay = null;
+        for (Entry e : load()) {
+            if (firstDay == null) {
+                firstDay = e.date;
+            }
+            if (seen.put(e.key(), e) == null && !e.date.equals(firstDay)) {
+                out.add(0, e);
+            }
+        }
+        return out;
+    }
+
     // the log lines of one model in the order they were written
     public ArrayList<Entry> of(String model) throws IOException {
         ArrayList<Entry> out = new ArrayList<>();

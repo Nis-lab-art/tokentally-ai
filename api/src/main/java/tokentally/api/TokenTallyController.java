@@ -165,6 +165,12 @@ public class TokenTallyController {
         return engine.history.changes();
     }
 
+    // models and tiers that appeared after tracking started
+    @GetMapping("/history/new")
+    public Object historyNew() throws Exception {
+        return engine.history.added();
+    }
+
     @GetMapping("/history")
     public Object history(@RequestParam String model) throws Exception {
         return engine.history.of(model);

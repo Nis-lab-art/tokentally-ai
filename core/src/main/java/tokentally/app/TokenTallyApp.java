@@ -348,6 +348,10 @@ public class TokenTallyApp {
         if (changes.isEmpty()) {
             System.out.println("no price has changed yet, crawl again later to see changes");
         }
+        for (PriceHistory.Entry e : engine.history.added()) {
+            System.out.printf("   %s  new  %-10s %-30s %-9s input %s  output %s%n", e.date, e.provider, e.model, e.tier,
+                ModelPrice.money(e.input), ModelPrice.money(e.output));
+        }
         int shown = 0;
         for (PriceHistory.Change c : changes) {
             if (shown++ == 15) {

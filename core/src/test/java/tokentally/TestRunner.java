@@ -403,6 +403,7 @@ public class TestRunner {
         check(ch.size() == 1, "only the changed price counts as a change");
         check(ch.get(0).after.model.equals("gpt-x") && ch.get(0).inputPercent == -50.0, "input price dropped 50 percent");
         check(ch.get(0).outputPercent == 0, "output did not move");
+        check(h.added().size() == 1 && h.added().get(0).model.equals("glm-x"), "only the model that came later is listed as new");
         check(h.of("gpt-x").size() == 2 && h.of("glm-x").size() == 1, "history of one model");
 
         PriceHistory again = new PriceHistory(dir);

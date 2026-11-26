@@ -180,7 +180,7 @@ ok   recommendation filters and order
 ok   saved data: parsers and accuracy
 ok   saved data: engine and speed
 
-146 checks passed, 0 failed
+147 checks passed, 0 failed
 ```
 
 ## Error handling and experiments
@@ -314,7 +314,7 @@ Models with a model card, and compare:
 
 ![compare](docs/report/figures/web-compare.png)
 
-Price history (this picture uses demo data with one price edited by hand):
+Price history. The button shows an example, those two changes are made up and are not real prices:
 
 ![price history](docs/report/figures/web-history.png)
 

@@ -134,11 +134,11 @@ Figure 11 Cost calculator in the command line menu (20 percent cached, 250K requ
 
 ## 5.11 models and compare
 
-The Models tab lists every price with filters for provider and tier and sorts by price or context window. Clicking a model opens a card with its prices, context window and the source page. Compare puts a few models side by side and says which one is cheapest for input plus output.
+The Models tab lists every price with filters for provider and tier and sorts by price or context window. Clicking a model opens a card with its prices, context window and the source page. Compare puts up to ten models side by side and says which one is cheapest for input plus output. The models are picked from a list that filters while the user types and each chosen model can be removed with one click.
 
 ![Figure 12 Models tab with a model card](figures/web-models.png){width=100%}
 
-![Figure 13 Compare tab](figures/web-compare.png){width=100%}
+![Figure 13 Compare tab with the model picker](figures/web-compare.png){width=100%}
 
 ## 5.12 parsers
 
@@ -154,9 +154,9 @@ The Insights tab shows the top searches, the data check, the free models, price 
 
 A price tracker needs to remember old prices. Each time the data is loaded or crawled `PriceHistory` compares every price with the last one it knows and writes a dated line to `price_history.csv` only when the price is new or different. The file only grows, nothing is rewritten. The Price history tab and menu option 13 show every price that moved with the old price, the new price and the change in percent. Looking at the whole log costs O(lines) with a hash map that holds the last price of every model.
 
-The log starts on the day of the first run so changes only show after a later crawl. Figure 15 uses a copy of the data where one price was changed by hand to show how a change looks. It is demo data and not a real price change.
+The log starts on the day of the first run so changes only show after a later crawl. The tab also lists models and tiers that appeared after tracking started. A button shows an example of what a change looks like. Figure 15 shows that example, the two changes in it are made up and are not real prices.
 
-![Figure 15 Price history tab (demo data, one price edited by hand)](figures/web-history.png){width=100%}
+![Figure 15 Price history tab with the example button, example changes and not real prices](figures/web-history.png){width=100%}
 
 ```
 FIGURE_HISTORY
@@ -222,7 +222,7 @@ Figure 21 Experiments in the command line menu (option 19, first two members)
 
 # 8 testing
 
-We wrote a small test runner ourselves (`TestRunner`) that counts passed and failed checks without a test library. It has 146 checks. They cover the heap, robots.txt rules, url cleaning, html cleaner, all five parsers, tokenizer, inverted index, Boyer-Moore and KMP (compared with a slow count), edit distance, spell checker, trie, search frequency file, ranking, validation, patterns, cost calculation, recommendation filters, the price history log, the 54 bad input cases, the experiments, the hardening of null and damaged input and the saved data (speed and accuracy). All checks pass. The web page was checked by hand and the live crawl was run again for this report.
+We wrote a small test runner ourselves (`TestRunner`) that counts passed and failed checks without a test library. It has 147 checks. They cover the heap, robots.txt rules, url cleaning, html cleaner, all five parsers, tokenizer, inverted index, Boyer-Moore and KMP (compared with a slow count), edit distance, spell checker, trie, search frequency file, ranking, validation, patterns, cost calculation, recommendation filters, the price history log, the 54 bad input cases, the experiments, the hardening of null and damaged input and the saved data (speed and accuracy). All checks pass. The web page was checked by hand and the live crawl was run again for this report.
 
 ```
 FIGURE_TESTS
