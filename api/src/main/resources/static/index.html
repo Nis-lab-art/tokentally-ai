@@ -91,10 +91,15 @@
   <!-- compare -->
   <section id="compare" class="tab hidden">
     <div id="wi-compare" class="mb-4"></div>
-    <form id="cmpForm" class="flex gap-2">
-      <input id="cmpText" value="gpt-6.2-astra, claude-opus-5-5, gemini-4-carbon, grok-4.7, glm-5.3" class="inp flex-1" />
-      <button class="btn">Compare</button>
+    <form id="cmpForm" class="relative">
+      <input id="cmpText" type="hidden" value="gpt-6.2-astra, claude-opus-5-5, gemini-4-carbon, grok-4.7, glm-5.3" />
+      <div id="cmpBox" class="flex flex-wrap items-center gap-1.5 p-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100 dark:focus-within:ring-indigo-950 cursor-text">
+        <div id="cmpChips" class="contents"></div>
+        <input id="cmpAdd" autocomplete="off" role="combobox" aria-label="Add a model to compare" class="flex-1 min-w-[11rem] bg-transparent outline-none text-sm px-2 py-1.5" />
+      </div>
+      <ul id="cmpList" class="hidden absolute z-10 left-0 right-0 mt-1.5 p-1.5 max-h-72 overflow-auto rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg"></ul>
     </form>
+    <p class="text-xs text-zinc-500 mt-2">Click the box and pick a model, or type part of its name. × removes it. Up to 10.</p>
     <p id="cmpBest" class="text-sm text-zinc-500 my-3"></p>
     <div id="cmpTable" class="mt-3"></div>
   </section>
@@ -406,7 +411,7 @@ function suggest(name) {
 
 // compare
 function runCompare() {
-  clearFail()
+  clearFail(); renderCmpChips()
   const names = $('cmpText').value.split(',').map((n) => n.trim()).filter(Boolean)
   get('/compare?ids=' + encodeURIComponent($('cmpText').value)).then(async (rows) => {
     const found = new Set(rows.map((r) => r.model))
@@ -424,7 +429,76 @@ function runCompare() {
     $('cmpTable').innerHTML = note + (rows.length ? priceTable(rows) : '')
   }).catch((err) => { $('cmpBest').innerHTML = ''; $('cmpTable').innerHTML = reaction('rejected', 'The comparison was refused', esc(err.message)) })
 }
-$('cmpForm').onsubmit = (e) => { e.preventDefault(); runCompare() }
+// model picker: chosen models are chips, the list below filters while you type
+let cmpAll = [], cmpActive = 0
+get('/models?tier=standard').then((rows) => { cmpAll = rows; renderCmpChips() }).catch(() => {})
+const cmpNames = () => $('cmpText').value.split(',').map((n) => n.trim()).filter(Boolean)
+
+function renderCmpChips() {
+  const names = cmpNames()
+  $('cmpChips').innerHTML = names.map((n, i) => {
+    const m = cmpAll.find((r) => r.model === n.toLowerCase())
+    const look = m || !cmpAll.length ? 'border-zinc-200 dark:border-zinc-700 bg-stone-50 dark:bg-zinc-800' : 'border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950'
+    return `<span class="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-lg border text-sm ${look}">${m ? `<span class="dot ${esc(m.provider)} -mr-1.5"></span>` : ''}${esc(n)}<button type="button" data-remove="${i}" aria-label="remove ${esc(n)}" class="px-1 text-zinc-500 hover:text-red-600">×</button></span>`
+  }).join('')
+  $('cmpAdd').placeholder = names.length ? 'add a model…' : 'pick the models to compare…'
+}
+
+const cmpMatches = () => {
+  const q = $('cmpAdd').value.trim().toLowerCase()
+  const chosen = new Set(cmpNames().map((n) => n.toLowerCase()))
+  return cmpAll.filter((r) => !chosen.has(r.model) && (r.model.includes(q) || r.provider.includes(q)))
+}
+function renderCmpList() {
+  const found = cmpMatches()
+  cmpActive = Math.max(0, Math.min(cmpActive, found.length - 1))
+  $('cmpList').innerHTML = found.length ? found.map((r, i) => `<li data-add="${esc(r.model)}" class="flex items-center gap-3 px-3 py-2 text-sm rounded-lg cursor-pointer ${i === cmpActive ? 'bg-indigo-50 dark:bg-indigo-950' : ''}">
+      <span class="flex-1">${esc(r.model)}</span>${tag(r.provider)}<span class="w-32 text-right text-xs text-zinc-500 tabular-nums">${money(r.input)} in · ${money(r.output)} out</span></li>`).join('')
+    : '<li class="px-3 py-2 text-sm text-zinc-500">no model matches, press Enter to check this name anyway</li>'
+  $('cmpList').classList.remove('hidden')
+  $('cmpList').children[cmpActive]?.scrollIntoView({ block: 'nearest' })
+}
+const closeCmpList = () => $('cmpList').classList.add('hidden')
+
+function setCmp(names) {
+  $('cmpText').value = names.join(', ')
+  if (names.length) return runCompare()
+  renderCmpChips(); $('cmpBest').innerHTML = ''; $('cmpTable').innerHTML = ''
+}
+function addCmp(text) {
+  const names = cmpNames()
+  text.split(',').map((n) => n.trim()).filter(Boolean).forEach((n) => { if (!names.some((x) => x.toLowerCase() === n.toLowerCase())) names.push(n) })
+  if (names.length > 10) return fail(new Error('compare up to 10 models at a time, remove one first'))
+  $('cmpAdd').value = ''; cmpActive = 0
+  setCmp(names)
+}
+
+$('cmpBox').onclick = (e) => {
+  const i = e.target.dataset.remove
+  if (i !== undefined) { setCmp(cmpNames().filter((_, j) => j !== Number(i))); return closeCmpList() }
+  $('cmpAdd').focus(); renderCmpList()
+}
+$('cmpAdd').onfocus = renderCmpList
+$('cmpAdd').oninput = () => { cmpActive = 0; renderCmpList() }
+$('cmpAdd').onblur = closeCmpList
+$('cmpAdd').onkeydown = (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); cmpActive += e.key === 'ArrowDown' ? 1 : -1; renderCmpList() }
+  if (e.key === 'Escape') closeCmpList()
+  if (e.key === 'Backspace' && !$('cmpAdd').value) { setCmp(cmpNames().slice(0, -1)); renderCmpList() }
+}
+// mousedown keeps the focus in the box, so several models can be picked one after another
+$('cmpList').onmousedown = (e) => {
+  e.preventDefault()
+  const li = e.target.closest('[data-add]')
+  if (li) { addCmp(li.dataset.add); renderCmpList() }
+}
+$('cmpForm').onsubmit = (e) => {
+  e.preventDefault()
+  const typed = $('cmpAdd').value.trim()
+  if (!typed) return
+  const pick = typed.includes(',') ? null : cmpMatches()[cmpActive]
+  addCmp(pick ? pick.model : typed); closeCmpList()
+}
 
 // price history
 function loadHistory() {
