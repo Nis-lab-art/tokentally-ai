@@ -7,9 +7,8 @@ import tokentally.text.InvertedIndex;
 import tokentally.text.Tokenizer;
 import tokentally.util.Heap;
 
-// shrijana
-// page ranking: a page scores the number of times the search keywords show up in it
-// a max heap gives the best pages first. a tie goes to the page with more different keywords
+// owner: Shrijana Karki
+// ranks pages, max heap
 public class PageRanker {
 
     public static class Result {
@@ -30,13 +29,13 @@ public class PageRanker {
 
     public ArrayList<Result> rank(String query, int howMany) {
         if (query == null || query.isBlank() || howMany <= 0) {
-            return new ArrayList<>(); // no keywords, no ranking
+            return new ArrayList<>(); // no keywords
         }
         HashMap<String, Result> byUrl = new HashMap<>();
         ArrayList<String> seen = new ArrayList<>();
         for (String word : Tokenizer.words(query)) {
             if (seen.contains(word)) {
-                continue; // the same keyword twice should not count twice
+                continue; // count once
             }
             seen.add(word);
             for (var e : index.postings(word).entrySet()) {

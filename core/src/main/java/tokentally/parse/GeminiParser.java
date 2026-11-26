@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 import tokentally.model.ModelPrice;
 
-// shrijana
-// the gemini page is markdoc text, not html tables
-// "## Gemini 3.8 Flash" starts a model, {% tab title="Batch" %} starts a tier,
-// rows are split by --- and each cell starts with "* " (feature, free tier, paid tier)
+// owner: Shrijana Karki
+// gemini prices
 public class GeminiParser implements PriceParser {
 
     private String model;
@@ -34,7 +32,7 @@ public class GeminiParser implements PriceParser {
                 model = idFromHeading(line);
                 tier = "standard";
             } else if (line.startsWith("*[`") && model != null) {
-                // the real id like *[`gemini-3.8-flash`](/docs/models/...)
+                // real model id
                 int a = line.indexOf('`') + 1;
                 int b = line.indexOf('`', a);
                 if (b > a) {
@@ -57,7 +55,7 @@ public class GeminiParser implements PriceParser {
                 } else if (line.startsWith("* ")) {
                     cells.add(line.substring(2));
                 } else if (!line.isEmpty() && !cells.isEmpty()) {
-                    // a cell can go over more than one line
+                    // multi line cell
                     int lastCell = cells.size() - 1;
                     cells.set(lastCell, cells.get(lastCell) + " " + line);
                 }
@@ -67,7 +65,7 @@ public class GeminiParser implements PriceParser {
         return list;
     }
 
-    // "## Gemini 3.8 Flash  {% id="gemini-3.8-flash" %}" -> gemini-3.8-flash
+    // heading -> model id
     private String idFromHeading(String line) {
         int at = line.indexOf("id=\"");
         if (at >= 0) {
@@ -77,7 +75,7 @@ public class GeminiParser implements PriceParser {
         return line.substring(3).trim().toLowerCase().replace(' ', '-');
     }
 
-    // a row is feature, free tier, paid tier. we only use the paid price
+    // use paid price
     private void useRow(ArrayList<String> cells) {
         if (model == null || cells.size() < 3) {
             return;
@@ -98,7 +96,7 @@ public class GeminiParser implements PriceParser {
             }
             return;
         }
-        // "$2.25, prompts <= 200k tokens $4.50, prompts > 200k"
+        // short and long price
         boolean hasLong = paid.contains("> 200k") || paid.contains(">200k");
         double shortPrice = amounts.get(0);
         double longPrice = hasLong && amounts.size() > 1 ? amounts.get(1) : -1;

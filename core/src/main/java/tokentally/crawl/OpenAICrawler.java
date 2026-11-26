@@ -1,7 +1,7 @@
 package tokentally.crawl;
 
-// abhinav
-// openai pricing page and the model pages under /api/docs/models
+// owner: Abhinav Pandey
+// openai pages
 public class OpenAICrawler implements Crawler {
 
     public String provider() {

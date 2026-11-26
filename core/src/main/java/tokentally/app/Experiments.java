@@ -17,9 +17,8 @@ import tokentally.text.BoyerMoore;
 import tokentally.text.EditDistance;
 import tokentally.text.KMPMatcher;
 
-// small measured experiments on the real crawled data, one or two for every member
-// each one compares our data structure or algorithm with the plain way of doing it
-// the numbers change a little on every run and on every laptop, the ratio is what matters
+// owner: Aakriti Mainali
+// timing experiments
 public class Experiments {
 
     public static class Row {
@@ -37,7 +36,7 @@ public class Experiments {
 
     private final Engine engine;
     private final ArrayList<Row> rows = new ArrayList<>();
-    private static long sink; // keeps the compiler from removing the work we time
+    private static long sink; // stops the compiler skipping work
 
     public Experiments(Engine engine) {
         this.engine = engine;
@@ -57,7 +56,7 @@ public class Experiments {
 
     private void abhinav() {
         String m = "Abhinav Pandey";
-        // 1 inverted index against reading every page
+        // index vs page scan
         String word = "batch";
         double index = micros(() -> sink += engine.index.postings(word).size(), 2000);
         double scan = micros(() -> {
@@ -74,7 +73,7 @@ public class Experiments {
             "inverted index (hash map)", index, "read every page", scan, "microseconds per search");
         note("a hash map lookup is O(1) on average, reading every page is O(total characters).");
 
-        // 2 boyer moore against kmp
+        // comparisons
         String[] words = {"price", "token", "batch", "cache", "context"};
         long bmCompare = 0;
         long kmpCompare = 0;
@@ -93,7 +92,7 @@ public class Experiments {
             "Boyer-Moore jumps ahead, KMP reads every character once. How many characters does each check?",
             "Boyer-Moore", bmCompare, "KMP", kmpCompare, "characters compared");
 
-        // 3 same answer, different speed
+        // speed
         String longest = "";
         for (Page p : engine.pages) {
             if (p.text.length() > longest.length()) {
@@ -116,7 +115,7 @@ public class Experiments {
         String m = "Nishan Giri";
         ArrayList<String> vocab = new ArrayList<>(engine.index.words());
 
-        // 4 heap against sorting all candidates
+        // heap vs sort
         String typo = "gemnii";
         double heap = micros(() -> sink += engine.spell.suggest(typo, 5).size(), 60);
         double sort = micros(() -> {
@@ -139,7 +138,7 @@ public class Experiments {
             "heap (ours)", heap, "collect and sort all", sort, "microseconds per search");
         note("with only a few hundred candidates a plain sort is just as quick. The heap pays off when there are far more candidates than the 5 we keep.");
 
-        // 5 how the edit distance grows with word length
+        // distance vs length
         String a8 = "pricingx";
         String a16 = "pricingxpricingx";
         String a32 = "pricingxpricingxpricingxpricing";
@@ -153,7 +152,7 @@ public class Experiments {
         r.takeaway = "16 letters took " + (long) d16 + " ns. 8 to 16 letters costs " + ratio(d16, d8) + " and 8 to 32 letters costs "
             + ratio(d32, d8) + ", about the 4x and 16x of an a x b table.";
 
-        // 6 cost calculator: min heap against sorting all prices
+        // heap vs sort
         Workload w = new Workload();
         w.inputPerDay = 2_000_000;
         w.outputPerDay = 500_000;
@@ -239,7 +238,7 @@ public class Experiments {
 
     private void khem() {
         String m = "Khem Raj Adhikari";
-        // 9 html cleaning speed on the raw pages that were saved
+        // cleaning speed
         long chars = 0;
         double ms = 0;
         for (String provider : new String[] {"openai", "gemini", "anthropic", "zai", "xai"}) {
@@ -253,7 +252,7 @@ public class Experiments {
                 sink += HtmlCleaner.text(html).length();
                 ms += (System.nanoTime() - t) / 1e6;
             } catch (Exception e) {
-                // a missing raw page is just left out of the experiment
+                // skip missing page
             }
         }
         add(m, "html cleaning", "clean the 5 saved pricing pages (" + chars / 1000 + " thousand characters)",
@@ -261,7 +260,7 @@ public class Experiments {
             "time for all 5 pages", ms, "per 100 thousand characters", chars == 0 ? 0 : ms / (chars / 100000.0), "milliseconds");
         rows.get(rows.size() - 1).takeaway = "about " + Math.round(chars == 0 ? 0 : ms / (chars / 100000.0)) + " ms for every 100 thousand characters. Why: one pass over the text, so the time grows in a straight line with the page size (O(n)).";
 
-        // 10 search frequency: counting in memory against saving to the file each time
+        // save vs read
         try {
             java.nio.file.Path f = java.nio.file.Files.createTempFile("freq", ".txt");
             f.toFile().deleteOnExit();
@@ -273,7 +272,7 @@ public class Experiments {
                 "record and save", record, "read a count", read, "microseconds per call");
             note("saving after every search is the slow part. It is safe because the history survives a crash, and a search still only takes about " + (long) record + " microseconds more.");
         } catch (java.io.IOException e) {
-            // no temp file, no experiment
+            // skip
         }
     }
 
@@ -301,7 +300,7 @@ public class Experiments {
         rows.add(r);
     }
 
-    // replaces the automatic sentence of the last row with an explanation
+    // add the reason
     private void note(String text) {
         Row r = rows.get(rows.size() - 1);
         r.takeaway = r.takeaway + ". Why: " + text;
@@ -319,7 +318,7 @@ public class Experiments {
         return Math.round(v * 100) / 100.0;
     }
 
-    // average time of a task in microseconds, after a warm up
+    // average time after warm up
     private static double micros(Runnable task, int repeats) {
         return nanos(task, repeats) / 1000.0;
     }

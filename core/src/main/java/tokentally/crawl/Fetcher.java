@@ -6,7 +6,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-// downloads a page with the http client that comes with java
+// owner: Khem Raj Adhikari
+// downloads pages
 public class Fetcher {
 
     public static final String USER_AGENT = "Mozilla/5.0 (compatible; TokenTallyBot/1.0; COMP8547 course project)";
@@ -16,8 +17,8 @@ public class Fetcher {
             .connectTimeout(Duration.ofSeconds(15))
             .build();
 
-    // gives the html and the final url after redirects
-    // a timeout, a dropped connection, http 429 or http 5xx is tried one more time after a short wait
+    // html and final url
+    // retry once on timeout, 429, 5xx
     public String[] get(String url) throws Exception {
         try {
             return once(url);
@@ -71,7 +72,7 @@ public class Fetcher {
         return new String[] {response.body(), response.uri().toString()};
     }
 
-    // same as get but null when anything goes wrong
+    // null on failure
     public String getQuietly(String url) {
         try {
             return get(url)[0];

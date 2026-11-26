@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 import tokentally.util.Heap;
 
-// aakriti
-// word completion: all words in the trie that start with the prefix,
-// the most frequent first using a heap
+// owner: Aakriti Mainali
+// word completion
 public class WordCompleter {
 
     private final Trie trie;

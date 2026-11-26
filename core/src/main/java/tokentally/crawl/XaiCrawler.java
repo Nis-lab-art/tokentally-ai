@@ -1,7 +1,7 @@
 package tokentally.crawl;
 
-// khem
-// xai pricing page and the model pages
+// owner: Khem Raj Adhikari
+// xai pages
 public class XaiCrawler implements Crawler {
 
     public String provider() {

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 import tokentally.model.ModelPrice;
 
-// every provider parser turns its pricing page html into model prices
+// owner: Shrijana Karki
+// parser interface
 public interface PriceParser {
 
     ArrayList<ModelPrice> parse(String html, String url);

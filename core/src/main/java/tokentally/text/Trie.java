@@ -3,22 +3,22 @@ package tokentally.text;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-// aakriti
-// trie of words, each node has its children by char and the count of the word ending there
+// owner: Aakriti Mainali
+// trie of words
 public class Trie {
 
     static class Node {
         TreeMap<Character, Node> children = new TreeMap<>();
-        int count; // 0 when no word ends here
+        int count; // 0 = no word
     }
 
     private final Node root = new Node();
     private int size;
 
-    // add the word, or add to its count if it is already there
+    // add word
     public void insert(String word, int times) {
         if (word == null || word.isEmpty() || times <= 0) {
-            return; // nothing to store
+            return; // ignore
         }
         Node cur = root;
         for (char c : word.toLowerCase().toCharArray()) {
@@ -42,7 +42,7 @@ public class Trie {
         return size;
     }
 
-    // walk down the trie to the node of the prefix
+    // find prefix node
     private Node find(String prefix) {
         Node cur = root;
         for (char c : prefix.toCharArray()) {
@@ -54,7 +54,7 @@ public class Trie {
         return cur;
     }
 
-    // every word under the prefix with its count
+    // words under prefix
     public ArrayList<Object[]> wordsWithPrefix(String prefix) {
         ArrayList<Object[]> out = new ArrayList<>();
         if (prefix == null || prefix.isEmpty()) {

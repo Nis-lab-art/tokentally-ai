@@ -1,7 +1,7 @@
 package tokentally.crawl;
 
-// aakriti
-// z.ai pricing page and the text and vision model pages
+// owner: Aakriti Mainali
+// z.ai pages
 public class ZaiCrawler implements Crawler {
 
     public String provider() {

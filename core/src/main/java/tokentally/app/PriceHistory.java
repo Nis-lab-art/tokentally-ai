@@ -10,9 +10,8 @@ import java.util.HashMap;
 
 import tokentally.model.ModelPrice;
 
-// keeps a dated log of prices so we can see when a price changed
-// data/price_history.csv has one line each time a model price is new or different
-// the log only grows, nothing is rewritten
+// owner: Nishan Giri
+// dated price log
 public class PriceHistory {
 
     private static final String HEADER = "date,provider,model,tier,input,cached_input,output";
@@ -35,11 +34,11 @@ public class PriceHistory {
         }
     }
 
-    // one price that moved between two log lines
+    // one price change
     public static class Change {
         public Entry before;
         public Entry after;
-        public double inputPercent;   // change of the input price in percent, 0 when unknown
+        public double inputPercent;   // percent, 0 if unknown
         public double outputPercent;
     }
 
@@ -62,7 +61,7 @@ public class PriceHistory {
             }
             String[] c = line.split(",", -1);
             if (c.length < 7) {
-                continue; // broken line
+                continue; // bad line
             }
             try {
                 Entry e = new Entry();
@@ -75,18 +74,17 @@ public class PriceHistory {
                 e.output = dbl(c[6]);
                 list.add(e);
             } catch (NumberFormatException ex) {
-                // skip lines we cannot read
+                // skip bad line
             }
         }
         return list;
     }
 
-    // adds a line for every price that is new or different from the last one we know
-    // returns how many lines were added
+    // write new or changed prices
     public int record(String date, ArrayList<ModelPrice> prices) throws IOException {
         HashMap<String, Entry> last = new HashMap<>();
         for (Entry e : load()) {
-            last.put(e.key(), e); // later lines replace earlier ones
+            last.put(e.key(), e); // last line wins
         }
         StringBuilder out = new StringBuilder();
         int added = 0;
@@ -110,7 +108,7 @@ public class PriceHistory {
         return added;
     }
 
-    // every time a known price moved, newest first
+    // changes, newest first
     public ArrayList<Change> changes() throws IOException {
         ArrayList<Change> out = new ArrayList<>();
         HashMap<String, Entry> last = new HashMap<>();
@@ -128,7 +126,7 @@ public class PriceHistory {
         return out;
     }
 
-    // prices that showed up after the first day of the log, so new models or new tiers, newest first
+    // new models, newest first
     public ArrayList<Entry> added() throws IOException {
         ArrayList<Entry> out = new ArrayList<>();
         HashMap<String, Entry> seen = new HashMap<>();
@@ -144,7 +142,7 @@ public class PriceHistory {
         return out;
     }
 
-    // the log lines of one model in the order they were written
+    // one model history
     public ArrayList<Entry> of(String model) throws IOException {
         ArrayList<Entry> out = new ArrayList<>();
         for (Entry e : load()) {

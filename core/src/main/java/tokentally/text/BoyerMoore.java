@@ -1,14 +1,13 @@
 package tokentally.text;
 
-// abhinav
-// boyer moore search that counts whole word matches
-// compares from the right end and jumps with the bad character rule or the good suffix rule
+// owner: Abhinav Pandey
+// boyer moore search
 public class BoyerMoore {
 
     private final String word;
     private final int[] lastSeen = new int[65536];
     private final int[] suffixJump;
-    public long comparisons; // how many char checks the last count did
+    public long comparisons; // chars compared
 
     public BoyerMoore(String word) {
         if (word == null || word.isEmpty()) {
@@ -17,7 +16,7 @@ public class BoyerMoore {
         this.word = word.toLowerCase();
         int m = this.word.length();
 
-        // bad character table: last place of each char in the word
+        // bad character table
         for (int i = 0; i < lastSeen.length; i++) {
             lastSeen[i] = -1;
         }
@@ -25,7 +24,7 @@ public class BoyerMoore {
             lastSeen[this.word.charAt(i)] = i;
         }
 
-        // good suffix table: jump for a mismatch at j, suffixJump[0] is for a full match
+        // good suffix table
         suffixJump = new int[m + 1];
         for (int j = -1; j < m; j++) {
             for (int jump = 1; jump <= m; jump++) {
@@ -46,7 +45,7 @@ public class BoyerMoore {
         }
     }
 
-    // text should already be lowercase
+    // lowercase text
     public int count(String text) {
         int m = word.length();
         int n = text.length();

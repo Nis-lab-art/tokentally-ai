@@ -10,17 +10,15 @@ import tokentally.model.ModelPrice;
 import tokentally.model.Page;
 import tokentally.parse.HtmlCleaner;
 
-// saves crawled data to the data folder so the app also works without internet
-// data/raw/<provider>.html   the pricing page (without scripts) for the parser
-// data/pages/<provider>.txt  clean text of every crawled page
-// data/prices.csv            all model prices in one format
+// owner: Abhinav Pandey
+// saves and loads data
 public class DataStore {
 
     public static final String[] CSV_HEADER = {"provider", "model", "tier", "input", "cached_input", "output",
         "long_input", "long_cached_input", "long_output", "long_threshold", "context_window", "max_output", "notes", "url"};
 
     private final Path dir;
-    public int badRows; // rows of prices.csv that could not be read the last time it was loaded
+    public int badRows; // skipped csv rows
 
     public DataStore(String folder) {
         this.dir = Path.of(folder);
@@ -147,7 +145,7 @@ public class DataStore {
                 p.notes = c[12];
                 p.sourceUrl = c[13];
             } catch (NumberFormatException e) {
-                badRows++; // a damaged row is skipped, the rest still loads
+                badRows++; // skip bad row
                 continue;
             }
             list.add(p);
@@ -183,7 +181,7 @@ public class DataStore {
         return s;
     }
 
-    // csv split where commas inside quotes stay in the value
+    // split, quotes keep commas
     public static String[] splitCsv(String line) {
         ArrayList<String> out = new ArrayList<>();
         StringBuilder cur = new StringBuilder();

@@ -27,7 +27,8 @@ import tokentally.model.Page;
 import tokentally.regex.InputValidator;
 import tokentally.text.FrequencyCounter;
 
-// web requests, each one calls the engine
+// owner: Abhinav Pandey, Nishan Giri
+// web requests to the engine
 @RestController
 @RequestMapping("/api")
 public class TokenTallyController {
@@ -128,7 +129,7 @@ public class TokenTallyController {
         return engine.dataProblems();
     }
 
-    // the form sends text like "2M" so the same regex checks as the command line are used
+    // same checks as the menu
     @PostMapping("/recommend")
     public ArrayList<Recommender.Pick> recommend(@RequestBody Map<String, Object> body) {
         Workload w = new Workload();
@@ -159,13 +160,13 @@ public class TokenTallyController {
         return engine.recommend(w, 10);
     }
 
-    // every price that moved, newest first
+    // price changes
     @GetMapping("/history/changes")
     public Object historyChanges() throws Exception {
         return engine.history.changes();
     }
 
-    // models and tiers that appeared after tracking started
+    // new models
     @GetMapping("/history/new")
     public Object historyNew() throws Exception {
         return engine.history.added();
@@ -176,13 +177,13 @@ public class TokenTallyController {
         return engine.history.of(model);
     }
 
-    // bad and extreme inputs on every feature, the same cases as menu option 18
+    // bad input cases
     @GetMapping("/error-demo")
     public synchronized ArrayList<ErrorDemo.Case> errorDemo() {
         return ErrorDemo.run(engine);
     }
 
-    // measured times on the real data, the same as menu option 19, takes a few seconds
+    // timing experiments
     @GetMapping("/experiments")
     public synchronized ArrayList<Experiments.Row> experiments() {
         return Experiments.run(engine);
@@ -213,7 +214,7 @@ public class TokenTallyController {
         return n;
     }
 
-    // a problem in one input field, so the page can mark that field
+    // error tied to a field
     static class FieldProblem extends IllegalArgumentException {
         final String field;
 
@@ -223,7 +224,7 @@ public class TokenTallyController {
         }
     }
 
-    // bad input gives a 400 with a short message instead of a stack trace
+    // bad input -> 400
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> badInput(IllegalArgumentException e) {
         Map<String, String> body = new LinkedHashMap<>();
@@ -244,7 +245,7 @@ public class TokenTallyController {
         return ResponseEntity.badRequest().body(Map.of("error", "the request could not be read, check the values and try again"));
     }
 
-    // anything we did not expect: a short message for the user, the details stay in the server log
+    // other errors -> 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> unexpected(Exception e) {
         e.printStackTrace();

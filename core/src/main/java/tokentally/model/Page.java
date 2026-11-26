@@ -1,6 +1,7 @@
 package tokentally.model;
 
-// one crawled page with its clean text
+// owner: Shrijana Karki
+// one crawled page
 public class Page {
 
     public String provider;

@@ -6,9 +6,8 @@ import java.util.HashMap;
 import tokentally.model.ModelPrice;
 import tokentally.util.Heap;
 
-// nishan
-// filters the models by the workload, works out the monthly cost
-// and keeps the cheapest ones with a min heap
+// owner: Nishan Giri
+// cheapest models, min heap
 public class Recommender {
 
     public static class Pick {
@@ -18,7 +17,7 @@ public class Recommender {
     }
 
     public static ArrayList<Pick> recommend(ArrayList<ModelPrice> prices, Workload w, int howMany) {
-        // cheapest allowed tier for each model
+        // cheapest tier per model
         HashMap<String, Pick> bestPerModel = new HashMap<>();
         for (ModelPrice p : prices) {
             if (!p.hasTokenPrice() || !tierAllowed(p.tier, w.batchOk)) {
@@ -30,7 +29,7 @@ public class Recommender {
             if (!w.provider.isEmpty() && !p.provider.equals(w.provider)) {
                 continue;
             }
-            // when the user needs a context size, a model must list one that is big enough
+            // context must fit
             if (w.minContext > 0 && (p.contextWindow < 0 || p.contextWindow < w.minContext)) {
                 continue;
             }
@@ -65,7 +64,7 @@ public class Recommender {
         return out;
     }
 
-    // standard always, batch and flex only when the user can wait
+    // batch and flex if allowed
     static boolean tierAllowed(String tier, boolean batchOk) {
         if (tier.equals("standard")) {
             return true;

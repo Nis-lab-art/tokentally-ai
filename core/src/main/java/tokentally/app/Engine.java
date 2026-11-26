@@ -20,8 +20,8 @@ import tokentally.text.Tokenizer;
 import tokentally.text.Trie;
 import tokentally.text.WordCompleter;
 
-// loads the data and builds every feature on it
-// the command line menu and the web api both use this one class
+// owner: Abhinav Pandey
+// loads data, runs features
 public class Engine {
 
     public final DataStore store;
@@ -41,7 +41,7 @@ public class Engine {
         history = new PriceHistory(Path.of(dataFolder));
     }
 
-    // use the saved data, and crawl only when there is none yet
+    // saved data first
     public void load() throws Exception {
         if (!store.hasData()) {
             CrawlAll.run(store, 20);
@@ -56,7 +56,7 @@ public class Engine {
         build();
     }
 
-    // fetch the live pages again and rebuild everything
+    // crawl again
     public ArrayList<String> recrawl() throws Exception {
         ArrayList<String> log = CrawlAll.run(store, 20);
         prices = store.loadPrices();
@@ -79,7 +79,7 @@ public class Engine {
             index.add(p);
         }
 
-        // vocabulary: every word with its count, model ids get counted too
+        // words and model ids
         HashMap<String, Integer> vocab = new HashMap<>(index.totals());
         for (ModelPrice p : prices) {
             vocab.merge(p.model, 1, Integer::sum);
@@ -93,14 +93,14 @@ public class Engine {
         ranker = new PageRanker(index);
     }
 
-    // context window and max output come from each model page, found with regex
+    // sizes from model pages
     private void fillSizesFromModelPages() {
         for (ModelPrice p : prices) {
             for (Page page : pages) {
                 if (!page.provider.equals(p.provider) || !pageIsAbout(page.url, p.model)) {
                     continue;
                 }
-                // try "1M context window" first and then "context window 1M"
+                // try both word orders
                 if (p.contextWindow < 0) {
                     p.contextWindow = PatternExtractor.firstSize(PatternExtractor.CONTEXT_WINDOW_FIRST, page.text);
                 }
@@ -117,7 +117,7 @@ public class Engine {
         }
     }
 
-    // .../models/gpt-6.2-astra or .../models/opus-5-5/overview belongs to that model
+    // is this the model page
     static boolean pageIsAbout(String url, String model) {
         String u = url.endsWith("/overview") ? url.substring(0, url.length() - 9) : url;
         String last = u.substring(u.lastIndexOf('/') + 1).toLowerCase();
@@ -134,7 +134,7 @@ public class Engine {
         public ArrayList<PageRanker.Result> pages = new ArrayList<>();
         public HashMap<String, Integer> phraseHits = new HashMap<>();
         public ArrayList<ModelPrice> models = new ArrayList<>();
-        public String searchedInstead = ""; // the suggestion used when the typed words found nothing
+        public String searchedInstead = ""; // suggestion used
     }
 
     public SearchResult search(String query) {
@@ -156,7 +156,7 @@ public class Engine {
         }
         r.pages = ranker.rank(r.query, 10);
 
-        // nothing found but every unknown word has a close match, so search with the matches
+        // retry with suggestion
         if (r.pages.isEmpty() && !r.unknownWords.isEmpty()) {
             StringBuilder fixed = new StringBuilder();
             boolean allFixed = true;
@@ -222,7 +222,7 @@ public class Engine {
         return out;
     }
 
-    // every tier of one model
+    // all tiers
     public ArrayList<ModelPrice> card(String model) {
         ArrayList<ModelPrice> out = new ArrayList<>();
         if (model == null) {
@@ -264,7 +264,7 @@ public class Engine {
         return out;
     }
 
-    // scheduled price changes and limited time offers found in the notes
+    // price warnings
     public ArrayList<ModelPrice> warnings() {
         ArrayList<ModelPrice> out = new ArrayList<>();
         for (ModelPrice p : prices) {
@@ -293,7 +293,7 @@ public class Engine {
         return PatternExtractor.summary(text.toString());
     }
 
-    // crawled prices that look wrong
+    // suspicious prices
     public LinkedHashMap<String, ArrayList<String>> dataProblems() {
         LinkedHashMap<String, ArrayList<String>> out = new LinkedHashMap<>();
         for (ModelPrice p : prices) {

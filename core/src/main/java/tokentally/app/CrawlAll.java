@@ -18,7 +18,8 @@ import tokentally.parse.PriceParser;
 import tokentally.parse.XaiParser;
 import tokentally.parse.ZaiParser;
 
-// runs the five crawlers, saves what they found and parses the prices
+// owner: Aakriti Mainali
+// runs all crawlers
 public class CrawlAll {
 
     public static final Crawler[] CRAWLERS = {
@@ -36,7 +37,7 @@ public class CrawlAll {
         }
     }
 
-    // crawl every provider, then parse all the saved pricing pages
+    // crawl then parse
     public static ArrayList<String> run(DataStore store, int maxPages) throws Exception {
         ArrayList<String> log = new ArrayList<>();
         for (Crawler c : CRAWLERS) {
@@ -46,7 +47,7 @@ public class CrawlAll {
                 log.add(c.provider() + " failed, keeping the old saved data " + crawler.errors);
                 continue;
             }
-            // parse first, so a page redesign that breaks the parser can not wipe the saved data
+            // keep old data if parse fails
             int parsed;
             try {
                 String startUrl = pages.isEmpty() ? c.startUrl() : pages.get(0).url;
@@ -72,7 +73,7 @@ public class CrawlAll {
         return log;
     }
 
-    // run every parser on the saved pricing pages
+    // parse saved pages
     public static ArrayList<ModelPrice> parseSaved(DataStore store) throws Exception {
         ArrayList<ModelPrice> all = new ArrayList<>();
         ArrayList<Page> pages = store.loadPages();
@@ -84,7 +85,7 @@ public class CrawlAll {
             String url = c.startUrl();
             for (Page p : pages) {
                 if (p.provider.equals(c.provider())) {
-                    url = p.url; // the first page is the pricing page after redirects
+                    url = p.url; // first page is pricing
                     break;
                 }
             }

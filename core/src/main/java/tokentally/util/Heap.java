@@ -3,9 +3,8 @@ package tokentally.util;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-// binary heap in an array list
-// the item that comes first by the comparator is always on top
-// pass a comparator for a min heap and the reverse for a max heap
+// owner: Nishan Giri
+// binary heap
 public class Heap<T> {
 
     private final ArrayList<T> items = new ArrayList<>();
@@ -27,7 +26,7 @@ public class Heap<T> {
         return items.isEmpty() ? null : items.get(0);
     }
 
-    // add at the end and move it up while it beats its parent
+    // add, move up
     public void push(T item) {
         items.add(item);
         int i = items.size() - 1;
@@ -41,7 +40,7 @@ public class Heap<T> {
         }
     }
 
-    // take the top, put the last item on top and move it down
+    // take top, move down
     public T pop() {
         if (items.isEmpty()) {
             return null;

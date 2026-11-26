@@ -1,7 +1,7 @@
 package tokentally.crawl;
 
-// shrijana
-// gemini pricing page (it now redirects to ai studio) and its model pages
+// owner: Shrijana Karki
+// gemini pages
 public class GeminiCrawler implements Crawler {
 
     public String provider() {

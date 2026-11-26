@@ -7,10 +7,8 @@ import java.util.regex.Pattern;
 
 import tokentally.model.ModelPrice;
 
-// nishan
-// claude has two header rows (Model Base tokens Prompt caching, then Name Input Output ...)
-// haiku 5.5 has a second row for prompts over 100,000 tokens without the model name
-// the batch table and the fast mode table use the same model names
+// owner: Nishan Giri
+// claude price tables
 public class AnthropicParser implements PriceParser {
 
     private static final Pattern NAME = Pattern.compile("Claude (Fable|Mythos|Opus|Sonnet|Haiku) ([0-9]+(?:\\.[0-9]+)?)");
@@ -40,7 +38,7 @@ public class AnthropicParser implements PriceParser {
                 }
                 String first = row.get(0);
 
-                // follow up row of the model above, for long prompts
+                // long prompt row
                 if (first.startsWith("$") && last != null && first.contains("over")) {
                     last.longInput = Prices.first(first);
                     last.longThreshold = Prices.tokens(first.substring(first.indexOf("over") + 4));
@@ -57,7 +55,7 @@ public class AnthropicParser implements PriceParser {
                     last = null;
                     continue;
                 }
-                // fast mode writes "Claude Opus 5 / Claude Opus 4.8" in one cell
+                // two models in one cell
                 Matcher m = NAME.matcher(first);
                 last = null;
                 while (m.find()) {
@@ -72,7 +70,7 @@ public class AnthropicParser implements PriceParser {
                         standard.put(id, p);
                     }
                     if (tier.equals("batch") && standard.containsKey(id)) {
-                        // the docs say the cache discount stacks with the 50 percent batch discount
+                        // batch halves cached price
                         double cached = standard.get(id).cachedInput;
                         p.cachedInput = cached < 0 ? -1 : cached / 2;
                     }

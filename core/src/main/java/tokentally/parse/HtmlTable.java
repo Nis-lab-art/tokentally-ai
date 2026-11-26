@@ -2,14 +2,15 @@ package tokentally.parse;
 
 import java.util.ArrayList;
 
-// one table from a page with the heading above it and the tab it sits in
+// owner: Khem Raj Adhikari
+// one html table
 public class HtmlTable {
 
     public String heading = "";
     public String tab = "";
     public ArrayList<ArrayList<String>> rows = new ArrayList<>();
 
-    // index of the first header cell that has this text or -1
+    // header column, -1 if none
     public int column(String name) {
         for (ArrayList<String> row : rows) {
             for (int i = 0; i < row.size(); i++) {

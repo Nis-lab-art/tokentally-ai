@@ -5,9 +5,8 @@ import java.util.HashMap;
 
 import tokentally.model.ModelPrice;
 
-// khem
-// xai text table has a context column then short context and long context prices
-// a separate table gives the batch discount and another one the grok 4.7 fast prices
+// owner: Khem Raj Adhikari
+// xai price tables
 public class XaiParser implements PriceParser {
 
     public ArrayList<ModelPrice> parse(String html, String url) {
@@ -43,7 +42,7 @@ public class XaiParser implements PriceParser {
         }
 
         for (HtmlTable t : tables) {
-            // batch: one cell lists the models and the next cell has the discount like "20 %"
+            // batch discount
             if (t.hasHeader("Batch discount")) {
                 for (ArrayList<String> row : t.rows) {
                     if (row.size() < 2 || !row.get(0).startsWith("grok")) {
@@ -58,7 +57,7 @@ public class XaiParser implements PriceParser {
                     }
                 }
             }
-            // grok 4.7 fast has its own small table with below and above 200k rows
+            // fast model table
             if (t.heading.toLowerCase().contains("fast pricing")) {
                 ModelPrice p = new ModelPrice("xai", "grok-4.7-fast", "fast");
                 for (ArrayList<String> row : t.rows) {

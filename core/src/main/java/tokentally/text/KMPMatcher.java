@@ -1,8 +1,7 @@
 package tokentally.text;
 
-// abhinav
-// knuth morris pratt search, used to check the boyer moore counts
-// the lps table says how far back to go in the word after a mismatch so the text never goes back
+// owner: Abhinav Pandey
+// kmp search
 public class KMPMatcher {
 
     private final String word;
@@ -31,7 +30,7 @@ public class KMPMatcher {
         }
     }
 
-    // text should already be lowercase
+    // lowercase text
     public int count(String text) {
         int m = word.length();
         int found = 0;

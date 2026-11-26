@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 import tokentally.model.Page;
 
-// abhinav
-// frequency count: how many times a word is in a given url
-// counts with boyer moore and also with kmp so the two can be compared
+// owner: Abhinav Pandey
+// word count on a page
 public class FrequencyCounter {
 
     public static class Result {
@@ -36,7 +35,7 @@ public class FrequencyCounter {
         return r;
     }
 
-    // the count in every page where the word is found
+    // pages with the word
     public static ArrayList<Result> countAll(String word, ArrayList<Page> pages) {
         ArrayList<Result> list = new ArrayList<>();
         for (Page p : pages) {

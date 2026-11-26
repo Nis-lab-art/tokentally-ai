@@ -41,8 +41,8 @@ import tokentally.text.Trie;
 import tokentally.text.WordCompleter;
 import tokentally.util.Heap;
 
-// a very small test runner, no test library needed
-// every test is a method below and check() counts passes and failures
+// owner: Shrijana Karki
+// our tests
 public class TestRunner {
 
     static int passed = 0;
@@ -368,7 +368,7 @@ public class TestRunner {
         check(t.size() == 0 && t.wordsWithPrefix(null).isEmpty(), "trie ignores null and empty words");
         check(new PageRanker(new InvertedIndex()).rank(null, 5).isEmpty(), "ranking a null query gives nothing");
 
-        // a damaged prices.csv still loads the good rows
+        // damaged csv
         Path dir = Files.createTempDirectory("badcsv");
         Files.writeString(dir.resolve("prices.csv"), String.join(",", DataStore.CSV_HEADER) + "\n"
             + "openai,gpt-x,standard,1,0.1,2,,,,,,,n,u\nopenai,gpt-y,standard,abc,0.1,2,,,,,,,n,u\nshort,row\n\n");
@@ -436,7 +436,7 @@ public class TestRunner {
             positive = positive && r.aValue >= 0 && r.bValue >= 0 && r.takeaway != null && !r.takeaway.isEmpty();
         }
         check(positive, "every experiment has two measured values and a sentence");
-        // the index must beat reading all pages, the trie must beat the scan
+        // index and trie must win
         Experiments.Row index = null;
         Experiments.Row trie = null;
         for (Experiments.Row r : rows) {
@@ -527,10 +527,10 @@ public class TestRunner {
         w.inputPerDay = 2_000_000;
         w.outputPerDay = 500_000;
         ModelPrice p = price("m", "standard", 2, 0.5, 6);
-        // 30 days * (2M * $2 + 0.5M * $6) / 1M = 30 * (4 + 3) = 210
+        // hand check: 210
         near(CostCalculator.monthly(p, w).total, 210, "plain cost");
         w.cachedShare = 0.5;
-        // 30 * (1M * 2 + 1M * 0.5 + 0.5M * 6) / 1M = 30 * 5.5 = 165
+        // hand check: 165
         near(CostCalculator.monthly(p, w).total, 165, "half the input cached");
         p.cachedInput = -1;
         near(CostCalculator.monthly(p, w).total, 210, "no cache price falls back to input price");
@@ -557,7 +557,7 @@ public class TestRunner {
         list.get(0).contextWindow = 32000;
         list.get(1).contextWindow = 200000;
         list.get(2).contextWindow = 200000;
-        list.add(price("unknown-size", "standard", 0.2, 0.02, 0.8)); // no context window listed
+        list.add(price("unknown-size", "standard", 0.2, 0.02, 0.8)); // no context
         Workload w = new Workload();
         w.inputPerDay = 1_000_000;
         w.outputPerDay = 100_000;
@@ -598,7 +598,7 @@ public class TestRunner {
         }
         check(problems == 0, "no price fails the sanity checks");
 
-        // values copied by hand from the official pages on the crawl day
+        // copied from the pages
         expect(all, "anthropic", "claude-opus-5-5", "standard", 4, 0.2, 20);
         expect(all, "anthropic", "claude-haiku-4-5", "batch", 0.5, 0.05, 2.5);
         expect(all, "xai", "grok-4.7", "standard", 2, 0.5, 6);

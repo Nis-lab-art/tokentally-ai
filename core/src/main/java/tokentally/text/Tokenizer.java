@@ -2,8 +2,8 @@ package tokentally.text;
 
 import java.util.ArrayList;
 
-// splits text into lowercase words one char at a time
-// dot dash and underscore stay inside a word so gpt-6.1-sol stays one word
+// owner: Abhinav Pandey
+// splits text into words
 public class Tokenizer {
 
     public static ArrayList<String> words(String text) {
@@ -16,7 +16,7 @@ public class Tokenizer {
             if (letter || (joiner && w.length() > 0)) {
                 w.append(c);
             } else if (w.length() > 0) {
-                // drop joiners at the end like "tokens." -> tokens
+                // drop ending . - _
                 int end = w.length();
                 while (end > 0 && !isLetterOrDigit(w.charAt(end - 1))) {
                     end--;
@@ -34,7 +34,7 @@ public class Tokenizer {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
     }
 
-    // true if the word has a letter, so prices like 2.50 are not words
+    // has a letter
     public static boolean hasLetter(String w) {
         for (int i = 0; i < w.length(); i++) {
             char c = w.charAt(i);

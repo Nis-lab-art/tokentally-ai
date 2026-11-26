@@ -4,19 +4,27 @@ subtitle: "COMP 8547 Advanced Computing Concepts, Fall 2026, Final Project Repor
 author: "Group 10, University of Windsor"
 ---
 
-# 1 group and variant
+# 1 group, members and variant
 
-| member | provider crawled | features | main java files |
-|---|---|---|---|
-| Nishan Giri | Anthropic Claude | spell checking, workload cost calculator | AnthropicCrawler, AnthropicParser, SpellChecker, EditDistance, Workload, CostCalculator, Recommender |
-| Abhinav Pandey | OpenAI | inverted indexing, frequency count | OpenAICrawler, OpenAIParser, InvertedIndex, FrequencyCounter, BoyerMoore, KMPMatcher |
-| Shrijana Karki | Google Gemini | page ranking, data validation | GeminiCrawler, GeminiParser, PageRanker, InputValidator |
-| Aakriti Mainali | Z.ai | word completion, finding patterns | ZaiCrawler, ZaiParser, Trie, WordCompleter, PatternExtractor |
-| Khem Raj Adhikari | xAI Grok | search frequency, html cleaning | XaiCrawler, XaiParser, HtmlCleaner, SearchFrequency |
+Group name: **Group 10**
 
-Shared files are ModelPrice, Page, Crawler, WebCrawler, Fetcher, RobotsTxtChecker, Heap, Tokenizer, DataStore, CrawlAll, Engine and TokenTallyApp. The extra feature price history (PriceHistory) is shared.
+Variant: **TokenTally AI: AI Model Pricing Comparison Engine**
 
-Code and data are in the public repository https://github.com/Nis-lab-art/tokentally-ai
+| member | provider crawled | features |
+|---|---|---|
+| Abhinav Pandey | OpenAI | inverted indexing, frequency count, web api and page |
+| Nishan Giri | Anthropic Claude | spell checking, workload cost calculator, web api and page |
+| Shrijana Karki | Google Gemini | page ranking, data validation |
+| Aakriti Mainali | Z.ai | word completion, finding patterns |
+| Khem Raj Adhikari | xAI Grok | search frequency, html cleaning |
+
+## 1.1 the task (copied from our proposal)
+
+TokenTally AI is a Java back-end application. It crawls the official pricing and model documentation pages of five AI providers: OpenAI, Google Gemini, Anthropic Claude, Z.ai, and xAI Grok. It pulls the prices and specs for each model out of those pages and stores them in one common format. Users can then search and compare models from a command-line menu.
+
+The main feature is a workload cost calculator. The user types in their expected usage, for example, "2 million input tokens and 500,000 output tokens per day, batch processing is fine". The program then lists the matching models from cheapest to most expensive by estimated monthly cost, counting batch discounts, cached input prices, long-context prices, and free models.
+
+The names of the java files of each member are in section 11. Code and data are in the repository https://github.com/Nis-lab-art/tokentally-ai
 
 # 2 what the program does
 
@@ -150,7 +158,11 @@ The Insights tab shows the top searches, the data check, the free models, price 
 
 ![Figure 14 Insights tab with top searches and data check](figures/web-insights.png){width=100%}
 
-# 6 extra feature, price history
+# 6 additional features
+
+On top of the required features we built the workload cost calculator with a recommendation (Nishan Giri), compare and model card, free models and price warnings (shared), the web page and api (Abhinav Pandey and Nishan Giri), price history (Nishan Giri), the error handling demo (Shrijana Karki) and measured experiments (Aakriti Mainali).
+
+## 6.1 price history (Nishan Giri)
 
 A price tracker needs to remember old prices. Each time the data is loaded or crawled `PriceHistory` compares every price with the last one it knows and writes a dated line to `price_history.csv` only when the price is new or different. The file only grows, nothing is rewritten. The Price history tab and menu option 13 show every price that moved with the old price, the new price and the change in percent. Looking at the whole log costs O(lines) with a hash map that holds the last price of every model.
 
@@ -166,7 +178,7 @@ Figure 16 Price history in the command line menu with the real data (no price ha
 
 # 7 error handling and experiments
 
-## 7.1 error handling
+## 7.1 error handling (Shrijana Karki)
 
 The presentation questions will ask what happens if a user does something unexpected. Because of that every member's features were tested with bad, odd and extreme inputs. A case is handled when the program gives a clear message or a safe result and does not crash. `ErrorDemo` runs 54 cases and all are handled. The command line menu (option 18), the web page (tab Error handling) and the test runner all use this one class. The web page also has a box where anybody can type anything and see the answer, and a row of "What if I..." buttons on every tab that fills in the real form with a strange value (for example "2 million" as tokens, a mistyped model name or a $0.01 budget), so the reaction can be shown without typing. Menu option 20 does the same from a numbered list.
 
@@ -193,7 +205,7 @@ FIGURE_ERRNISHAN
 
 Figure 19 The same cases in the command line menu (option 18 started with `./run.sh data nishan`, so only that member and the shared parts show)
 
-## 7.2 experiments
+## 7.2 experiments (Aakriti Mainali)
 
 Each member compared their data structure or algorithm with the plain way of doing it, measured on the real crawled data (`Experiments`, menu option 19, tab Experiments). The numbers change a little on every run and laptop, the ratio is what matters.
 
@@ -245,9 +257,27 @@ Figure 22 All checks pass (test.sh)
 
 See the README in the repository. In short, open the core folder in eclipse and run `TokenTallyApp` for the menu or import the api folder as a maven project and run `ApiApplication` and open http://localhost:8080. There are also `run.sh` and `run.bat` files. `./run.sh data nishan` (or abhinav, shrijana, aakriti, khem) shows only the options of that member, so each member can demonstrate their own features without the web page.
 
-# 11 team work
+# 11 team work and contribution
 
-Each member wrote and studied the crawler, parser and two features listed in section 1 and can explain their own files. Shared parts were done together. Some code was written with the help of an AI assistant, each of us reviewed and tested our own part. (each member to check this section and add what they did)
+Every java file starts with an `owner` line with the same names as below. Each member crawls and parses one provider and builds two features. The shared files were divided equally, four to each member. The web api is not a course requirement and was done by Abhinav and Nishan.
+
+| member | crawler and feature files | shared files | extra work |
+|---|---|---|---|
+| Abhinav Pandey | OpenAICrawler, OpenAIParser, InvertedIndex, FrequencyCounter, BoyerMoore, KMPMatcher | Engine, DataStore, Tokenizer, WholeWord | web api and page with Nishan: ApiApplication, TokenTallyController, index.html |
+| Nishan Giri | AnthropicCrawler, AnthropicParser, SpellChecker, EditDistance, Workload, CostCalculator, Recommender | ModelPrice, Prices, PriceHistory, Heap | web api and page with Abhinav: ApiApplication, TokenTallyController, index.html |
+| Shrijana Karki | GeminiCrawler, GeminiParser, PageRanker, InputValidator | Page, PriceParser, ErrorDemo, TestRunner | error handling demo and tests |
+| Aakriti Mainali | ZaiCrawler, ZaiParser, Trie, WordCompleter, PatternExtractor | Crawler, CrawlAll, TokenTallyApp, Experiments | menu and experiments |
+| Khem Raj Adhikari | XaiCrawler, XaiParser, HtmlCleaner, SearchFrequency | HtmlTable, WebCrawler, Fetcher, RobotsTxtChecker | shared web crawler |
+
+| member | features | data structures and algorithms | figures |
+|---|---|---|---|
+| Abhinav Pandey | inverted indexing, frequency count | hash map of positions, Boyer-Moore, KMP | 3, 4 |
+| Nishan Giri | spell checking, cost calculator, price history | dp table, min heap, append only log | 4, 5, 10, 11, 15, 16 |
+| Shrijana Karki | page ranking, data validation, error handling demo | max heap, regular expressions | 4, 6, 17, 18, 19 |
+| Aakriti Mainali | word completion, finding patterns, experiments | trie, heap, regular expressions | 7, 8, 9, 20, 21 |
+| Khem Raj Adhikari | search frequency, html cleaning, web crawler | hash map, tree map, queue, hash set | 2, 14 |
+
+Some code was written with the help of an AI assistant. Each member is responsible for explaining the files under their name.
 
 # 12 references
 

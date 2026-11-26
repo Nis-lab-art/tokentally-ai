@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 import tokentally.model.Page;
 import tokentally.parse.HtmlCleaner;
 
-// breadth first crawl shared by all five providers
-// a queue holds the urls still to visit and a hash set the ones already seen
+// owner: Khem Raj Adhikari
+// bfs crawl, queue + hash set
 public class WebCrawler {
 
     private static final Pattern HREF = Pattern.compile("href=\"([^\"#]+)");
@@ -24,7 +24,7 @@ public class WebCrawler {
     private final int maxDepth;
     private final long delayMs;
 
-    // the html of the first page, used later by the price parser
+    // first page html
     public String startHtml;
     public ArrayList<String> errors = new ArrayList<>();
 
@@ -85,7 +85,7 @@ public class WebCrawler {
         return pages;
     }
 
-    // links from href attributes and from markdown links like ](/docs/x)
+    // href and markdown links
     public static ArrayList<String> links(String html, String base) {
         ArrayList<String> out = new ArrayList<>();
         URI baseUri = URI.create(base);
@@ -98,14 +98,14 @@ public class WebCrawler {
                         out.add(normalize(abs));
                     }
                 } catch (Exception e) {
-                    // bad link, ignore it
+                    // bad link
                 }
             }
         }
         return out;
     }
 
-    // drop the fragment, the query and a trailing slash so one page is not crawled twice
+    // clean url
     public static String normalize(String url) {
         int cut = url.indexOf('#');
         if (cut >= 0) {

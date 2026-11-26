@@ -2,19 +2,19 @@ package tokentally.parse;
 
 import java.util.ArrayList;
 
-// shared html cleaning used by every parser
-// removes scripts styles and the page chrome, turns tags into text and reads tables
+// owner: Khem Raj Adhikari
+// html to text and tables
 public class HtmlCleaner {
 
     private static final String[] DROP = {"script", "style", "svg", "noscript", "nav", "header", "footer", "aside", "head"};
 
-    // the readable text of a page with one block per line
+    // page text
     public static String text(String html) {
         if (html == null || html.isBlank()) {
             return "";
         }
         String full = text(html, DROP);
-        // some pages (ai studio) keep all the content inside noscript, so try again without dropping the chrome
+        // ai studio uses noscript
         if (full.length() < 400) {
             String more = text(html, new String[] {"script", "style", "svg", "head"});
             if (more.length() > 400 && more.length() > full.length() * 3) {
@@ -37,7 +37,7 @@ public class HtmlCleaner {
         return tidy(s);
     }
 
-    // text inside the title tag
+    // page title
     public static String title(String html) {
         if (html == null) {
             return "";
@@ -51,7 +51,7 @@ public class HtmlCleaner {
         return b < 0 ? "" : decode(html.substring(a, b)).trim();
     }
 
-    // all tables with the last heading before them and the tab pane they are in
+    // all tables
     public static ArrayList<HtmlTable> tables(String html) {
         ArrayList<HtmlTable> list = new ArrayList<>();
         int from = 0;
@@ -84,7 +84,7 @@ public class HtmlCleaner {
         return list;
     }
 
-    // text of every th and td in one row
+    // row cells
     private static ArrayList<String> cells(String row) {
         ArrayList<String> out = new ArrayList<>();
         int i = 0;
@@ -95,7 +95,7 @@ public class HtmlCleaner {
             if (c < 0) {
                 break;
             }
-            // skip things like <thead> that also start with <th
+            // skip thead
             char next = row.charAt(c + 3);
             if (next != '>' && next != ' ') {
                 i = c + 3;
@@ -128,7 +128,7 @@ public class HtmlCleaner {
         return close < 0 ? "" : tidy(decode(html.substring(open, close).replaceAll("<[^>]*>", " ")));
     }
 
-    // openai puts each tier in a div with data-content-switcher-pane and data-value
+    // openai tier tabs
     private static String lastTab(String html, int before) {
         int p = html.lastIndexOf("data-content-switcher-pane", before);
         if (p < 0) {
@@ -148,7 +148,7 @@ public class HtmlCleaner {
         int i = 0;
         while (true) {
             int a = lower.indexOf("<" + tag, i);
-            // make sure it is the tag and not a longer name like <header vs <head
+            // exact tag name
             while (a >= 0 && a + tag.length() + 1 < lower.length()) {
                 char c = lower.charAt(a + tag.length() + 1);
                 if (c == '>' || c == ' ' || c == '\n' || c == '/') {
@@ -175,7 +175,7 @@ public class HtmlCleaner {
                 .replace("&quot;", "\"").replace("&#39;", "'").replace("&#x27;", "'").replace("&apos;", "'")
                 .replace("&rarr;", "->").replace("&ge;", ">=").replace("&le;", "<=").replace("&mdash;", "-")
                 .replace("&ndash;", "-").replace("&times;", "x").replace("&middot;", ".");
-        // numeric codes like &#8212; or &#x2014;
+        // numeric codes
         StringBuilder out = new StringBuilder();
         int i = 0;
         while (i < s.length()) {
@@ -198,7 +198,7 @@ public class HtmlCleaner {
         return out.toString().replace("&amp;", "&");
     }
 
-    // trim every line, drop empty lines and squeeze spaces
+    // tidy spaces
     private static String tidy(String s) {
         StringBuilder out = new StringBuilder();
         for (String line : s.split("\n")) {

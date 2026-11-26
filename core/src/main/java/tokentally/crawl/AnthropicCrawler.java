@@ -1,7 +1,7 @@
 package tokentally.crawl;
 
-// nishan
-// claude pricing page and the model overview pages
+// owner: Nishan Giri
+// claude pages
 public class AnthropicCrawler implements Crawler {
 
     public String provider() {

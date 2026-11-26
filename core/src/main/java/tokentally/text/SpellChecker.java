@@ -5,10 +5,8 @@ import java.util.HashMap;
 
 import tokentally.util.Heap;
 
-// nishan
-// the vocabulary is every word from the crawled pages with how often it shows up
-// a word that is not in it gets the closest words by edit distance
-// a heap keeps the best ones: smaller distance first, then the more common word
+// owner: Nishan Giri
+// suggests close words
 public class SpellChecker {
 
     public static class Suggestion {
@@ -40,7 +38,7 @@ public class SpellChecker {
 
     public ArrayList<Suggestion> suggest(String word, int howMany) {
         if (word == null || word.isBlank()) {
-            return new ArrayList<>(); // nothing to correct
+            return new ArrayList<>(); // empty word
         }
         String w = word.toLowerCase();
         Heap<Suggestion> heap = new Heap<>((a, b) -> a.distance != b.distance
@@ -48,7 +46,7 @@ public class SpellChecker {
                 : Integer.compare(b.frequency, a.frequency));
 
         for (String v : vocabulary.keySet()) {
-            // words with a very different length can not be close, skip the dp table for them
+            // length too different
             if (Math.abs(v.length() - w.length()) > maxDistance) {
                 continue;
             }

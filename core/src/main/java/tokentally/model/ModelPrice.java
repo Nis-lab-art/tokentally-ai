@@ -1,7 +1,7 @@
 package tokentally.model;
 
-// one model on one tier with its prices in usd per 1 million tokens
-// a price of -1 means the page did not list it
+// owner: Nishan Giri
+// one model price, usd per 1M tokens
 public class ModelPrice {
 
     public String provider;
@@ -13,7 +13,7 @@ public class ModelPrice {
     public double longInput = -1;
     public double longCachedInput = -1;
     public double longOutput = -1;
-    public long longThreshold = -1; // prompt size where long prices start
+    public long longThreshold = -1; // long price starts here
     public long contextWindow = -1;
     public long maxOutput = -1;
     public String notes = "";

@@ -4,7 +4,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// reads robots.txt once per site and checks a path against the rules for user-agent *
+// owner: Khem Raj Adhikari
+// robots.txt rules
 public class RobotsTxtChecker {
 
     private final Fetcher fetcher;
@@ -26,7 +27,7 @@ public class RobotsTxtChecker {
         return allowedByRules(rules, path);
     }
 
-    // keep only the allow and disallow lines of the user-agent * group
+    // rules for user agent *
     public static ArrayList<String[]> parse(String robots) {
         ArrayList<String[]> rules = new ArrayList<>();
         if (robots == null) {
@@ -43,7 +44,7 @@ public class RobotsTxtChecker {
             String key = line.substring(0, colon).trim().toLowerCase();
             String value = line.substring(colon + 1).trim();
             if (key.equals("user-agent")) {
-                // agents listed one after another share a group
+                // grouped agents
                 boolean star = value.equals("*");
                 forUs = lastWasAgent ? (forUs || star) : star;
                 lastWasAgent = true;
@@ -57,7 +58,7 @@ public class RobotsTxtChecker {
         return rules;
     }
 
-    // the longest matching rule wins and allow wins a tie
+    // longest rule wins
     public static boolean allowedByRules(ArrayList<String[]> rules, String path) {
         int bestLength = -1;
         boolean result = true;

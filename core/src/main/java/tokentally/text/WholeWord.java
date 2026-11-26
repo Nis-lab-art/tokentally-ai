@@ -1,6 +1,7 @@
 package tokentally.text;
 
-// a match only counts when it is not part of a longer word
+// owner: Abhinav Pandey
+// whole word check
 public class WholeWord {
 
     public static boolean at(String text, int start, int length) {

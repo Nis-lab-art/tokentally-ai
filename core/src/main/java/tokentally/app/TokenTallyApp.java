@@ -13,7 +13,8 @@ import tokentally.regex.InputValidator;
 import tokentally.text.FrequencyCounter;
 import tokentally.text.SpellChecker;
 
-// command line menu for every feature
+// owner: Aakriti Mainali
+// command line menu
 public class TokenTallyApp {
 
     private static final String[] MENU = {
@@ -40,14 +41,14 @@ public class TokenTallyApp {
         "exit"
     };
 
-    // who built the option, "all" means it uses everybody's work
+    // option owners
     private static final String[] OWNER = {
         "all", "Aakriti", "Abhinav", "Khem Raj", "all", "all", "all", "Nishan", "all", "Aakriti",
         "Shrijana", "all", "all", "Nishan", "Abhinav", "Shrijana", "Khem Raj", "all", "all", "all", ""
     };
 
     private final Engine engine;
-    private String member = ""; // show only the options of this member when set
+    private String member = ""; // show one member only
     private final Scanner in = new Scanner(System.in);
 
     public TokenTallyApp(Engine engine) {
@@ -71,7 +72,7 @@ public class TokenTallyApp {
         }
         System.out.println("TokenTally AI  |  " + engine.prices.size() + " model prices  |  "
                 + engine.pages.size() + " pages  |  " + engine.index.words().size() + " words");
-        // optional second argument: nishan, abhinav, shrijana, aakriti or khem shows only that member's options
+        // optional member name
         new TokenTallyApp(engine, args.length > 1 ? args[1] : "").loop();
     }
 
@@ -81,12 +82,12 @@ public class TokenTallyApp {
             for (int i = 0; i < MENU.length; i++) {
                 String owner = OWNER[i];
                 if (!member.isEmpty() && !owner.isEmpty() && !owner.equals("all") && !owner.toLowerCase().contains(member)) {
-                    continue; // another member's option
+                    continue; // hide others
                 }
                 System.out.printf("%2d  %-52s %s%n", i + 1, MENU[i], owner.isEmpty() ? "" : "(" + owner + ")");
             }
             if (!in.hasNextLine()) {
-                return; // input closed
+                return; // no more input
             }
             int c = InputValidator.choice(ask("choose"), MENU.length);
             if (c == -1) {
@@ -465,7 +466,7 @@ public class TokenTallyApp {
         System.out.println(cases.size() + " cases, " + (cases.size() - bad) + " handled, " + bad + " crashed");
     }
 
-    // pick one situation from the list and see exactly how the program reacts
+    // pick a situation
     private void whatIf() {
         var all = ErrorDemo.run(engine);
         ArrayList<ErrorDemo.Case> list = new ArrayList<>();

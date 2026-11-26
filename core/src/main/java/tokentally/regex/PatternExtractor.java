@@ -5,25 +5,25 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// aakriti
-// finds useful patterns in the crawled text with regular expressions
+// owner: Aakriti Mainali
+// regex pattern finder
 public class PatternExtractor {
 
-    // $0.26  $12.50 / MTok  $4.00 / 1M
+    // prices
     public static final Pattern PRICE = Pattern.compile("\\$\\s?\\d+(?:,\\d{3})*(?:\\.\\d+)?(?:\\s*(?:USD\\s*)?/\\s*(?:MTok|1M|M tokens|million tokens))?");
-    // 1,050,000 tokens  1.05M tokens  200K  500k context
+    // context sizes
     public static final Pattern CONTEXT = Pattern.compile("(?i)\\b(\\d{1,3}(?:,\\d{3})+|\\d+(?:\\.\\d+)?\\s?[KM])\\s*(?:tokens?|context)\\b");
-    // through December 31, 2026 / starting January 1, 2027 / from March 1, 2027
+    // dated prices
     public static final Pattern DATED = Pattern.compile("(?i)\\b(through|until|starting|from|after|before)\\s+(january|february|march|april|may|june|july|august|september|october|november|december)\\s+\\d{1,2},\\s*\\d{4}");
-    // >= 200k tokens, > 200k, over 100,000 tokens
+    // long context limits
     public static final Pattern LONG_CONTEXT = Pattern.compile("(?i)(≥|>=|>|over|above)\\s*(\\d{1,3}(?:,\\d{3})+|\\d+\\s?[kKmM])\\s*(?:tokens)?");
     public static final Pattern MODEL_ID = Pattern.compile("\\b(?:gpt|claude|gemini|glm|grok|o\\d)[-.]?[a-z0-9]+(?:[-.][a-z0-9]+)*\\b");
     public static final Pattern SPECIAL = Pattern.compile("(?i)\\b(limited-time free|free of charge|free)\\b");
-    // "Context window 1M tokens" on a model page, the value can be on the next line
+    // label then value
     private static final String SIZE_VALUE = "(\\d{1,3}(?:,\\d{3})+|\\d+(?:\\.\\d+)?\\s?[KM]\\b|\\d{4,})";
     public static final Pattern CONTEXT_WINDOW = Pattern.compile("(?is)context (?:window|length)[^0-9$]{0,80}?" + SIZE_VALUE);
     public static final Pattern MAX_OUTPUT = Pattern.compile("(?is)max(?:imum)? output(?: tokens)?[^0-9$]{0,80}?" + SIZE_VALUE);
-    // some pages put the value first: "1,050,000 context window" or "a 1M-token context window"
+    // value then label
     public static final Pattern CONTEXT_WINDOW_FIRST = Pattern.compile("(?i)" + SIZE_VALUE + "[\\s-]*(?:tokens?)?[\\s-]*context (?:window|length)");
     public static final Pattern MAX_OUTPUT_FIRST = Pattern.compile("(?i)" + SIZE_VALUE + "[\\s-]*max(?:imum)? output");
 
@@ -36,7 +36,7 @@ public class PatternExtractor {
         return out;
     }
 
-    // every kind of pattern with the different values found and how many times
+    // count all patterns
     public static LinkedHashMap<String, LinkedHashMap<String, Integer>> summary(String text) {
         if (text == null) {
             text = "";
@@ -60,7 +60,7 @@ public class PatternExtractor {
         out.put(name, counts);
     }
 
-    // first value after a label like "Context window" on a model page, -1 if none
+    // first size, -1 if none
     public static long firstSize(Pattern labelled, String text) {
         Matcher m = labelled.matcher(text);
         return m.find() ? toTokens(m.group(1)) : -1;

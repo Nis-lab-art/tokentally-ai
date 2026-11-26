@@ -6,10 +6,8 @@ import java.util.Set;
 
 import tokentally.model.Page;
 
-// abhinav
-// word -> url -> positions of the word in that page
-// a search only looks up the word instead of reading every page
-// keeping positions also lets us find exact phrases
+// owner: Abhinav Pandey
+// word -> page -> positions
 public class InvertedIndex {
 
     private final HashMap<String, HashMap<String, ArrayList<Integer>>> index = new HashMap<>();
@@ -18,7 +16,7 @@ public class InvertedIndex {
 
     public void add(Page page) {
         if (page == null || page.text == null || page.url == null) {
-            return; // nothing to index
+            return; // empty page
         }
         ArrayList<String> words = Tokenizer.words(page.text);
         pageLengths.put(page.url, words.size());
@@ -34,7 +32,7 @@ public class InvertedIndex {
         }
     }
 
-    // pages that have the word and its positions there
+    // pages and positions
     public HashMap<String, ArrayList<Integer>> postings(String word) {
         if (word == null) {
             return new HashMap<>();
@@ -47,13 +45,13 @@ public class InvertedIndex {
         return index.containsKey(word.toLowerCase());
     }
 
-    // how many times a word is in one page, straight from the index
+    // count on one page
     public int count(String word, String url) {
         ArrayList<Integer> pos = postings(word).get(url);
         return pos == null ? 0 : pos.size();
     }
 
-    // pages where the words come one right after the other
+    // phrase search
     public HashMap<String, Integer> phrase(String phrase) {
         HashMap<String, Integer> hits = new HashMap<>();
         ArrayList<String> words = Tokenizer.words(phrase);
@@ -84,7 +82,7 @@ public class InvertedIndex {
         return index.keySet();
     }
 
-    // how many times the word is in all pages together
+    // total count
     public int total(String word) {
         return totals.getOrDefault(word.toLowerCase(), 0);
     }

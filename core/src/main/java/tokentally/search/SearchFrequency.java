@@ -9,10 +9,8 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-// khem
-// every search adds one to the count of that word in a hash map
-// the map is saved to a file so the history stays after the app closes
-// the top list is built with a tree map sorted by count, biggest first
+// owner: Khem Raj Adhikari
+// counts searches
 public class SearchFrequency {
 
     private final HashMap<String, Integer> counts = new HashMap<>();
@@ -23,7 +21,7 @@ public class SearchFrequency {
         load();
     }
 
-    // synchronized because the web page can send two searches at the same time
+    // safe with two users
     public synchronized int record(String query) {
         if (query == null) {
             return 0;
@@ -44,7 +42,7 @@ public class SearchFrequency {
         return counts.getOrDefault(query.trim().toLowerCase(), 0);
     }
 
-    // the most searched words, ties in a to z order
+    // top searches
     public synchronized ArrayList<Object[]> top(int howMany) {
         TreeMap<Integer, TreeSet<String>> byCount = new TreeMap<>((a, b) -> b - a);
         for (var e : counts.entrySet()) {
@@ -66,7 +64,7 @@ public class SearchFrequency {
         return counts.size();
     }
 
-    // one line per word: count then a tab then the word
+    // count TAB word
     private void load() {
         try {
             if (Files.exists(file)) {
@@ -76,7 +74,7 @@ public class SearchFrequency {
                         try {
                             counts.put(line.substring(tab + 1), Integer.parseInt(line.substring(0, tab)));
                         } catch (NumberFormatException e) {
-                            // skip a broken line instead of failing
+                            // skip bad line
                         }
                     }
                 }

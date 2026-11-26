@@ -1,12 +1,13 @@
 package tokentally.crawl;
 
-// every provider crawler gives the start page and which links it may follow
+// owner: Aakriti Mainali
+// crawler interface
 public interface Crawler {
 
     String provider();
 
     String startUrl();
 
-    // true if the crawler should visit this link
+    // follow this link?
     boolean follow(String url);
 }

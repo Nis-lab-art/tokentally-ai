@@ -12,7 +12,7 @@
 | 8 price history log and tab (our extra feature, replaces the email report) | done |
 | 9 hardening, error handling demo and experiments for every member | done |
 | 10 final report (docx) | done, team section to fill in |
-| 11 presentation | not started |
+| 11 presentation (docs/slides) | done, practise timing |
 
 ## Data structures
 

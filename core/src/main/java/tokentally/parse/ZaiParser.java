@@ -5,9 +5,8 @@ import java.util.HashSet;
 
 import tokentally.model.ModelPrice;
 
-// aakriti
-// z.ai has plain tables for text and vision models: Model Input Cached Input Cached Input Storage Output
-// free models say Free and a missing cached price is "-" or "\"
+// owner: Aakriti Mainali
+// z.ai price tables
 public class ZaiParser implements PriceParser {
 
     public ArrayList<ModelPrice> parse(String html, String url) {
@@ -28,7 +27,7 @@ public class ZaiParser implements PriceParser {
                     continue;
                 }
                 String id = Prices.firstWord(row.get(cModel));
-                // the same model can show up in two tables, keep the first one
+                // keep first
                 if (!seen.add(id)) {
                     continue;
                 }

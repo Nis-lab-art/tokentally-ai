@@ -1,8 +1,7 @@
 package tokentally.text;
 
-// nishan
-// levenshtein distance with a dynamic programming table
-// d[i][j] is the fewest inserts deletes and replaces to turn a[0..i) into b[0..j)
+// owner: Nishan Giri
+// edit distance, dp table
 public class EditDistance {
 
     public static int between(String a, String b) {

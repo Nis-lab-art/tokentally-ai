@@ -8,11 +8,13 @@ TokenTally AI crawls the official pricing pages of five AI providers (OpenAI, Go
 
 | Member | Provider | Features |
 |---|---|---|
-| Nishan Giri | Anthropic Claude | spell checking, workload cost calculator |
-| Abhinav Pandey | OpenAI | inverted indexing, frequency count |
+| Nishan Giri | Anthropic Claude | spell checking, workload cost calculator, web api and page |
+| Abhinav Pandey | OpenAI | inverted indexing, frequency count, web api and page |
 | Shrijana Karki | Google Gemini | page ranking, data validation |
 | Aakriti Mainali | Z.ai | word completion, finding patterns |
 | Khem Raj Adhikari | xAI Grok | search frequency, html cleaning |
+
+The slides are `docs/slides/TokenTally_AI_Presentation.pptx` (made by `docs/slides/make_slides.js`). Every java file has an `owner` line. The list by member is in `submission/FILES.md`. Run `submission/build.sh` to make the upload files (source as `.java` and `.txt`, a zip, the report and the slides).
 
 ## Folders
 

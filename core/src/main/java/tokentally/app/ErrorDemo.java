@@ -22,9 +22,8 @@ import tokentally.text.FrequencyCounter;
 import tokentally.text.InvertedIndex;
 import tokentally.text.Trie;
 
-// runs bad, odd and extreme inputs through every feature and shows what the program does
-// the command line menu and the web page both show the result of this one class
-// a case is "handled" when the program answered with a clear message or a safe result and did not crash
+// owner: Shrijana Karki
+// bad input cases
 public class ErrorDemo {
 
     public static class Case {
@@ -34,7 +33,7 @@ public class ErrorDemo {
         public String input;
         public String result;
         public boolean handled;
-        public String kind; // rejected, safe result or crashed
+        public String kind; // result type
     }
 
     private final Engine engine;
@@ -55,7 +54,7 @@ public class ErrorDemo {
         return d.cases;
     }
 
-    // one scenario: the code inside may throw, that is exactly what we want to see handled
+    // run one case, catch errors
     private void check(String member, String feature, String scenario, String input, Supplier<String> action) {
         Case c = new Case();
         c.member = member;
@@ -407,7 +406,7 @@ public class ErrorDemo {
         }
     }
 
-    // for the tests: every case that crashed
+    // crashed cases
     public static ArrayList<Case> crashed(ArrayList<Case> all) {
         ArrayList<Case> out = new ArrayList<>();
         for (Case c : all) {
@@ -418,7 +417,7 @@ public class ErrorDemo {
         return out;
     }
 
-    // used by the menu to count by member
+    // count per member
     public static HashMap<String, int[]> perMember(ArrayList<Case> all) {
         HashMap<String, int[]> out = new HashMap<>();
         for (Case c : all) {

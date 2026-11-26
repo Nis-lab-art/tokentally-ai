@@ -5,16 +5,15 @@ import java.util.HashMap;
 
 import tokentally.model.ModelPrice;
 
-// abhinav
-// openai shows one table per tier (standard batch flex fast ...) behind tabs
-// each table has Model Input Output Cached input and two cache write columns
+// owner: Abhinav Pandey
+// openai price tables
 public class OpenAIParser implements PriceParser {
 
     public ArrayList<ModelPrice> parse(String html, String url) {
         ArrayList<ModelPrice> list = new ArrayList<>();
         HashMap<String, ModelPrice> byKey = new HashMap<>();
         for (HtmlTable t : HtmlCleaner.tables(html)) {
-            // only text token tables, not image audio or fine tuning tables
+            // text token tables only
             if (!t.hasHeader("Model") || !t.hasHeader("Input") || !t.hasHeader("Output")
                     || t.hasHeader("Modality") || t.hasHeader("Training") || t.hasHeader("Use case")) {
                 continue;
@@ -39,7 +38,7 @@ public class OpenAIParser implements PriceParser {
                 if (!id.matches("[a-z][a-z0-9.\\-]*")) {
                     continue;
                 }
-                // a second table for the same tier is a later price, so keep the first and warn
+                // later price, keep first
                 ModelPrice old = byKey.get("openai|" + id + "|" + tier);
                 if (old != null) {
                     if (!old.notes.contains("price change")) {

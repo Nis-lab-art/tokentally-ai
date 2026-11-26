@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Bean;
 
 import tokentally.app.Engine;
 
-// starts the web api. all the real work is in the core Engine
+// owner: Abhinav Pandey, Nishan Giri
+// starts the web app
 @SpringBootApplication
 public class ApiApplication {
 
@@ -15,7 +16,7 @@ public class ApiApplication {
         SpringApplication.run(ApiApplication.class, args);
     }
 
-    // one engine for the whole app, loaded from the saved data
+    // one shared engine
     @Bean
     public Engine engine(@Value("${tokentally.data}") String folder) throws Exception {
         Engine e = new Engine(folder);
